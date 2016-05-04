@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Layer Groups</title>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.14.2/css/ol.css" type="text/css">
+    <script src="http://openlayers.org/en/v3.14.2/build/ol.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <style>
+      #layertree li > span {
+        cursor: pointer;
+      }    </style>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <div id="layertree">
+      <h5>Click on layer nodes below to change their properties.</h5>
+      <ul>
+        <li><span>OpenAerial layer</span>
+          <fieldset id="layer0">
+            <label class="checkbox" for="visible0">
+              <input id="visible0" class="visible" type="checkbox"/>visibility
+            </label>
+            <label>opacity</label>
+            <input class="opacity" type="range" min="0" max="1" step="0.01"/>
+          </fieldset>
+        </li>
+        <li><span>Layer group</span>
+          <fieldset id="layer1">
+            <label class="checkbox" for="visible1">
+              <input id="visible1" class="visible" type="checkbox"/>visibility
+            </label>
+            <label>opacity</label>
+            <input class="opacity" type="range" min="0" max="1" step="0.01"/>
+          </fieldset>
+          <ul>
+            <li><span>Food insecurity layer</span>
+              <fieldset id="layer10">
+                <label class="checkbox" for="visible10">
+                  <input id="visible10" class="visible" type="checkbox"/>visibility
+                </label>
+                <label>opacity</label>
+                <input class="opacity" type="range" min="0" max="1" step="0.01"/>
+              </fieldset>
+            </li>
+            <li><span>World borders layer</span>
+              <fieldset id="layer11">
+                <label class="checkbox" for="visible11">
+                  <input id="visible11" class="visible" type="checkbox"/>visibility
+                </label>
+                <label>opacity</label>
+                <input class="opacity" type="range" min="0" max="1" step="0.01"/>
+              </fieldset>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="form-group">
+      <label for="usr">Name:</label>
+      <input type="text" class="form-control" id="usr">
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password:</label>
+      <input type="password" class="form-control" id="pwd">
+    </div>
+    <script>
+      var map = new ol.Map({
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.MapQuest({layer: 'sat'})
+          }), new ol.layer.Group({
+            layers: [
+              new ol.layer.Tile({
+                source: new ol.source.TileJSON({
+                  url: 'http://api.tiles.mapbox.com/v3/' +
+                      'mapbox.20110804-hoa-foodinsecurity-3month.json',
+                  crossOrigin: 'anonymous'
+                })
+              }),
+              new ol.layer.Tile({
+                source: new ol.source.TileJSON({
+                  url: 'http://api.tiles.mapbox.com/v3/' +
+                      'mapbox.world-borders-light.json',
+                  crossOrigin: 'anonymous'
+                })
+              })
+            ]
+          })
+        ],
+        target: 'map',
+        view: new ol.View({
+          center: ol.proj.fromLonLat([37.40570, 8.81566]),
+          zoom: 4
+        })
+      });
+
+      function bindInputs(layerid, layer) {
+        var visibilityInput = $('input#usr');
+        visibilityInput.on('change', function() {
+        console.log('ping'+visibilityInput.val())
+        });
+        visibilityInput.prop('checked', layer.getVisible());
+      }
+      map.getLayers().forEach(function(layer, i) {
+        bindInputs('#layer' + i, layer);
+        if (layer instanceof ol.layer.Group) {
+          layer.getLayers().forEach(function(sublayer, j) {
+            bindInputs('#layer' + i + j, sublayer);
+          });
+        }
+      });
+
+      $('#layertree li > span').click(function() {
+        $(this).siblings('fieldset').toggle();
+      }).siblings('fieldset').hide();
+    </script>
+  </body>
+</html>

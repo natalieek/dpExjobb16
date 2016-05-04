@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Interface</title>
+  <link rel="stylesheet" href="ol3-layerswitcher.css" type="text/css">
+  <link rel="stylesheet" href="http://openlayers.org/en/v3.14.2/css/ol.css" type="text/css">
+  <link rel="stylesheet" href="interface.css" type="text/css">
+    
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-2.2.3.js" integrity="sha256-laXWtGydpwqJ8JA+X9x2miwmaiKhn8tVmOVEigRNtP4=" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+  <script src="https://cdn.rawgit.com/bjornharrtell/jsts/gh-pages/1.1.0/jsts.min.js"></script>
+  <script src="http://openlayers.org/en/v3.3.0/resources/bootstrap/js/bootstrap.js"></script>
+  <script src="http://openlayers.org/en/v3.14.2/build/ol-debug.js"></script>
+  <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4-src.js"></script>
+  <script src="funcs.js"></script>
+  <script src="ol3-layerswitcher.js"></script>
+  <script src="http://underscorejs.org/underscore-min.js"></script>
+  <script src="interface.js"></script>
+    
+</head>
+<body>
+
+
+
+  <div class="container">
+    <div id="popup"></div>
+    <div class="row map" id="map" ></div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class= "search">
+          <input type="text" class="searchtext" value="Sök">
+        </div>
+
+
+        <div class="dropdown">
+          <div id="exp" class="searchexpand">
+            <i id="downarrow" class="fa fa-angle-double-down" aria-hidden="true">
+            </i>
+          </div>
+          <div class="dropdown-content">
+            <a href="#">Sök station</a>
+            <a href="#">Sök anslutningspunkt</a>
+            <a href="#">Sök linjeapparat</a>
+            <a href="#">Sök kabelskåp</a>
+            <a href="#">Sök jordtag</a>
+            <a href="#">Sök stolpe</a>
+            <a href="#">Sök driftbeteckning</a>
+            <a href="#">Sök mätare</a>
+            <a href="#" onclick="show('searchoptions')">Sök kund</a>
+            <a href="#">Sök abonnemang</a>
+            <a href="#">Sök fastighet</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div id="searchoptions" class="searchoptions">
+        <div id="hidearea" onclick="hide('searchoptions')"> 
+          <i id="leftarrow"  class="fa fa-angle-left" aria-hidden="true"></i>
+        </div>
+        <p id="cust">Sök kund</p>    
+        <div class="form-group">
+          <div class="col-sm-10">
+            <input class="form-control" id="ID" placeholder="ID">
+            <input class="form-control" id="Namn" placeholder="Namn">
+            <div class="btns ">
+              <button class="btn btn-default" onclick="show('searchresult')">Sök</button>
+              <button class="btn btn-default" onclick="hide('searchresult')">Rensa</button>
+            </div>
+          </div>
+        </div>
+
+        <table class="tbl" id="searchresult">
+          <tr>
+            <th>ID</th>
+            <th>Namn</th> 
+            <th>Adress</th>
+            <th>Typ</th>
+            <th>Fabrikat</th>
+          </tr>
+          <tr>
+            <td>Ipsum</td>
+            <td>Lorumus</td> 
+            <td>Rabattvägen 94</td>
+            <td>Ipsum</td>
+            <td>Lorum</td> 
+          </tr>
+          <tr>
+            <td>Ipsum</td>
+            <td>Lorumus</td> 
+            <td>Rabattvägen 94</td>
+            <td>Ipsum</td>
+            <td>Lorum</td> 
+          </tr>
+          <tr>
+            <td>Ipsum</td>
+            <td>Lorumus</td> 
+            <td>Rabattvägen 94</td>
+            <td>Ipsum</td>
+            <td>Lorum</td> 
+          </tr>
+        </table>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="tools" id="tools">
+        <div class="col-xs-2 bg" id="bg1">
+          <i class="fa fa-bars" aria-hidden="true"></i>
+        </div>
+        <div class="col-xs-2 bg" id="bg2" onclick="showpanel('bg2')">
+          <i id="user" class="fa fa-user" aria-hidden="true"></i>
+        </div>
+        <div class="col-xs-2 bg" id="bg3" onclick="showmsg('bg3')">
+          <i class="fa fa-envelope" aria-hidden="true" onclick="indicateChoice('bg3')"></i>
+        </div>
+        <div class="col-xs-2 bg" id="bg4" onclick="showkill()">
+          <i class="fa fa-bolt" aria-hidden="true"></i>
+        </div>
+        <div class="col-xs-2 bg" id="bg5" onclick="showstatus('bg5')">
+          <div id="status" class="circle"> 
+            <i class="fa fa-info" aria-hidden="true" style="color:white;"></i>
+          </div>
+        </div>
+        <div class="col-xs-2">
+          <i id="arrow" onclick="hidepanel('bg2');hidemsg('bg3');" class="fa fa-angle-double-up" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <div class="row" id="customers">
+        <div class="top-panel">
+          <input type="text" value="Filtrera">
+          <label class="checkbox-inline"><input type="checkbox" value="">Ickekund</label>
+          <label class="checkbox-inline"><input type="checkbox" value="">Användare</label>
+          <label class="checkbox-inline"><input type="checkbox" value="">Beställare</label>
+          <label class="checkbox-inline"><input type="checkbox" value="">Installatör</label>
+          <label class="checkbox-inline"><input type="checkbox" value="">Abonnent</label>
+        </div>
+
+        <table>
+
+        </table>
+
+      </div>
+
+      <div class="row" >
+        <div class="col-sm-4" id="msg" >
+
+          <div id="topmsg">
+            <p>Nytt meddelande</p>
+          </div>
+          <input class="form-control" id="to" placeholder="Till">
+          <input class="form-control" id="subj" placeholder="Ämne">
+          <button class="btn btn-default" id="send">Skicka</button>
+        </div>
+
+      </div>
+
+      <div class="row" id="statusbox">
+        <!--<div class="col-sm-4" id="statusbox">-->
+        <div class="col-sm-4 col" id="stat">
+          <div class="row">
+            <div class="circle" id="circstat"></div>
+            <p id="statustext">Inga avbrott</p>
+          </div>
+        </div>
+
+        <div class="col-sm-4 col">
+          <p>Aktiviteter</p>
+          <ul id="act">
+            <li>Reparationer (2)</li>
+            <li>Installationer (1)</li>
+          </ul>
+        </div>
+
+        <!-- </div> --> 
+      </div>
+
+    </div>
+
+    <div class="row" id="kill">
+     <div class="form-group">
+      <label for="usr">NODE TO KILL: </label>
+      <input type="text" class="form-control" id="usr">
+    </div>
+    <select class="form-control" id="Networks" name="Networks">
+      <option selected="selected" value="0">Water</option>
+      <option value="1">El</option>
+      <option value="2">Heating</option>
+    </select>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+  init();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clustered Features</title>
+    <link rel="stylesheet" href="v3.14.2-dist/ol.css" type="text/css">
+    <script src="v3.14.2-dist/ol-debug.js"></script>
+    <script src="http://sugarjs.com/release/current/sugar.min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <script>
+              // Taken from http://www.acuriousanimal.com/thebookofopenlayers3/chapter03_04_imagecanvas.html
+                var canvasFunction = function(size,inFeature, inArray, inColors) {
+                var canvas = document.createElement('canvas');
+                canvas.id = 'someId';
+                var context = canvas.getContext('2d');
+                var canvasWidth = size[0], canvasHeight = size[1];
+                canvas.setAttribute('width', 100);
+                canvas.setAttribute('height', 100);
+                var feat = inFeature;
+                var colors = inColors
+                var radius = 15;
+
+                // Track the accumulated arcs drawn
+                var totalArc = -90*Math.PI / 180;
+                var percentToRadians = 1 / 100*360 *Math.PI / 180;
+                var wedgeRadians;
+                var coordinate = inFeature.getGeometry().getCoordinates();
+                var data = inArray; //Placeholder
+                
+                function drawWedge(coordinate, percent, color) {
+                    // Compute size of the wedge in radians
+                    wedgeRadians = percent * percentToRadians;
+                    // Draw
+                    //context.save();
+                    context.beginPath();
+                    context.moveTo(50, 50);
+                    context.arc(50, 50, radius, totalArc, totalArc + wedgeRadians, false);
+                    context.closePath();
+                    context.fillStyle = color;
+                    
+                    context.fill();
+                    context.lineWidth = 0;
+                    context.strokeStyle = '#666666';
+                    //context.stroke();
+                    context.restore();
+                    
+                    // Accumulate the size of wedges
+                    totalArc += wedgeRadians;
+                }
+                var drawPie = function(coordinate, data, colors) {
+                    for(var i=0;i<data.length;i++){
+                      
+                        drawWedge(coordinate,data[i],colors[i]);
+                    }
+                }
+                drawPie(coordinate, data, colors);
+                return canvas;            
+            };
+function styleFunc(feature) {
+    console.log(feature)
+    var size = feature.get('features').length;
+    var inputFeatures = feature.get('features');
+    var calleInput = _.map(inputFeatures, function(ol) {
+      return ol.get('value');
+    })
+    
+    var share_array = _.values(proportions(calleInput));
+    var fixedColors = _.map(_.keys(proportions(calleInput)), function(x) {return colors[x]});
+    
+    var expCanvas = canvasFunction(map.getSize(), feature, share_array, fixedColors);    
+    
+      style =  new ol.style.Style({
+        image: new ol.style.Icon(({
+          img: expCanvas,
+          imgSize: [100,100]
+        })),
+        text: new ol.style.Text({
+          text: size.toString(),
+          fill: new ol.style.Fill({
+            color: '#66666'
+          })
+        })
+    });
+    
+    return style;
+  }
+      var count = 1500;
+      var features = new Array(count);
+      var e = 8500000;
+      var customer = ['A','B','C','D']
+      
+      for (var i = 0; i < count; ++i) {
+        var rand = Math.random();
+        rand *= customer.length;
+        rand = Math.floor(rand);
+        var endX = [2 * e * Math.random() - e, 2 * e * Math.random() - e];
+        features[i] = new ol.Feature({
+          geometry: new ol.geom.Point(endX), 
+          value: customer[rand]
+      })};
+
+var source = new ol.source.Vector({
+  features: features
+});
+
+var clusterSource = new ol.source.Cluster({
+  distance: 40,
+  source: source
+});
+
+var proportions = function(data) {
+  tot = data.length;
+  data = _.countBy(data, _.identity);
+  data = _.map(data, function(num, key) { return [key, 100*(num/tot)]; })
+  return _.object(data);
+}
+var colors= {'A': '#62e515', 'B':'#d87047', 'C':'#3a1d15', 'D': '#215e38'};
+
+var clusters = new ol.layer.Vector({
+  source: clusterSource,
+  style: styleFunc
+});
+
+var raster = new ol.layer.Tile({
+  source: new ol.source.MapQuest({layer: 'sat'})
+});
+
+var map = new ol.Map({
+  layers: [raster, clusters],
+  renderer: 'canvas',
+  target: 'map',
+  view: new ol.View({
+    center: [0, 0],
+    zoom: 2
+  })
+});
+
+</script>
+
+</body>
+
+</html>
