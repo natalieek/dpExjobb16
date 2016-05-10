@@ -70,7 +70,7 @@ var gas = {
     }),
      'node': new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 2,
+        radius: 10,
         fill: new ol.style.Fill({color: 'blue'}),
         stroke: new ol.style.Stroke({color: 'blue', width: 1})
       })
@@ -150,6 +150,8 @@ var gas = {
   makeRequest('GET', '/cust/gas_cust'),
   'waterCust':
   makeRequest('GET', '/cust/vatten_cust'),
+  'heatmap': 
+  makeRequest('GET', '/heatmap')
 }
 
 // ALTER TABLE heat_arcs ALTER COLUMN geom TYPE geometry(LineString,3006) USING ST_LineMerge(geom);
@@ -193,11 +195,11 @@ var gas = {
       //console.log(layers.Data[i].arcSource.getFeatures(), 'lagerdata')
       layers.Networks.push(network[i]);
       customer.push(customerMaker(inLayers.Customers[i]));
-      layerMaker(data[i],layers,customer[i], layers.Types[i], false, layerGroups, layers.Types[i]+'_Full');
+      layerMaker(data[i],layers,customer[i], layers.Types[i], false, layerGroups, layers.Types[i]+'_Full', false);
       //Stores the raw data
     }
-    //console.log(layers);
-    map = mapMaker(layerGroups, layers);   
+    heatmap = heatmapMaker(responses.heatmap)
+    map = mapMaker(layerGroups, layers, heatmap);   
   })
  .catch(function (err) {
   console.error('Augh, there was an error!', err.statusText);
@@ -210,9 +212,9 @@ var gas = {
 function dataMaker(json_arc, json_node){
   var arcSource_in = new ol.source.Vector()
   var nodeSource_in = new ol.source.Vector()
+  //console.log(JSON.parse(json_arc), 'jsarc')
   arcSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_arc)))
   nodeSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_node)))
-  //console.log(arcSource_in.getFeatures(), 'featurez')
   return {'arcSource': arcSource_in, 'nodeSource':nodeSource_in}
 }
 
@@ -258,15 +260,29 @@ function networkMaker(inArc, inNode){
   return {'arcArray': inArc, 'nodeArray':inNode}
 }
 
+swe_eng = {'full':{
+  'water': {'title':'Vattennät', 'arc': 'Ledningar', 'cust': 'Kunder'},
+  'gas': {'title':'Gasnät','arc':'Ledningar', 'cust':'Kunder' },
+  'heating': {'title':'Fjärrvärmenät','arc':'Ledningar','cust':'Kunder' }},
+  'broken':{
+    'water': {'title':'Avbrott: Vatten','node': 'Trasig nod: '},
+    'gas': {'title': 'Avbrott: Gas','node':'Trasig nod:'},
+    'heating': {'title':'Avbrott: Fjärrvärme', 'node':'Trasig nod: ' }}}
 
 // Creates the layers and sets the styles determining the visualization
-function layerMaker(data,layers,customer,network,visibility,layerGroups,title){
+function layerMaker(data,layers,customer,network,visibility,layerGroups,title,bool_broken){
+  broken = ''
+  if(bool_broken===true){
+    broken = 'broken'
+  } else{
+    broken = 'full'
+  }
   tmpArc = new ol.layer.Vector({
     source: data.arcSource,
     style: styleFunction('arc', network),
     visible: visibility,
     network: network,
-    title: title+'_arc',
+    title: swe_eng['full'][network]['arc'],
     type: 'arc'
   })
 
@@ -275,19 +291,23 @@ function layerMaker(data,layers,customer,network,visibility,layerGroups,title){
     style: styleFunction('node', network),
     visible: visibility,
     network: network,
-    title: title+'_node',
+    title: swe_eng[broken][network]['node']+title,
     type: 'node'
   })
+
+  if(bool_broken===false){
+    tmpNode.unset('title')
+  }
   tmpCust = new ol.layer.Vector({
     source: customer.custSource,
     style: styleFunction('customer',network),
     visible: visibility,
-    title: title+'_cust',
+    title: swe_eng['full'][network]['cust'],
     network: network,
     type: 'cust'
   })
   layerGroups.push(new ol.layer.Group({
-    'title': network,
+    'title': swe_eng[broken][network]['title'],
     layers: [tmpArc, tmpNode, tmpCust]
   }))
   layers.Arcs.push(tmpArc)
@@ -363,7 +383,7 @@ function hexToRgbA(hex){
 
 // Creates the final map, along with two mouse events.
 // To-do: Set correct data on load.
-function mapMaker(inGroups, inLayers){
+function mapMaker(inGroups, inLayers, heatmap){
   proj4.defs("EPSG:3006","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
   var myProjection = ol.proj.get('EPSG:3006');
   var raster = new ol.layer.Tile({  
@@ -376,15 +396,10 @@ function mapMaker(inGroups, inLayers){
     })
   });
   var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster]})
+  var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
   ol.proj.addProjection(myProjection);
   var map = new ol.Map({
-    //Adds all the layers previously creates, along with a background layer.
-    /*
-    layers: _.flatten([raster,(_.map([inLayers.Arcs, inLayers.Nodes, inLayers.Customers, inLayers.Clusters], function(num, key){
-      return num
-    }))]),*/
-    layers: _.flatten([basemap, inGroups]),
-    // Needs to be changed to work with map groups^
+    layers: _.flatten([basemap, inGroups, heatmapGroup]),
     target: 'map',
     interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
     view: new ol.View({
@@ -696,7 +711,7 @@ function disableNode(feature, inLayers, map, layerGroups) {
       alert("This node is redundant - no effect.")
     } else {
       responses = JSON.parse(responses.broken)
-      tmpLayers = {'Arcs': responses.Arc, 'Nodes': responses.Node, 'Customers':responses.Cust}
+      tmpLayers = {'Arcs': JSON.stringify(responses.Arc), 'Nodes': JSON.stringify(responses.Node), 'Customers':JSON.stringify(responses.Cust)}
       customer = [] 
       data = []
       network = []
@@ -706,8 +721,12 @@ function disableNode(feature, inLayers, map, layerGroups) {
       inLayers.Networks.push(network[0]);
       inLayers.Types.push(networkType)
       customer.push(customerMaker(tmpLayers.Customers));
-      layerMaker(data[0],inLayers,customer[0], networkType, false, layerGroups, networkType+' Broken_id:'+feature.get("gid"));
-      console.log("test")
+      cust_id_list = _.map(customer[0].custSource.getFeatures(), function(key, value){
+        return key.get("gid")
+      })
+      /*fillCustomers(cust_id_list)*/
+      console.log(cust_id_list)
+      layerMaker(data[0],inLayers,customer[0], networkType, false, layerGroups, feature.get("gid"), true);
       clusterMaker(customer[0].custSource, true, layerGroups[layerGroups.length-1])      
       //Fixa stöd för grupper
       map.addLayer(layerGroups[layerGroups.length-1])
@@ -718,19 +737,43 @@ function disableNode(feature, inLayers, map, layerGroups) {
   })
 };
 
-function deleteLayers(inLayers, layer, map, layerGroups){
-  console.log(layer, 'inLayer')
-  layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'cust':inLayers.Customers}
-  index = _.indexOf(layerType[layer.get('type')], layer)
-  console.log(layerType, 'type')
-  console.log(index, 'index')
-  console.log(map.getLayers(), 'layersMap')
-  console.log(inLayers, 'inLayers')
-  _.each(inLayers, function(value, key){
-    if(key !== 'Clusters' && index >= 3){
-      map.removeLayer(layerGroups[index])
-      value.splice(index,1)
-      map.render()
-    }
-  });
+
+function heatmapMaker(responses){
+    console.log(JSON.parse(responses))
+    var heatSource = new ol.source.Vector()
+    heatSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
+    heatLayer = new ol.layer.Heatmap({
+      source: heatSource,
+      visible: true,
+      title: 'Avbrottshistorik',
+      type: 'arc',
+      radius: 5
+    })
+    console.log(heatLayer, 'lyr123')
+    return heatLayer
 }
+
+function fillCustomers(gidList, network_type){
+  console.log(gidList, 'inList')
+  requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
+  Promise.props(requests).then(function(responses) {
+    customerArray = JSON.parse(responses.cust)
+    //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
+  })}
+
+  function deleteLayers(inLayers, layer, map, layerGroups){
+    console.log(layer, 'inLayer')
+    layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'cust':inLayers.Customers}
+    index = _.indexOf(layerType[layer.get('type')], layer)
+    console.log(layerType, 'type')
+    console.log(index, 'index')
+    console.log(map.getLayers(), 'layersMap')
+    console.log(inLayers, 'inLayers')
+    _.each(inLayers, function(value, key){
+      if(key !== 'Clusters' && index >= 3){
+        map.removeLayer(layerGroups[index])
+        value.splice(index,1)
+        map.render()
+      }
+    });
+  }
