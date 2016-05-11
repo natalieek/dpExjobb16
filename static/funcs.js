@@ -724,8 +724,6 @@ function disableNode(feature, inLayers, map, layerGroups) {
       cust_id_list = _.map(customer[0].custSource.getFeatures(), function(key, value){
         return key.get("gid")
       })
-      /*fillCustomers(cust_id_list)*/
-      console.log(cust_id_list)
       layerMaker(data[0],inLayers,customer[0], networkType, false, layerGroups, feature.get("gid"), true);
       clusterMaker(customer[0].custSource, true, layerGroups[layerGroups.length-1])      
       //Fixa stöd för grupper
