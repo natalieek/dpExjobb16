@@ -1,12 +1,13 @@
 //Visual settings for el 
 var gas = {
  'customer': new ol.style.Style({
-   image: new ol.style.RegularShape({
-    points: 4,
-    radius: 2,
-    rotation: Math.PI/4,
-    fill: new ol.style.Fill({color: 'green'}),
-    stroke: new ol.style.Stroke({color: 'green', width: 2})
+   text: new ol.style.Text({
+    text: '\uf007 ',
+    font: 'normal 18px FontAwesome',
+    textBaseline: 'Bottom',
+    fill: new ol.style.Fill({
+      color: 'green',
+    })
   })
  }),
  'arc': new ol.style.Style({
@@ -16,22 +17,25 @@ var gas = {
   })
 }),
  'node': new ol.style.Style({
-  image: new ol.style.Circle({
-    radius: 2,
-    fill: new ol.style.Fill({color: 'black'}),
-    stroke: new ol.style.Stroke({color: 'black', width: 1})
-  })
-})
-};
+  text: new ol.style.Text({
+    text: '\uf0e7 ',
+    font: 'normal 20px FontAwesome',
+    textBaseline: 'Bottom',
+    fill: new ol.style.Fill({
+      color: 'green',
+    })
+  })   
+})};
    //Visual settings for heating
    var heating = {
      'customer': new ol.style.Style({
-      image: new ol.style.RegularShape({
-        points: 4,
-        radius: 2,
-        rotation: Math.PI/4,
-        fill: new ol.style.Fill({color: 'black'}),
-        stroke: new ol.style.Stroke({color: 'black', width: 2})
+      text: new ol.style.Text({
+        text: '\uf007 ',
+        font: 'normal 18px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: 'black',
+        })
       })
     }),
      
@@ -43,23 +47,26 @@ var gas = {
       })
     }),
      'node': new ol.style.Style({
-      image: new ol.style.Circle({
-        radius: 2,
-        fill: new ol.style.Fill({color: 'yellow'}),
-        stroke: new ol.style.Stroke({color: 'red', width: 1})
-      })
-    })
-   };
+       text: new ol.style.Text({
+        text: '\uf0e7 ',
+        font: 'normal 20px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: 'black',
+        })
+      })   
+     })};
    //Visual settings for water
    var water = {
      'customer': new ol.style.Style({
-      image: new ol.style.RegularShape({
-        points: 4,
-        radius: 2,
-        rotation: Math.PI/4,
-        fill: new ol.style.Fill({color: '#0066ff'}),
-        stroke: new ol.style.Stroke({color: '#0066ff', width: 2})
-      })      
+      text: new ol.style.Text({
+        text: '\uf007 ',
+        font: 'normal 18px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: '#0066ff',
+        })
+      })   
     }),
      'arc': new ol.style.Style({
       stroke: new ol.style.Stroke({
@@ -69,15 +76,40 @@ var gas = {
       })
     }),
      'node': new ol.style.Style({
-      image: new ol.style.Circle({
-        radius: 10,
-        fill: new ol.style.Fill({color: 'blue'}),
-        stroke: new ol.style.Stroke({color: 'blue', width: 1})
+       text: new ol.style.Text({
+        text: '\uf0e7 ',
+        font: 'normal 20px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: '#0066ff',
+        })
+      })   
+     })};
+
+
+     var repairs = new ol.style.Style({
+      text: new ol.style.Text({
+        text: '\uf0ad',
+        font: 'normal 18px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: 'red',
+        })
       })
     })
-   };
 
-   var styles = {'heating':heating, 'gas':gas, 'water':water}
+     var installations = new ol.style.Style({
+      text: new ol.style.Text({
+        text: '\uf1e6 ',
+        font: 'normal 18px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: 'black',
+        })
+      })
+    })
+
+     var styles = {'heating':heating, 'gas':gas, 'water':water}
 
    //Takes the type of network and the object to visualize as input.
    var styleFunction = function(visualize, network_type) {
@@ -119,9 +151,9 @@ var gas = {
   //"el" aka el
 
   var pointColors = {
-    '703000':{'type':'gas','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
+    '933000':{'type':'Arbete','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
-    '804000':{'type':'water','color':'#0066ff'}, '800004':{'type':'gas','color':'#00FF00'}
+    '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'}
   }
 
   var lineColors = {
@@ -151,31 +183,15 @@ var gas = {
   'waterCust':
   makeRequest('GET', '/cust/vatten_cust'),
   'heatmap': 
-  makeRequest('GET', '/heatmap')
+  makeRequest('GET', '/heatmap'),
+  'repairs': 
+  makeRequest('GET', '/repairs/(596,434,380,343,120)'),
+  'installations': 
+  makeRequest('GET', '/repairs/(717,691,72,598,60,125,544)')
 }
-
-// ALTER TABLE heat_arcs ALTER COLUMN geom TYPE geometry(LineString,3006) USING ST_LineMerge(geom);
-
-//Ideal-case requests:
-/*requests = {'Arcs':
-   [makeRequest('GET', 'elledning.json'),
-   makeRequest('GET', 'heating_arc.json'),
-   makeRequest('GET', 'vatten_arcs.json')],
-   'Nodes':
-   [
-   makeRequest('GET', 'knutpunkt.json'),
-   makeRequest('GET', 'heating_node.json'),   
-   makeRequest('GET', 'vatten_node.json')],
-   'Customers':[
-   makeRequest('GET', 'kunder.json'),
-   makeRequest('GET', 'el_cust.json'),
-   makeRequest('GET', 'vatten_cust.json')]
- }*/
-
-
- Promise
- .props(requests)
- .then(function(responses) {
+Promise
+.props(requests)
+.then(function(responses) {
   $(function () {
     $('[data-toggle="popover"]').popover()
   })
@@ -186,6 +202,7 @@ var gas = {
     customer = [] 
     data = []
     network = []
+    workLayers = []
     //For each "network type"(nyttighet): creates the data, creates the network, creates customers and adds the layers.
     for (var i = 0; i < layers.Types.length; i++) {
       data.push(dataMaker(inLayers.Arcs[i], inLayers.Nodes[i]));
@@ -195,13 +212,15 @@ var gas = {
       //console.log(layers.Data[i].arcSource.getFeatures(), 'lagerdata')
       layers.Networks.push(network[i]);
       customer.push(customerMaker(inLayers.Customers[i]));
-      layerMaker(data[i],layers,customer[i], layers.Types[i], false, layerGroups, layers.Types[i]+'_Full', false);
+      layerMaker(data[i],layers,customer[i], layers.Types[i], false,false,false, layerGroups, layers.Types[i]+'_Full', false);
       //Stores the raw data
     }
     heatmap = heatmapMaker(responses.heatmap)
-    map = mapMaker(layerGroups, layers, heatmap);   
+    workLayers.push(workMaker(responses.repairs, 'Pågående Reparationer', repairs))
+    workLayers.push(workMaker(responses.installations, 'Pågående Installationer', installations))
+    map = mapMaker(layerGroups, layers, heatmap, workLayers);   
   })
- .catch(function (err) {
+.catch(function (err) {
   console.error('Augh, there was an error!', err.statusText);
   console.error(err);
 });
@@ -225,36 +244,6 @@ function customerMaker(json_customers){
   return {'custSource': custSource_in}
 }
 
-//Creates connections between nodes and arcs, using buffered extents and intersections.
-/*
-function networkMaker(inArc, inNode){
-  var outLine = new Set();
-  var outPoint = new Set();
-  //Create attributes for the nodes and arcs
-  _.each(inArc, function(arc) { arc.set('nodeArray', [])});
-  _.each(inNode, function(node) { node.set('connectivity', 0), node.set('lineArray', []);});
-
-  //For each node-arc pair, check if the node intersects with a slightly buffered arc
-  
-  for (var i = 0; i < inArc.length; ++i) {
-    for (var j = 0;j<inNode.length;++j) {
-      var newExtent = ol.extent.buffer(inArc[i].getGeometry().getExtent(),0.05);
-      //If so, add the id of the node to the arc and vice-versa.
-      if(inNode[j].getGeometry().intersectsExtent(newExtent)) {
-        inArc[i].get('nodeArray').push(inNode[j].get('dp_oid'));
-        inNode[j].get('lineArray').push(inArc[i].get('dp_oid'));
-        outLine.add(inArc[i]);
-        outPoint.add(inNode[j]);
-      }
-      //If there was an intersection, make sure it doesn't contain duplicates and note how connected it is.
-      if(inNode[j].get('lineArray').length>0){
-        inNode[j].set('lineArray', _.uniq(inNode[j].get('lineArray')));
-        inNode[j].set('connectivity', inNode[j].get('lineArray').length);
-      }
-    }
-  }
-  return {'arcArray': Array.from(outLine), 'nodeArray':Array.from(outPoint)}
-}*/
 
 function networkMaker(inArc, inNode){
   return {'arcArray': inArc, 'nodeArray':inNode}
@@ -270,7 +259,7 @@ swe_eng = {'full':{
     'heating': {'title':'Avbrott: Fjärrvärme', 'node':'Trasig nod: ' }}}
 
 // Creates the layers and sets the styles determining the visualization
-function layerMaker(data,layers,customer,network,visibility,layerGroups,title,bool_broken){
+function layerMaker(data,layers,customer,network,showArc, showNode, showCust,layerGroups,title,bool_broken){
   broken = ''
   if(bool_broken===true){
     broken = 'broken'
@@ -280,7 +269,7 @@ function layerMaker(data,layers,customer,network,visibility,layerGroups,title,bo
   tmpArc = new ol.layer.Vector({
     source: data.arcSource,
     style: styleFunction('arc', network),
-    visible: visibility,
+    visible: showArc,
     network: network,
     title: swe_eng['full'][network]['arc'],
     type: 'arc'
@@ -289,7 +278,7 @@ function layerMaker(data,layers,customer,network,visibility,layerGroups,title,bo
   tmpNode = new ol.layer.Vector({
     source: data.nodeSource,
     style: styleFunction('node', network),
-    visible: visibility,
+    visible: showNode,
     network: network,
     title: swe_eng[broken][network]['node']+title,
     type: 'node'
@@ -301,7 +290,7 @@ function layerMaker(data,layers,customer,network,visibility,layerGroups,title,bo
   tmpCust = new ol.layer.Vector({
     source: customer.custSource,
     style: styleFunction('customer',network),
-    visible: visibility,
+    visible: showCust,
     title: swe_eng['full'][network]['cust'],
     network: network,
     type: 'cust'
@@ -383,7 +372,7 @@ function hexToRgbA(hex){
 
 // Creates the final map, along with two mouse events.
 // To-do: Set correct data on load.
-function mapMaker(inGroups, inLayers, heatmap){
+function mapMaker(inGroups, inLayers, heatmap, workLayers){
   proj4.defs("EPSG:3006","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
   var myProjection = ol.proj.get('EPSG:3006');
   var raster = new ol.layer.Tile({  
@@ -397,9 +386,12 @@ function mapMaker(inGroups, inLayers, heatmap){
   });
   var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster]})
   var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
+  console.log(workLayers)
+  var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
+  console.log(repairsGroup)
   ol.proj.addProjection(myProjection);
   var map = new ol.Map({
-    layers: _.flatten([basemap, inGroups, heatmapGroup]),
+    layers: _.flatten([basemap, inGroups, heatmapGroup, repairsGroup]),
     target: 'map',
     interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
     view: new ol.View({
@@ -466,10 +458,7 @@ function mapMaker(inGroups, inLayers, heatmap){
     if (e.dragging) {
       $(element).popover('destroy');
       return;
-    }/*
-    var pixel = map.getEventPixel(e.originalEvent);
-    var hit = map.hasFeatureAtPixel(pixel);
-    map.getTarget().style.cursor = hit ? 'pointer' : '';*/
+    }
   });
 
 }
@@ -724,7 +713,7 @@ function disableNode(feature, inLayers, map, layerGroups) {
       cust_id_list = _.map(customer[0].custSource.getFeatures(), function(key, value){
         return key.get("gid")
       })
-      layerMaker(data[0],inLayers,customer[0], networkType, false, layerGroups, feature.get("gid"), true);
+      layerMaker(data[0],inLayers,customer[0], networkType, false, false, false, layerGroups, feature.get("gid"), true);
       clusterMaker(customer[0].custSource, true, layerGroups[layerGroups.length-1])      
       //Fixa stöd för grupper
       map.addLayer(layerGroups[layerGroups.length-1])
@@ -735,20 +724,31 @@ function disableNode(feature, inLayers, map, layerGroups) {
   })
 };
 
-
 function heatmapMaker(responses){
-    console.log(JSON.parse(responses))
-    var heatSource = new ol.source.Vector()
-    heatSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
-    heatLayer = new ol.layer.Heatmap({
-      source: heatSource,
-      visible: true,
-      title: 'Avbrottshistorik',
-      type: 'arc',
-      radius: 5
-    })
-    console.log(heatLayer, 'lyr123')
-    return heatLayer
+
+  var heatSource = new ol.source.Vector()
+  heatSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
+  heatLayer = new ol.layer.Heatmap({
+    source: heatSource,
+    visible: true,
+    title: 'Avbrottshistorik',
+    type: 'Old',
+    radius: 5
+  })
+  return heatLayer
+}
+
+function workMaker(responses, title, style){
+  var workSource = new ol.source.Vector()
+  workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
+  workLayer = new ol.layer.Vector({
+    source: workSource,
+    visible: true,
+    title: title,
+    type: 'Repair',
+    style: style
+  })
+  return workLayer
 }
 
 function fillCustomers(gidList, network_type){
@@ -757,7 +757,7 @@ function fillCustomers(gidList, network_type){
   Promise.props(requests).then(function(responses) {
     customerArray = JSON.parse(responses.cust)
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
-  })}
+  })};
 
   function deleteLayers(inLayers, layer, map, layerGroups){
     console.log(layer, 'inLayer')

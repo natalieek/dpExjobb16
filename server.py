@@ -58,7 +58,17 @@ def heatmapMaker():
     heatCurs.execute(query)
     inVar = [w[0] for w in heatCurs.fetchall()]
     return json.dumps(inVar[0])
-    
+
+
+@app.route('/repairs/<indata>')
+def repairMaker(indata):
+    repairCurs = conn.cursor()
+    work_gid_list = indata
+    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM gas_arcs_vertices_pgr as lg WHERE gid in {0}) as f ) as fc".format(str(work_gid_list))
+    repairCurs.execute(query)
+    inVar = [w[0] for w in repairCurs.fetchall()]
+    return json.dumps(inVar[0])
+
 
 @app.route('/broken/<network_name>/<node_id>')
 def nodeBreaker(network_name, node_id):
