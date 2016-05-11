@@ -4,6 +4,7 @@ html, body, .map {
 	position:fixed;
 	margin:0px; 
 	padding:0px;
+	z-index: -1;
 }
 
 .container {
@@ -40,10 +41,11 @@ html, body, .map {
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
-	background-color:white;
+	background-color: transparent;
 	width:240px;
 	height: 40px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	
 }
 
 .circle {
@@ -329,6 +331,19 @@ input {
 
 }
 
-.ol-control {
+.ol-control button {
+	position: fixed;
 	display: visible !important;
+	background-color: transparent;
+	background: transparent;
+	bottom: 25px;
+	background-color:red;
+	right:230px;
+	z-index: 100 !important;
+
+}
+
+.layer-switcher.shown {
+	position: fixed;
+	bottom: 55px;
 }

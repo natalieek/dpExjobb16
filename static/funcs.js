@@ -418,7 +418,7 @@ function mapMaker(inGroups, inLayers, heatmap){
   });
   map.addOverlay(popup);
 
-  var layerSwitcher = new ol.control.LayerSwitcher({
+  var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
         tipLabel: 'Legend' // Optional label for button
       });
   map.addControl(layerSwitcher);
