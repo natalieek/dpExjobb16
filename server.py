@@ -100,7 +100,8 @@ def nodeBreaker(network_name, node_id):
                 return "NULL" 
         except:
             conn.rollback()
-            return query
+            print(query)
+            return "NULL"
        
 
 def bfs(network_name,broken_node, node_id):

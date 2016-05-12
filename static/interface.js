@@ -79,8 +79,11 @@ function showkill() {
 	});
 } 
 
-function alertOutage() {
+function alertOutage(network, num_cust, node_id) {
 	indicateChoice('bg5');
 	document.getElementById('statusbox2').style.visibility = 'visible';
 	document.getElementById('status').style.background='red';
+	$('#networkList').text('Nätverk: '+network);
+	$('#idList').text('Trasig nod: '+node_id);
+	$('#numList').text('Antal drabbade: '+num_cust);
 }

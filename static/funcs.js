@@ -266,7 +266,7 @@ swe_eng = {'full':{
 
 // Creates the layers and sets the styles determining the visualization
 function layerMaker(data,layers,connection,network,showArc, showNode, showConn,layerGroups,title,bool_broken){
-  
+
   broken = ''
   if(bool_broken===true){
     broken = 'broken'
@@ -332,7 +332,7 @@ function workCluster(responses, title, visibility, styleF){
 
 function brokenCluster(inConn, visibility, inGroup, styleF){
   var clusterSource = new ol.source.Cluster({
-    distance: 100,
+    distance: 200,
     source: inConn
   });
 
@@ -555,7 +555,7 @@ function trimData(restraints, layers, inGroups){
       _.each(layerGroup.getLayers().getArray(), function(layer){
         if(layer.get("type")==='conn'){
           if(restraints[0]['connection']==true){
-            layer.setVisible(true);
+            layer.setVisible(false);
           } else {
             layer.setVisible(false);
           }
@@ -754,7 +754,7 @@ function disableNode(feature, inLayers, map, layerGroups) {
         return key.get("cust_id")
       })
       fillCustomer(conn_id_list, networkType)
-      layerMaker(data[0],inLayers,connection[0], networkType, false, false, false, layerGroups, feature.get("gid"), true);
+      layerMaker(data[0],inLayers,connection[0], networkType, true, true, true, layerGroups, feature.get("gid"), true);
       brokenCluster(connection[0].connSource, true, layerGroups[layerGroups.length-1], polyMaker)      
       //Fixa stöd för grupper
       map.addLayer(layerGroups[layerGroups.length-1])
@@ -764,10 +764,17 @@ function disableNode(feature, inLayers, map, layerGroups) {
 
       /* Hoppa till midpoint av extent
       Räkna ut extent av view på en viss zoomnivå runt området, välj den som är precis ett större än */
+      alertOutage(swe_eng['full'][networkType]['title'], conn_id_list.length, feature.get("gid"));
+      $('#zoomButton').click(function() {
+        var extent = inLayers.Clusters[inLayers.Clusters.length-1].getSource().getExtent()
+        console.log(extent, 'clustxt')
+        console.log(map.getView().calculateExtent(map.getSize()), 'mapxt')
+        map.getView().fit(extent,map.getSize());
+      });
+      //zoomButton
+
     }
   })
-  alertOutage();
-  
 };
 
 function heatmapMaker(responses){
