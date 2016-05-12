@@ -764,6 +764,8 @@ function disableNode(feature, inLayers, map, layerGroups) {
       Räkna ut extent av view på en viss zoomnivå runt området, välj den som är precis ett större än */
     }
   })
+  alertOutage();
+  
 };
 
 function heatmapMaker(responses){

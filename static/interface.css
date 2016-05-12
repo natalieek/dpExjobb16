@@ -310,7 +310,7 @@ input {
 }
 
 #statusbox2 {
-	visibility: visible;
+	visibility: hidden;
 	font-weight: bold;
 	margin-left: 50%;
 	left:-175px;
@@ -387,7 +387,7 @@ input {
 
 .layer-switcher.shown {
 	bottom: 45px;
-	overflow: scroll;
+	overflow: auto;
 }
 
 .layer-switcher .panel {
