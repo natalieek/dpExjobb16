@@ -63,12 +63,12 @@ function showstatus(id) {
 	hidepanel('bg2');
 	hidemsg('bg3');
 	indicateChoice(id);
-	document.getElementById('statusbox').style.visibility = 'visible';
+	document.getElementById('statusbox1').style.visibility = 'visible';
 }
 
 function hidestatus(id) {
 	hideChoice(id);
-	document.getElementById('statusbox').style.visibility = 'hidden';
+	document.getElementById('statusbox1').style.visibility = 'hidden';
 }
 
 
