@@ -361,13 +361,13 @@ input {
 }
 
 .ol-control button {
-	position: fixed;
+	position: absolute;
 	display: visible !important;
 	background-color: transparent;
 	background: transparent;
-	bottom: 25px;
+	bottom: 55px;
 	/*background-color:red;*/
-	right:230px;
+	right:210px;
 	z-index: 100 !important;
 
 }
@@ -379,7 +379,8 @@ input {
 .layer-switcher {
 	bottom:-45px;
 	right:-200px;
-	width:242px;
+	width:240px;
+	font-size: 12px;
 	top:auto;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
