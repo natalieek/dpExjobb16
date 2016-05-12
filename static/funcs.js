@@ -151,7 +151,7 @@ var gas = {
   //"el" aka el
 
   var pointColors = {
-    '933000':{'type':'Arbete','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
+    '933000':{'type':'gas','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
     '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'},
     '112233':{'type':'installation','color':'black', 'icon':'\uf1e6'}, '123123':{'type':'reparation','color':'red', 'icon':'\uf0ad'}
@@ -735,6 +735,7 @@ function disableNode(feature, inLayers, map, layerGroups) {
   networkType = pointColors[feature.get("dp_otype")].type
   requests = {'broken': makeRequest('GET', '/broken/'+networkType+'/'+feature.get("gid"))}
   Promise.props(requests).then(function(responses) {
+    console.log(responses.broken)
     if(responses.broken === 'NULL') {
       alert("This node is redundant - no effect.")
     } else {
@@ -750,8 +751,9 @@ function disableNode(feature, inLayers, map, layerGroups) {
       inLayers.Types.push(networkType)
       connection.push(connectionMaker(tmpLayers.Connections));
       conn_id_list = _.map(connection[0].connSource.getFeatures(), function(key, value){
-        return key.get("gid")
+        return key.get("cust_id")
       })
+      fillCustomer(conn_id_list, networkType)
       layerMaker(data[0],inLayers,connection[0], networkType, false, false, false, layerGroups, feature.get("gid"), true);
       brokenCluster(connection[0].connSource, true, layerGroups[layerGroups.length-1], polyMaker)      
       //Fixa stöd för grupper
@@ -800,6 +802,7 @@ function fillCustomer(gidList, network_type){
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
     customerArray = JSON.parse(responses.cust)
+    console.log(customerArray)
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
   })};
 

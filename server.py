@@ -3,7 +3,7 @@ import json
 from flask import Flask, request, send_from_directory
 from config import conn
 
-tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'conn': 'gas_cust', 'station_id':539},
+tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'conn': 'gas_cust', 'station_id':259},
 'heating': {'arcs':'heat_arcs', 'nodes': 'heat_arcs_vertices_pgr', 'conn': 'heat_cust', 'station_id': 2},
 'water': {'arcs': 'vatten_arc', 'nodes':'vatten_arc_vertices_pgr', 'conn': 'vatten_cust', 'station_id':1394}}
 
@@ -40,7 +40,6 @@ def menuCustomers(custList):
     with conn.cursor() as cursor:    
         #menuCurs = conn.cursor()
         query = "SELECT row_to_json(fc) FROM (SELECT firstname, lastname, address, gid FROM customers) fc WHERE fc.gid IN {0};".format(str(custList))
-        
         cursor.execute(query)
         inVar = [w[0] for w in cursor.fetchall()]
     return json.dumps(inVar)
@@ -101,7 +100,7 @@ def nodeBreaker(network_name, node_id):
                 return "NULL" 
         except:
             conn.rollback()
-            return "NULL"
+            return query
        
 
 def bfs(network_name,broken_node, node_id):
