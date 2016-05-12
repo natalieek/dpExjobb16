@@ -41,7 +41,7 @@ html, body, .map {
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
-	background-color: transparent;
+	background-color: white;
 	width:240px;
 	height: 40px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -51,6 +51,17 @@ html, body, .map {
 .circle {
 	text-align: center;
 	background-color: #43A047;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	left: 50%;
+	margin-left:-3px;
+	margin-right: 0px;
+}
+
+.circle2 {
+	text-align: center;
+	background-color: red;
 	border-radius: 50%;
 	width: 20px;
 	height: 20px;
@@ -286,7 +297,19 @@ input {
 	bottom:15px;
 }
 
-#statusbox {
+#statusbox1 {
+	visibility: hidden;
+	font-weight: bold;
+	margin-left: 50%;
+	left:-175px;
+	position: absolute;
+	background-color: white;
+	bottom: 20px;
+	width:350px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#statusbox2 {
 	visibility: hidden;
 	font-weight: bold;
 	margin-left: 50%;
@@ -323,6 +346,12 @@ input {
 	margin-top: 2px;
 }
 
+.circle2#circstat2 {
+	width: 13px;
+	height: 13px;
+	margin-top: 2px;
+}
+
 #kill {
 	display: none;
 	position: absolute;
@@ -337,13 +366,35 @@ input {
 	background-color: transparent;
 	background: transparent;
 	bottom: 25px;
-	background-color:red;
+	/*background-color:red;*/
 	right:230px;
 	z-index: 100 !important;
 
 }
 
+.ol-control {
+	padding: 0px;
+}
+
+.layer-switcher {
+	bottom:-45px;
+	right:-200px;
+	width:242px;
+	top:auto;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 .layer-switcher.shown {
-	position: fixed;
-	bottom: 55px;
+	bottom: 45px;
+}
+
+.layer-switcher .panel {
+	border: none;
+	border-radius: 0px;
+	padding: 5px;
+}
+
+img {
+	height: 16px;
+	width: 16px;
 }
