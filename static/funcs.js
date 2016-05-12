@@ -805,11 +805,22 @@ function workMaker(responses, title, style){
 }*/
 
 function fillCustomer(gidList, network_type){
+  var table = document.getElementById("custTable");
   console.log(gidList, 'inList')
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
     customerArray = JSON.parse(responses.cust)
     console.log(customerArray)
+    console.log(customerArray[0])
+    console.log(customerArray[0].address)
+    for(i=0; i<customerArray.length; i++) {
+      var row = custTable.insertRow(i);
+      row.insertCell(0).innerHTML="<p>"+customerArray[i].gid+"</p>";
+      row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
+      row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
+      row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
+
+     }
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
   })};
 
