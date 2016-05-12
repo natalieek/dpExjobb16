@@ -441,3 +441,8 @@ img {
 .close {
 	margin: 10px;
 }
+
+#bg1:hover {
+	background-color: rgb(210,210,210);
+	border: 0.3px solid rgba(160,160,160, 0.3)
+}
