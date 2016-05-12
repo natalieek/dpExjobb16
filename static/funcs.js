@@ -1,8 +1,8 @@
 //Visual settings for el 
 var gas = {
- 'customer': new ol.style.Style({
+ 'connection': new ol.style.Style({
    text: new ol.style.Text({
-    text: '\uf007 ',
+    text: 'A',
     font: 'normal 18px FontAwesome',
     textBaseline: 'Bottom',
     fill: new ol.style.Fill({
@@ -28,9 +28,9 @@ var gas = {
 })};
    //Visual settings for heating
    var heating = {
-     'customer': new ol.style.Style({
+     'connection': new ol.style.Style({
       text: new ol.style.Text({
-        text: '\uf007 ',
+        text: 'A',
         font: 'normal 18px FontAwesome',
         textBaseline: 'Bottom',
         fill: new ol.style.Fill({
@@ -58,9 +58,9 @@ var gas = {
      })};
    //Visual settings for water
    var water = {
-     'customer': new ol.style.Style({
+     'connection': new ol.style.Style({
       text: new ol.style.Text({
-        text: '\uf007 ',
+        text: 'A',
         font: 'normal 18px FontAwesome',
         textBaseline: 'Bottom',
         fill: new ol.style.Fill({
@@ -154,7 +154,7 @@ var gas = {
     '933000':{'type':'Arbete','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
     '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'},
-    '112233':{'type':'installation','color':'black', 'icon':'\uf0e7'}, '123123':{'type':'reparation','color':'red', 'icon':'\uf0ad'}
+    '112233':{'type':'installation','color':'black', 'icon':'\uf1e6'}, '123123':{'type':'reparation','color':'red', 'icon':'\uf0ad'}
   }
 
   var lineColors = {
@@ -181,18 +181,18 @@ var gas = {
   makeRequest('GET', '/arc/vatten_arc'),
   'waterNode':
   makeRequest('GET', '/node/vatten_arc_vertices_pgr'),
-  'heatCust':
-  makeRequest('GET', '/cust/heat_cust'),
-  'gasCust':
-  makeRequest('GET', '/cust/gas_cust'),
-  'waterCust':
-  makeRequest('GET', '/cust/vatten_cust'),
+  'heatConn':
+  makeRequest('GET', '/conn/heat_cust'),
+  'gasConn':
+  makeRequest('GET', '/conn/gas_cust'),
+  'waterConn':
+  makeRequest('GET', '/conn/vatten_cust'),
   'heatmap': 
   makeRequest('GET', '/heatmap'),
   'repairs': 
-  makeRequest('GET', '/repairs/'),
+  makeRequest('GET', '/repairs'),
   'installations': 
-  makeRequest('GET', '/installations/')
+  makeRequest('GET', '/installations')
 }
 Promise
 .props(requests)
@@ -200,15 +200,15 @@ Promise
   $(function () {
     $('[data-toggle="popover"]').popover()
   })
-  layers = {'Arcs': [], 'Nodes': [], 'Customers':[], 'Networks':[], 'Data':[], 'Types':['gas', 'heating', 'water'], 'Clusters':[]}
+  layers = {'Arcs': [], 'Nodes': [], 'Connections':[], 'Networks':[], 'Data':[], 'Types':['gas', 'heating', 'water'], 'Clusters':[]}
   layerGroups = [];
-  inLayers = {'Arcs': [responses.gasArc, responses.heatArc, responses.waterArc], 'Nodes': [responses.gasNode, responses.heatNode, responses.waterNode], 'Customers':[responses.gasCust, responses.heatCust, responses.waterCust]}
-    //inLayers = {'Arcs':responses.Arcs, 'Nodes':responses.Nodes, 'Customers':responses.Customers}
-    customer = [] 
+  inLayers = {'Arcs': [responses.gasArc, responses.heatArc, responses.waterArc], 'Nodes': [responses.gasNode, responses.heatNode, responses.waterNode], 'Connections':[responses.gasConn, responses.heatConn, responses.waterConn]}
+    //inLayers = {'Arcs':responses.Arcs, 'Nodes':responses.Nodes, 'Connections':responses.Connections}
+    connection = [] 
     data = []
     network = []
     workLayers = []
-    //For each "network type"(nyttighet): creates the data, creates the network, creates customers and adds the layers.
+    //For each "network type"(nyttighet): creates the data, creates the network, creates connections and adds the layers.
     for (var i = 0; i < layers.Types.length; i++) {
       data.push(dataMaker(inLayers.Arcs[i], inLayers.Nodes[i]));
       //console.log(data[i].arcSource.getFeatures(), 'data')
@@ -216,14 +216,14 @@ Promise
       layers.Data.push(data[i]);
       //console.log(layers.Data[i].arcSource.getFeatures(), 'lagerdata')
       layers.Networks.push(network[i]);
-      customer.push(customerMaker(inLayers.Customers[i]));
-      layerMaker(data[i],layers,customer[i], layers.Types[i], false,false,false, layerGroups, layers.Types[i]+'_Full', false);
+      connection.push(connectionMaker(inLayers.Connections[i]));
+      layerMaker(data[i],layers,connection[i], layers.Types[i], false,false,false, layerGroups, layers.Types[i]+'_Full', false);
       //Stores the raw data
     }
     heatmap = heatmapMaker(responses.heatmap)
     workLayers.push(workCluster(responses.repairs, 'Pågående Reparationer', true, workStyler))
     workLayers.push(workCluster(responses.installations, 'Pågående Installationer', true, workStyler))
-    console.log(workLayers, 'wl')
+    
     map = mapMaker(layerGroups, layers, heatmap, workLayers);   
   })
 .catch(function (err) {
@@ -243,11 +243,11 @@ function dataMaker(json_arc, json_node){
   return {'arcSource': arcSource_in, 'nodeSource':nodeSource_in}
 }
 
-//Creates source object and fills it with customers from the json
-function customerMaker(json_customers){
-  var custSource_in = new ol.source.Vector()
-  custSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_customers)))
-  return {'custSource': custSource_in}
+//Creates source object and fills it with connections from the json
+function connectionMaker(json_connections){
+  var connSource_in = new ol.source.Vector()
+  connSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_connections)))
+  return {'connSource': connSource_in}
 }
 
 
@@ -256,16 +256,17 @@ function networkMaker(inArc, inNode){
 }
 
 swe_eng = {'full':{
-  'water': {'title':'Vattennät', 'arc': 'Ledningar', 'cust': 'Kunder'},
-  'gas': {'title':'Gasnät','arc':'Ledningar', 'cust':'Kunder' },
-  'heating': {'title':'Fjärrvärmenät','arc':'Ledningar','cust':'Kunder' }},
+  'water': {'title':'Vattennät', 'arc': 'Ledningar', 'conn': 'Anslutningar'},
+  'gas': {'title':'Gasnät','arc':'Ledningar', 'conn':'Anslutningar' },
+  'heating': {'title':'Fjärrvärmenät','arc':'Ledningar','conn':'Anslutningar' }},
   'broken':{
     'water': {'title':'Avbrott: Vatten','node': 'Trasig nod: '},
     'gas': {'title': 'Avbrott: Gas','node':'Trasig nod:'},
     'heating': {'title':'Avbrott: Fjärrvärme', 'node':'Trasig nod: ' }}}
 
 // Creates the layers and sets the styles determining the visualization
-function layerMaker(data,layers,customer,network,showArc, showNode, showCust,layerGroups,title,bool_broken){
+function layerMaker(data,layers,connection,network,showArc, showNode, showConn,layerGroups,title,bool_broken){
+  
   broken = ''
   if(bool_broken===true){
     broken = 'broken'
@@ -293,28 +294,27 @@ function layerMaker(data,layers,customer,network,showArc, showNode, showCust,lay
   if(bool_broken===false){
     tmpNode.unset('title')
   }
-  tmpCust = new ol.layer.Vector({
-    source: customer.custSource,
-    style: styleFunction('customer',network),
-    visible: showCust,
-    title: swe_eng['full'][network]['cust'],
+  tmpConn = new ol.layer.Vector({
+    source: connection.connSource,
+    style: styleFunction('connection',network),
+    visible: showConn,
+    title: swe_eng['full'][network]['conn'],
     network: network,
-    type: 'cust'
+    type: 'conn'
   })
   layerGroups.push(new ol.layer.Group({
     'title': swe_eng[broken][network]['title'],
-    layers: [tmpArc, tmpNode, tmpCust]
+    layers: [tmpArc, tmpNode, tmpConn]
   }))
   layers.Arcs.push(tmpArc)
   layers.Nodes.push(tmpNode)
-  layers.Customers.push(tmpCust)
+  layers.Connections.push(tmpConn)
   //If multiple clusters, add clustering vector creation here
 }
 
 function workCluster(responses, title, visibility, styleF){
   var workSource = new ol.source.Vector()
   workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
-  console.log(workSource.getFeatures(), 'ws')
   var clusterSource = new ol.source.Cluster({
     distance: 100,
     source: workSource
@@ -327,15 +327,13 @@ function workCluster(responses, title, visibility, styleF){
     visible: true,
     type: 'cluster'
   });
-
-  console.log(clusterLayer, 'clusters')
   return clusterLayer
 }
 
-function brokenCluster(inCust, visibility, inGroup, styleF){
+function brokenCluster(inConn, visibility, inGroup, styleF){
   var clusterSource = new ol.source.Cluster({
     distance: 100,
-    source: inCust
+    source: inConn
   });
 
   //console.log(clusterSource)
@@ -412,9 +410,7 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers){
   });
   var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster]})
   var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
-  console.log(workLayers)
   var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
-  console.log(repairsGroup)
   ol.proj.addProjection(myProjection);
   var map = new ol.Map({
     layers: _.flatten([basemap, heatmapGroup, repairsGroup,inGroups]),
@@ -529,14 +525,14 @@ function popupMaker(feature,popup){
 
 
 //Based on the resolution, changes the content in the source of the line- and node layers, thus changing what is drawn.
-//Also sets / unsets the visibility of the customers, depending on the layer.
+//Also sets / unsets the visibility of the connections, depending on the layer.
 function trimData(restraints, layers, inGroups){
   for (var i = 0; i < layers.Arcs.length; i++) {
     arcs = layers.Arcs[i]
     nodes = layers.Nodes[i]
     networks = layers.Networks[i]
     data = layers.Data[i]
-    customers = layers.Customers[i]
+    connections = layers.Connections[i]
     //Clears all current arcs
     arcs.getSource().clear();
     //For each restraint-set(i.e. one per network type)
@@ -557,15 +553,15 @@ function trimData(restraints, layers, inGroups){
   _.each(inGroups, function(layerGroup){
     if(layerGroup.getLayers().getArray()[0] instanceof ol.layer.Vector){      
       _.each(layerGroup.getLayers().getArray(), function(layer){
-        if(layer.get("type")==='cust'){
-          if(restraints[0]['customer']==true){
+        if(layer.get("type")==='conn'){
+          if(restraints[0]['connection']==true){
             layer.setVisible(true);
           } else {
             layer.setVisible(false);
           }
 
         } else if (layer.get("type")==='cluster'){
-          if(restraints[0]['customer']==true){
+          if(restraints[0]['connection']==true){
             layer.setVisible(false);
           } else {
             layer.setVisible(true);
@@ -574,7 +570,7 @@ function trimData(restraints, layers, inGroups){
       })
     }
   })
-    //Shows customers for the correct zoom-levels.
+    //Shows connections for the correct zoom-levels.
 
 
     // Om vi skall visa upp noder, slutför förändringen här
@@ -597,7 +593,7 @@ function trimData(restraints, layers, inGroups){
     restraints = [];
     for (var i = 0; i < layers.Arcs.length; i++) {
       var showLine = [];
-      var showCustomer = false;
+      var showCon = false;
 
       switch (true){
         case (cur_res>=6):
@@ -614,10 +610,10 @@ function trimData(restraints, layers, inGroups){
         break;
         case (cur_res<1):
         showLine = ['big', 'main', 'small']
-        showCustomer = true;
+        showCon = true;
         break;
       }
-      toShow = {'line': showLine, 'customer': showCustomer}
+      toShow = {'line': showLine, 'connection': showCon}
       restraints.push(toShow);
     }
     return restraints
@@ -743,8 +739,8 @@ function disableNode(feature, inLayers, map, layerGroups) {
       alert("This node is redundant - no effect.")
     } else {
       responses = JSON.parse(responses.broken)
-      tmpLayers = {'Arcs': JSON.stringify(responses.Arc), 'Nodes': JSON.stringify(responses.Node), 'Customers':JSON.stringify(responses.Cust)}
-      customer = [] 
+      tmpLayers = {'Arcs': JSON.stringify(responses.Arc), 'Nodes': JSON.stringify(responses.Node), 'Connections':JSON.stringify(responses.Conn)}
+      connection = [] 
       data = []
       network = []
       data.push(dataMaker(tmpLayers.Arcs, tmpLayers.Nodes));
@@ -752,14 +748,15 @@ function disableNode(feature, inLayers, map, layerGroups) {
       inLayers.Data.push(data[0]);
       inLayers.Networks.push(network[0]);
       inLayers.Types.push(networkType)
-      customer.push(customerMaker(tmpLayers.Customers));
-      cust_id_list = _.map(customer[0].custSource.getFeatures(), function(key, value){
+      connection.push(connectionMaker(tmpLayers.Connections));
+      conn_id_list = _.map(connection[0].connSource.getFeatures(), function(key, value){
         return key.get("gid")
       })
-      layerMaker(data[0],inLayers,customer[0], networkType, false, false, false, layerGroups, feature.get("gid"), true);
-      brokenCluster(customer[0].custSource, true, layerGroups[layerGroups.length-1], polyMaker)      
+      layerMaker(data[0],inLayers,connection[0], networkType, false, false, false, layerGroups, feature.get("gid"), true);
+      brokenCluster(connection[0].connSource, true, layerGroups[layerGroups.length-1], polyMaker)      
       //Fixa stöd för grupper
       map.addLayer(layerGroups[layerGroups.length-1])
+      layerGroups[layerGroups.length-1].dispatchEvent('change:layers')
       map.render()
 
 
@@ -796,7 +793,7 @@ function workMaker(responses, title, style){
   return workLayer
 }*/
 
-function fillCustomers(gidList, network_type){
+function fillCustomer(gidList, network_type){
   console.log(gidList, 'inList')
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
@@ -806,7 +803,7 @@ function fillCustomers(gidList, network_type){
 
   function deleteLayers(inLayers, layer, map, layerGroups){
     console.log(layer, 'inLayer')
-    layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'cust':inLayers.Customers}
+    layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'conn':inLayers.Connections}
     index = _.indexOf(layerType[layer.get('type')], layer)
     console.log(layerType, 'type')
     console.log(index, 'index')
