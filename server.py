@@ -10,22 +10,18 @@ tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'cust': '
 app = Flask(__name__)
 @app.route('/cust/<filename>')
 def custGetter(filename):
-    
     custCurs = conn.cursor()
     query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid, cust_id) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
     custCurs.execute(query)
     inVar = (custCurs.fetchone()[0])
-    
     return json.dumps(inVar)
 
 @app.route('/arc/<filename>')
 def arcGetter(filename):
-    
     arcCurs = conn.cursor()
     query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
     arcCurs.execute(query)
     inVar = (arcCurs.fetchone()[0])
-    
     return json.dumps(inVar)
 
 @app.route('/node/<filename>')
@@ -60,14 +56,22 @@ def heatmapMaker():
     return json.dumps(inVar[0])
 
 
-@app.route('/repairs/<indata>')
-def repairMaker(indata):
+@app.route('/repairs/')
+def repairMaker():
     repairCurs = conn.cursor()
-    work_gid_list = indata
-    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM gas_arcs_vertices_pgr as lg WHERE gid in {0}) as f ) as fc".format(str(work_gid_list))
+    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM repairjobs as lg) as f ) as fc"
     repairCurs.execute(query)
     inVar = [w[0] for w in repairCurs.fetchall()]
     return json.dumps(inVar[0])
+
+@app.route('/installations/')
+def installMaker():
+    installCurs = conn.cursor()    
+    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM installationjobs as lg) as f ) as fc"
+    installCurs.execute(query)
+    inVar = [w[0] for w in installCurs.fetchall()]
+    return json.dumps(inVar[0])
+
 
 
 @app.route('/broken/<network_name>/<node_id>')
@@ -101,7 +105,6 @@ def bfs(network_name,broken_node, node_id):
     return visited
 
 def getBrokenArc(network_name,nodeSet):
-    
     baCurs = conn.cursor()
     query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM {0} as lg WHERE source in {1} AND target in {1}) as f ) as fc;".format(network_name.strip("\'"), str(nodeSet).replace('{','(').replace('}',')'))
     baCurs.execute(query)
@@ -112,7 +115,6 @@ def getBrokenArc(network_name,nodeSet):
 
 
 def getBrokenNode(network_name,brokenNode):
-    
     bnCurs = conn.cursor()
     query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM {0} as lg WHERE gid = {1} ) as f ) as fc;".format(network_name.strip("\'"), brokenNode)
     bnCurs.execute(query)
@@ -121,7 +123,6 @@ def getBrokenNode(network_name,brokenNode):
     #gets nodes intersecting bfs-set
 
 def getBrokenCust(network_name,nodeSet):
-    
     bcCurs = conn.cursor()
     query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid, cust_id) as l )) as properties FROM {0} as lg WHERE gid in {1}) as f ) as fc;".format(network_name.strip("\'"), str(nodeSet).replace('{','(').replace('}',')'))
     bcCurs.execute(query)

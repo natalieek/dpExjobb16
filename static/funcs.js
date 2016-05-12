@@ -153,12 +153,17 @@ var gas = {
   var pointColors = {
     '933000':{'type':'Arbete','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
-    '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'}
+    '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'},
+    '112233':{'type':'installation','color':'black', 'icon':'\uf0e7'}, '123123':{'type':'reparation','color':'red', 'icon':'\uf0ad'}
   }
 
   var lineColors = {
     '901000':{'type':'gas','color':'#006f00'}, '602000':{'type':'heating','color':'#000000'}, 
     '808000':{'type':'water','color':'#0066ff'},'901000':{'type':'gas','color':'#006f00'},
+  }
+
+  var iconSizes = {
+    0:'normal 20px FontAwesome',1:'normal 25px FontAwesome', 2:'bold 25px FontAwesome', 3:'normal 30px FontAwesome', 4:'bold 30px FontAwesome'
   }
 
   init = function() {
@@ -185,9 +190,9 @@ var gas = {
   'heatmap': 
   makeRequest('GET', '/heatmap'),
   'repairs': 
-  makeRequest('GET', '/repairs/(596,434,380,343,120)'),
+  makeRequest('GET', '/repairs/'),
   'installations': 
-  makeRequest('GET', '/repairs/(717,691,72,598,60,125,544)')
+  makeRequest('GET', '/installations/')
 }
 Promise
 .props(requests)
@@ -216,8 +221,9 @@ Promise
       //Stores the raw data
     }
     heatmap = heatmapMaker(responses.heatmap)
-    workLayers.push(workMaker(responses.repairs, 'Pågående Reparationer', repairs))
-    workLayers.push(workMaker(responses.installations, 'Pågående Installationer', installations))
+    workLayers.push(workCluster(responses.repairs, 'Pågående Reparationer', true, workStyler))
+    workLayers.push(workCluster(responses.installations, 'Pågående Installationer', true, workStyler))
+    console.log(workLayers, 'wl')
     map = mapMaker(layerGroups, layers, heatmap, workLayers);   
   })
 .catch(function (err) {
@@ -305,7 +311,28 @@ function layerMaker(data,layers,customer,network,showArc, showNode, showCust,lay
   //If multiple clusters, add clustering vector creation here
 }
 
-function clusterMaker(inCust, visibility, inGroup){
+function workCluster(responses, title, visibility, styleF){
+  var workSource = new ol.source.Vector()
+  workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
+  console.log(workSource.getFeatures(), 'ws')
+  var clusterSource = new ol.source.Cluster({
+    distance: 100,
+    source: workSource
+  });
+
+  var clusterLayer = new ol.layer.Vector({
+    source: clusterSource,
+    title: title,
+    style: styleF,
+    visible: true,
+    type: 'cluster'
+  });
+
+  console.log(clusterLayer, 'clusters')
+  return clusterLayer
+}
+
+function brokenCluster(inCust, visibility, inGroup, styleF){
   var clusterSource = new ol.source.Cluster({
     distance: 100,
     source: inCust
@@ -316,8 +343,7 @@ function clusterMaker(inCust, visibility, inGroup){
   var clusterLayer = new ol.layer.Vector({
     source: clusterSource,
     title: 'Cluster',
-    //style: styleFunc,
-    style: polyMaker,
+    style: styleF,
     visible: true,
     type: 'cluster'
   });
@@ -391,7 +417,7 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers){
   console.log(repairsGroup)
   ol.proj.addProjection(myProjection);
   var map = new ol.Map({
-    layers: _.flatten([basemap, inGroups, heatmapGroup, repairsGroup]),
+    layers: _.flatten([basemap, heatmapGroup, repairsGroup,inGroups]),
     target: 'map',
     interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
     view: new ol.View({
@@ -653,6 +679,23 @@ var proportions = function(data) {
   return _.object(data);
 }
 
+function workStyler(feature) {
+  var size = feature.get('features').length;
+  var type = feature.get('features')[0].get('dp_otype')
+  style = new ol.style.Style({
+   text: new ol.style.Text({
+    text: pointColors[type].icon,
+    font: iconSizes[size%5],
+    textBaseline: 'Bottom',
+    fill: new ol.style.Fill({
+      color: pointColors[type].color,
+    })
+  })
+ })
+  return style
+}
+
+
 function styleFunc(feature) {
   var size = feature.get('features').length;
   var inputFeatures = feature.get('features');
@@ -689,8 +732,8 @@ function bindNodeInputs(layer, inLayers, inMap, layerGroups) {
       feature = _.find(layer.getSource().getFeatures(),function(feat){return feat.get("gid").toString()===textbox.val()})
       disableNode(feature, inLayers, inMap, layerGroups)
     }    
-  });
-}
+  })
+};
 
 function disableNode(feature, inLayers, map, layerGroups) {
   networkType = pointColors[feature.get("dp_otype")].type
@@ -714,10 +757,12 @@ function disableNode(feature, inLayers, map, layerGroups) {
         return key.get("gid")
       })
       layerMaker(data[0],inLayers,customer[0], networkType, false, false, false, layerGroups, feature.get("gid"), true);
-      clusterMaker(customer[0].custSource, true, layerGroups[layerGroups.length-1])      
+      brokenCluster(customer[0].custSource, true, layerGroups[layerGroups.length-1], polyMaker)      
       //Fixa stöd för grupper
       map.addLayer(layerGroups[layerGroups.length-1])
       map.render()
+
+
       /* Hoppa till midpoint av extent
       Räkna ut extent av view på en viss zoomnivå runt området, välj den som är precis ett större än */
     }
@@ -725,19 +770,19 @@ function disableNode(feature, inLayers, map, layerGroups) {
 };
 
 function heatmapMaker(responses){
-
   var heatSource = new ol.source.Vector()
   heatSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
   heatLayer = new ol.layer.Heatmap({
     source: heatSource,
-    visible: true,
+    visible: false,
     title: 'Avbrottshistorik',
     type: 'Old',
-    radius: 5
+    radius: 5,
+    opacity: 0.8
   })
   return heatLayer
 }
-
+/*
 function workMaker(responses, title, style){
   var workSource = new ol.source.Vector()
   workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
@@ -749,7 +794,7 @@ function workMaker(responses, title, style){
     style: style
   })
   return workLayer
-}
+}*/
 
 function fillCustomers(gidList, network_type){
   console.log(gidList, 'inList')
