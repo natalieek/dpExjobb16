@@ -310,7 +310,7 @@ input {
 }
 
 #statusbox2 {
-	visibility: hidden;
+	visibility: visible;
 	font-weight: bold;
 	margin-left: 50%;
 	left:-175px;
@@ -327,7 +327,7 @@ input {
 	padding-left: 30px !important;
 }
 
-#act {
+.act {
 	font-weight: normal;
 	list-style-type: none;
 	padding: 0;
@@ -335,7 +335,7 @@ input {
 	width: 160px;
 }
 
-#statustext {
+.statustext {
 	margin-top: -16px;
 	margin-left: 18px;
 }
@@ -387,6 +387,7 @@ input {
 
 .layer-switcher.shown {
 	bottom: 45px;
+	overflow: scroll;
 }
 
 .layer-switcher .panel {
@@ -395,7 +396,48 @@ input {
 	padding: 5px;
 }
 
+::-webkit-scrollbar { 
+    display: none; 
+}
 img {
 	height: 16px;
 	width: 16px;
+}
+
+.info {
+	font-weight: normal;
+	list-style-type: none;
+	padding: 0;
+	font-size: 13px;
+	width: 160px;
+	left: 50%;
+	margin-left:-18px;
+}
+
+.info2 {
+	font-weight: normal;
+	list-style-type: none;
+	padding: 0;
+	font-size: 13px;
+	width: 160px;
+	left: 50%;
+	margin-left:-10px;
+	margin-top: 30px;
+}
+
+.btn-stat {
+	width:120px;
+	border-radius: 5px !important;
+	padding: 3px 8px !important;
+	margin-left: -19px;
+}
+
+#infcust {
+	margin-left: -10px !important;
+    position: absolute;
+    bottom: -45px;
+}
+
+.close {
+	margin: 10px;
 }

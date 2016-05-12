@@ -22,7 +22,7 @@
   <script src="interface.js"></script>
     
 </head>
-<body>
+<body onload="alertOutage()">
 
 
 
@@ -165,16 +165,17 @@
 
       <div class="row"  id="statusbox1">
         <!--<div class="col-sm-4" id="statusbox">-->
+        <i class="fa fa-times close" aria-hidden="true" onclick="hidestatus('bg5')"></i>
         <div class="col-sm-4 col" id="stat">
           <div class="row">
             <div class="circle" id="circstat"></div>
-            <p id="statustext">Inga avbrott</p>
+            <p class="statustext">Inga avbrott</p>
           </div>
         </div>
 
         <div class="col-sm-4 col">
           <p>Aktiviteter</p>
-          <ul id="act">
+          <ul class="act">
             <li>Reparationer (2)</li>
             <li>Installationer (1)</li>
           </ul>
@@ -198,17 +199,23 @@
   </div>
 
 <div class="row" id="statusbox2">
+  <i class="fa fa-times close" aria-hidden="true" onclick="hidestatus('bg5')"></i>
    <div class="col-sm-4 col">
       <div class="row">
         <div class="circle2" id="circstat2"></div>
-        <p id="pushtitel">Avbrott!</p>
+        <p class="statustext">Avbrott!</p>
       </div>
-      <p> 500 drabbade kunder </p>
-      <p> Nod 1246 trasig </p>
-    <button>Gå till avbrottet i kartan</button>
+      <ul class="info">
+        <li>Nätverk: Fjärrvärme</li>
+        <li>Trasig nod: 1246</li>
+      </ul>
+    <button class="btn-xs btn-default btn-stat">Zooma till avbrott</button>
     </div> 
     <div class="col-sm-4 col">
-      <button>Informera kunder</button>
+      <ul class="info2">
+        <li>Antal drabbade: 500</li>
+      </ul>
+      <button class="btn-xs btn-default btn-stat" id="infcust" onclick="showmsg('bg3')">Informera kunder</button>
     </div>
 
   </div>

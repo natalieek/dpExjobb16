@@ -41,7 +41,6 @@ function hidepanel(id) {
 
 function showmsg(id) {
 	hidepanel('bg2');
-	hidestatus('bg5');
 	indicateChoice(id);
 	document.getElementById('msg').style.visibility = 'visible';
 	document.getElementById('tools').style.bottom = '300px';
@@ -69,6 +68,7 @@ function showstatus(id) {
 function hidestatus(id) {
 	hideChoice(id);
 	document.getElementById('statusbox1').style.visibility = 'hidden';
+	document.getElementById('statusbox2').style.visibility = 'hidden';
 }
 
 
@@ -78,3 +78,9 @@ function showkill() {
 		$("#kill").toggle();
 	});
 } 
+
+function alertOutage() {
+	indicateChoice('bg5');
+	document.getElementById('statusbox2').style.visibility = 'visible';
+	document.getElementById('status').style.background='red';
+}
