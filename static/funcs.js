@@ -814,7 +814,7 @@ function fillCustomer(gidList, network_type){
     console.log(customerArray[0])
     console.log(customerArray[0].address)
     for(i=0; i<customerArray.length; i++) {
-      var row = custTable.insertRow(i);
+      var row = custTable.insertRow(i+1);
       row.insertCell(0).innerHTML="<p>"+customerArray[i].gid+"</p>";
       row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
       row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";

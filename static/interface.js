@@ -22,8 +22,10 @@ function hideChoice(id) {
 
 function showpanel(id) {
 	hidemsg('bg3');
-	hidestatus('bg5');
+	//hidestatus('bg5');
 	indicateChoice(id);
+	document.getElementById('statusbox1').style.bottom = '320px';
+	document.getElementById('statusbox2').style.bottom = '320px';
 	document.getElementById('customers').style.visibility = 'visible';
 	document.getElementById('tools').style.bottom = '300px';
 	document.getElementById('status').style.bottom = '310px';
@@ -32,6 +34,8 @@ function showpanel(id) {
 
 function hidepanel(id) {
 	hideChoice(id);
+	document.getElementById('statusbox1').style.bottom = '20px';
+	document.getElementById('statusbox2').style.bottom = '20px';
 	document.getElementById('customers').style.visibility='hidden';
 	document.getElementById('tools').style.bottom = '20px';
 	document.getElementById('status').style.bottom = '30px';
