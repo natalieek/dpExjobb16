@@ -1,15 +1,13 @@
 //Visual settings for el 
 var gas = {
  'connection': new ol.style.Style({
-   text: new ol.style.Text({
-    text: 'A',
-    font: 'normal 18px FontAwesome',
-    textBaseline: 'Bottom',
-    fill: new ol.style.Fill({
-      color: 'green',
-    })
-  })
- }),
+  image: new ol.style.Circle({
+   fill: new ol.style.Fill({
+    color: 'green'
+  }),
+   radius: 5
+ })
+}),
  'arc': new ol.style.Style({
   stroke: new ol.style.Stroke({
     color: 'green',
@@ -19,7 +17,7 @@ var gas = {
  'node': new ol.style.Style({
   text: new ol.style.Text({
     text: '\uf0e7 ',
-    font: 'normal 20px FontAwesome',
+    font: 'normal 35px FontAwesome',
     textBaseline: 'Bottom',
     fill: new ol.style.Fill({
       color: 'green',
@@ -29,14 +27,12 @@ var gas = {
    //Visual settings for heating
    var heating = {
      'connection': new ol.style.Style({
-      text: new ol.style.Text({
-        text: 'A',
-        font: 'normal 18px FontAwesome',
-        textBaseline: 'Bottom',
-        fill: new ol.style.Fill({
-          color: 'black',
-        })
-      })
+      image: new ol.style.Circle({
+       fill: new ol.style.Fill({
+        color: 'black'
+      }),
+       radius: 5
+     })
     }),
      
      'arc': new ol.style.Style({
@@ -48,9 +44,12 @@ var gas = {
     }),
      'node': new ol.style.Style({
        text: new ol.style.Text({
-        text: '\uf0e7 ',
-        font: 'normal 20px FontAwesome',
+        text: '\uf0e7',
+        font: 'normal 35px FontAwesome',
         textBaseline: 'Bottom',
+        stroke: new ol.style.Stroke({
+          color: 'rgba(255, 140, 0, 0.6)',
+          width: 8}),
         fill: new ol.style.Fill({
           color: 'black',
         })
@@ -59,18 +58,16 @@ var gas = {
    //Visual settings for water
    var water = {
      'connection': new ol.style.Style({
-      text: new ol.style.Text({
-        text: 'A',
-        font: 'normal 18px FontAwesome',
-        textBaseline: 'Bottom',
-        fill: new ol.style.Fill({
-          color: '#0066ff',
-        })
-      })   
+      image: new ol.style.Circle({
+       fill: new ol.style.Fill({
+        color: '#2196F3'
+      }),
+       radius: 5
+     })
     }),
      'arc': new ol.style.Style({
       stroke: new ol.style.Stroke({
-        color: '#0066ff',
+        color: '#2196F3',
         lineDash: [5,5],
         width: 3
       })
@@ -78,11 +75,13 @@ var gas = {
      'node': new ol.style.Style({
        text: new ol.style.Text({
         text: '\uf0e7 ',
-        font: 'normal 20px FontAwesome',
+        font: 'normal 35px FontAwesome',
         textBaseline: 'Bottom',
         fill: new ol.style.Fill({
-          color: '#0066ff',
-        })
+          color: '#2196F3'}),
+        stroke: new ol.style.Stroke({
+          color: 'rgba(255, 140, 0, 0.6)',
+          width: 8}),
       })   
      })};
 
@@ -163,7 +162,7 @@ var gas = {
   }
 
   var iconSizes = {
-    0:'normal 20px FontAwesome',1:'normal 25px FontAwesome', 2:'bold 25px FontAwesome', 3:'normal 30px FontAwesome', 4:'bold 30px FontAwesome'
+    0:'normal 20px FontAwesome',1:'normal 25px FontAwesome', 2:'normal 25px FontAwesome', 3:'normal 30px FontAwesome', 4:'normal 30px FontAwesome'
   }
 
   init = function() {
@@ -759,7 +758,7 @@ function disableNode(feature, inLayers, map, layerGroups) {
       map.addLayer(layerGroups[layerGroups.length-1])
       layerGroups[layerGroups.length-1].dispatchEvent('change:layers')
       map.render()
-
+      map.dispatchEvent('change:resolution')
       alertOutage(swe_eng['full'][networkType]['title'], conn_id_list.length, feature.get("gid"));
       $('#zoomButton').click(function() {
         var extent = inLayers.Clusters[inLayers.Clusters.length-1].getSource().getExtent()
@@ -789,22 +788,22 @@ function fillCustomer(gidList, network_type){
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
     customerArray = JSON.parse(responses.cust)
-  var table = document.getElementById("custTable");
-  console.log(gidList, 'inList')
-  requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
-  Promise.props(requests).then(function(responses) {
-    customerArray = JSON.parse(responses.cust)
-    console.log(customerArray)
-    console.log(customerArray[0])
-    console.log(customerArray[0].address)
-    for(i=0; i<customerArray.length; i++) {
-      var row = custTable.insertRow(i+1);
-      row.insertCell(0).innerHTML="<p>"+customerArray[i].gid+"</p>";
-      row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
-      row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
-      row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
+    var table = document.getElementById("custTable");
+    console.log(gidList, 'inList')
+    requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
+    Promise.props(requests).then(function(responses) {
+      customerArray = JSON.parse(responses.cust)
+      console.log(customerArray)
+      console.log(customerArray[0])
+      console.log(customerArray[0].address)
+      for(i=0; i<customerArray.length; i++) {
+        var row = custTable.insertRow(i+1);
+        row.insertCell(0).innerHTML="<p>"+customerArray[i].gid+"</p>";
+        row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
+        row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
+        row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
 
-     }
+      }
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
   })})};
 
