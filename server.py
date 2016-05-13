@@ -3,6 +3,7 @@ import json
 from flask import Flask, request, send_from_directory
 from config import conn
 
+
 tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'conn': 'gas_cust', 'station_id':259},
 'heating': {'arcs':'heat_arcs', 'nodes': 'heat_arcs_vertices_pgr', 'conn': 'heat_cust', 'station_id': 2},
 'water': {'arcs': 'vatten_arc', 'nodes':'vatten_arc_vertices_pgr', 'conn': 'vatten_cust', 'station_id':1394}}
@@ -10,6 +11,7 @@ tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'conn': '
 app = Flask(__name__)
 @app.route('/conn/<filename>')
 def custGetter(filename):
+    
     with conn.cursor() as cursor:
         #custCurs = conn.cursor()
         query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid, cust_id) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
@@ -19,6 +21,7 @@ def custGetter(filename):
 
 @app.route('/arc/<filename>')
 def arcGetter(filename):
+    
     with conn.cursor() as cursor:
         #arcCurs = conn.cursor()
         query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)

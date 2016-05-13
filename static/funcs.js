@@ -735,7 +735,6 @@ function disableNode(feature, inLayers, map, layerGroups) {
   networkType = pointColors[feature.get("dp_otype")].type
   requests = {'broken': makeRequest('GET', '/broken/'+networkType+'/'+feature.get("gid"))}
   Promise.props(requests).then(function(responses) {
-    console.log(responses.broken)
     if(responses.broken === 'NULL') {
       alert("This node is redundant - no effect.")
     } else {
@@ -761,14 +760,9 @@ function disableNode(feature, inLayers, map, layerGroups) {
       layerGroups[layerGroups.length-1].dispatchEvent('change:layers')
       map.render()
 
-
-      /* Hoppa till midpoint av extent
-      Räkna ut extent av view på en viss zoomnivå runt området, välj den som är precis ett större än */
       alertOutage(swe_eng['full'][networkType]['title'], conn_id_list.length, feature.get("gid"));
       $('#zoomButton').click(function() {
         var extent = inLayers.Clusters[inLayers.Clusters.length-1].getSource().getExtent()
-        console.log(extent, 'clustxt')
-        console.log(map.getView().calculateExtent(map.getSize()), 'mapxt')
         map.getView().fit(extent,map.getSize());
       });
       //zoomButton
@@ -805,22 +799,17 @@ function workMaker(responses, title, style){
 }*/
 
 function fillCustomer(gidList, network_type){
-  console.log(gidList, 'inList')
+  
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
     customerArray = JSON.parse(responses.cust)
-    console.log(customerArray)
+  
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
   })};
 
   function deleteLayers(inLayers, layer, map, layerGroups){
-    console.log(layer, 'inLayer')
     layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'conn':inLayers.Connections}
     index = _.indexOf(layerType[layer.get('type')], layer)
-    console.log(layerType, 'type')
-    console.log(index, 'index')
-    console.log(map.getLayers(), 'layersMap')
-    console.log(inLayers, 'inLayers')
     _.each(inLayers, function(value, key){
       if(key !== 'Clusters' && index >= 3){
         map.removeLayer(layerGroups[index])
