@@ -326,6 +326,14 @@ function workCluster(responses, title, visibility, styleF){
     visible: true,
     type: 'cluster'
   });
+  
+  if(workSource.getFeatures()[0].get("dp_otype")===112233){
+  
+    $('#numInstalls').text('Installationer: '+workSource.getFeatures().length);
+  }else if(workSource.getFeatures()[0].get("dp_otype")===123123){
+  
+    $('#numRepairs').text('Reparationer: '+workSource.getFeatures().length);
+  }
   return clusterLayer
 }
 
