@@ -92,7 +92,7 @@ var gas = {
         font: 'normal 18px FontAwesome',
         textBaseline: 'Bottom',
         fill: new ol.style.Fill({
-          color: 'red',
+          color: '#EC407A',
         })
       })
     })
@@ -103,7 +103,7 @@ var gas = {
         font: 'normal 18px FontAwesome',
         textBaseline: 'Bottom',
         fill: new ol.style.Fill({
-          color: 'black',
+          color: '#3F51B5',
         })
       })
     })
@@ -153,7 +153,7 @@ var gas = {
     '933000':{'type':'gas','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
     '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'},
-    '112233':{'type':'installation','color':'black', 'icon':'\uf1e6'}, '123123':{'type':'reparation','color':'red', 'icon':'\uf0ad'}
+    '112233':{'type':'installation','color':'#3F51B5', 'icon':'\uf1e6', 'rotation':0}, '123123':{'type':'reparation','color':'#EC407A', 'icon':'\uf0ad','rotation':3*Math.PI/2}
   }
 
   var lineColors = {
@@ -681,6 +681,7 @@ function workStyler(feature) {
    text: new ol.style.Text({
     text: pointColors[type].icon,
     font: iconSizes[size%5],
+    rotation: pointColors[type].rotation,
     textBaseline: 'Bottom',
     fill: new ol.style.Fill({
       color: pointColors[type].color,
