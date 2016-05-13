@@ -784,28 +784,11 @@ function heatmapMaker(responses){
   })
   return heatLayer
 }
-/*
-function workMaker(responses, title, style){
-  var workSource = new ol.source.Vector()
-  workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
-  workLayer = new ol.layer.Vector({
-    source: workSource,
-    visible: true,
-    title: title,
-    type: 'Repair',
-    style: style
-  })
-  return workLayer
-}*/
 
-function fillCustomer(gidList, network_type){
-<<<<<<< HEAD
-  
+function fillCustomer(gidList, network_type){ 
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
     customerArray = JSON.parse(responses.cust)
-  
-=======
   var table = document.getElementById("custTable");
   console.log(gidList, 'inList')
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
@@ -822,9 +805,8 @@ function fillCustomer(gidList, network_type){
       row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
 
      }
->>>>>>> origin/master
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
-  })};
+  })})};
 
   function deleteLayers(inLayers, layer, map, layerGroups){
     layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'conn':inLayers.Connections}
