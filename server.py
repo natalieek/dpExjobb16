@@ -42,7 +42,7 @@ def nodeGetter(filename):
 def menuCustomers(custList):
     with conn.cursor() as cursor:    
         #menuCurs = conn.cursor()
-        query = "SELECT row_to_json(fc) FROM (SELECT firstname, lastname, address, gid FROM customers) fc WHERE fc.gid IN {0};".format(str(custList))
+        query = "SELECT row_to_json(fc) FROM (SELECT firstname, lastname, address, gid, gas_id, heating_id, water_id FROM customers) fc WHERE fc.gid IN {0};".format(str(custList))
         cursor.execute(query)
         inVar = [w[0] for w in cursor.fetchall()]
     return json.dumps(inVar)

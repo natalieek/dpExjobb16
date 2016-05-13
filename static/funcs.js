@@ -811,6 +811,9 @@ function fillCustomer(gidList, network_type){
         row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
         row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
         row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
+        row.insertCell(4).innerHTML="<p>"+customerArray[i].gas_id+"</p>";
+        row.insertCell(5).innerHTML="<p>"+customerArray[i].water_id+"</p>";
+        row.insertCell(5).innerHTML="<p>"+customerArray[i].heating_id+"</p>";
 
       }
     //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
