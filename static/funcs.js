@@ -509,12 +509,20 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
 var pointTexts = {
   '606000':{'type':'fjärrvärmenät','body':'Heatinganslutning', 'title':'Fjärrvärmenät'}, 
   '890400':{'type':'vattennät','body':'Vattenanslutning', 'title':'Vattennät'},
+  '804000':{'type':'vattennod','body':'Vattennod', 'title':'Avbrott i vattennät'},
+  '933000':{'type':'gasnod','body':'Gasnod', 'title':'Avbrott i gasnät'},
+  '800004':{'type':'fjärrvärmenod','body':'Fjärrvärmenod', 'title':'Avbrott i fjärrvärmenät'},
   '934000':{'type':'gasnät','body':'Gasanslutning', 'title':'Gasnät'},
   '112233':{'type':'installation','body':'#3F51B5', 'title':'Installation'}, 
   '123123':{'type':'reparation','body':'#EC407A', 'title':'Reparation'},
   '333333':{'type':'kund','body':'pink', 'title':'Kund'}
 }
 
+
+var lineTexts = {
+  '901000':{'type':'gas','title':'Gas'}, '602000':{'type':'fjärrvärme','title':'Fjärrvärme'}, 
+  '808000':{'type':'vatten','title':'Vatten'},'901000':{'type':'gas','title':'Gas'},
+}
 
 
 //'703000':['el','#006f00'], '606000':['heating','#000000'], '890400':['water','#0066ff']
@@ -524,8 +532,8 @@ function popupMaker(feature,popup){
   var title = "2"
   var content = "1"
   //If polygon
-  console.log(feature.get('features'))
-  if(typeof feature.get('features') != 'undefined'){
+  
+  if(typeof feature.get('features') != 'undefined' && feature.get('features').length > 1){
     data = _.countBy(_.map(feature.get('features'), function(num){
       return num.get('dp_otype')
     }), _.identity);
@@ -549,7 +557,12 @@ function popupMaker(feature,popup){
   } else {
 
     if(feature.getGeometry().getType() == 'Point'){
-      var key = feature.get("dp_otype").toString()
+      var key
+      if(typeof feature.get('features') != 'undefined'){
+        key = feature.get('features')[0].get("dp_otype").toString()
+      } else {
+        key = feature.get("dp_otype").toString()
+      }
       //Kund
       //if-clause broken
       if(key==='333333'){
@@ -560,16 +573,28 @@ function popupMaker(feature,popup){
         Adress: '+feature.get('address')+' \
         Anslutningspunkter: '+ feature.get('gas_id') +' '+feature.get('water_id')+' '+feature.get('heating_id')
         coord = feature.getGeometry().getCoordinates()
-
       }else if(key === '606000' || key === '890400' || key === '934000'){
         title = 'Anslutningspunkt i '+pointTexts[key].type
         content = 'Tillhör kund med ID: '+feature.get('cust_id')
         coord = feature.getGeometry().getCoordinates()
+      } else if(key === '933000' || key === '804000' || key === '800004'){
+        title = pointTexts[key].title
+        content = 'ID på trasig nod: '+feature.get('gid')
+        coord = feature.getGeometry().getCoordinates()
+      } else{
+        console.log(feature, 'debug')
+        title = pointTexts[key].title
+        if(key==='112233'){
+          content = 'Startdatum: 2016-05-18 \ Beräknat slutdatum: 2016-05-25 \ Typ: Nyanslutning'  
+        } else {
+          content = 'Startdatum: 2016-05-19 \ Beräknat slutdatum: 2016-05-20 \ Typ: Avgrävd kabel'  
+        }
+        coord = feature.getGeometry().getCoordinates()
       }
     } else {
-      title = 'I am a '.concat(feature.getGeometry().getType())
-      console.log(feature.get("dp_otype"), lineColors)
-      content = 'Of the type2: '.concat(lineColors[feature.get("dp_otype")].type)
+      key = feature.get("dp_otype").toString()
+      title = lineTexts[key].title
+      content = ''
       coord = feature.getGeometry().getCoordinateAt(0.5)      
     }
   }
