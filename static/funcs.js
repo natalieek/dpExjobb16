@@ -3,14 +3,14 @@ var gas = {
  'connection': new ol.style.Style({
   image: new ol.style.Circle({
    fill: new ol.style.Fill({
-    color: 'green'
+    color: '#D500F9'
   }),
    radius: 5
  })
 }),
  'arc': new ol.style.Style({
   stroke: new ol.style.Stroke({
-    color: 'green',
+    color: '#D500F9',
     width: 2
   })
 }),
@@ -20,7 +20,7 @@ var gas = {
     font: 'normal 35px FontAwesome',
     textBaseline: 'Bottom',
     fill: new ol.style.Fill({
-      color: 'green',
+      color: '#D500F9',
     })
   })   
 })};
@@ -34,7 +34,7 @@ var gas = {
        radius: 5
      })
     }),
-     
+
      'arc': new ol.style.Style({
       stroke: new ol.style.Stroke({
         color: 'black',
@@ -55,6 +55,41 @@ var gas = {
         })
       })   
      })};
+
+     var brokenHeating = {
+       'connection': new ol.style.Style({
+        image: new ol.style.Circle({
+         fill: new ol.style.Fill({
+          color: 'black'
+        }),
+         radius: 5,
+         stroke: new ol.style.Stroke({
+          color: 'rgba(255, 140, 0, 0.6)',
+          width: 10})
+       })
+      }),
+
+       'arc': new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: 'black',
+          lineDash: [5,1,5],
+          width: 6
+        })
+      }),
+       'node': new ol.style.Style({
+         text: new ol.style.Text({
+          text: '\uf0e7',
+          font: 'normal 35px FontAwesome',
+          textBaseline: 'Bottom',
+          stroke: new ol.style.Stroke({
+            color: 'rgba(255, 140, 0, 0.6)',
+            width: 8}),
+          fill: new ol.style.Fill({
+            color: 'black',
+          })
+        })   
+       })};
+
    //Visual settings for water
    var water = {
      'connection': new ol.style.Style({
@@ -85,45 +120,60 @@ var gas = {
       })   
      })};
 
-
-     var repairs = new ol.style.Style({
-      text: new ol.style.Text({
-        text: '\uf0ad',
-        font: 'normal 18px FontAwesome',
-        textBaseline: 'Bottom',
-        fill: new ol.style.Fill({
-          color: '#EC407A',
+     var brokenWater = {
+       'connection': new ol.style.Style({
+        image: new ol.style.Circle({
+         fill: new ol.style.Fill({
+          color: '#2196F3'
+        }),
+         radius: 5,
+         stroke: new ol.style.Stroke({
+          color: 'rgba(255, 140, 0, 0.6)',
+          width: 10})
+       })
+      }),
+       'arc': new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#2196F3',
+          lineDash: [5,5],
+          width: 5
         })
-      })
-    })
+      }),
+       'node': new ol.style.Style({
+         text: new ol.style.Text({
+          text: '\uf0e7 ',
+          font: 'normal 35px FontAwesome',
+          textBaseline: 'Bottom',
+          fill: new ol.style.Fill({
+            color: '#2196F3'}),
+          stroke: new ol.style.Stroke({
+            color: 'rgba(255, 140, 0, 0.6)',
+            width: 8}),
+        })   
+       })};
 
-     var installations = new ol.style.Style({
-      text: new ol.style.Text({
-        text: '\uf1e6 ',
-        font: 'normal 18px FontAwesome',
-        textBaseline: 'Bottom',
-        fill: new ol.style.Fill({
-          color: '#3F51B5',
-        })
-      })
-    })
+       var customerStyle = new ol.style.Style({
+         text: new ol.style.Text({
+          text: '\uf007',
+          font: 'normal 20px FontAwesome',
+          textBaseline: 'Bottom',
+          fill: new ol.style.Fill({
+            color: 'pink',
+          })
+        })   
+       })
 
-     var customerStyle = new ol.style.Style({
-       text: new ol.style.Text({
-        text: '\uf007',
-        font: 'normal 20px FontAwesome',
-        textBaseline: 'Bottom',
-        fill: new ol.style.Fill({
-          color: 'pink',
-        })
-      })   
-     })
-
-     var styles = {'heating':heating, 'gas':gas, 'water':water}
+       var styles = {'heating':heating, 'gas':gas, 'water':water}
+       var brokenStyles = {'heating':brokenHeating, 'water':brokenWater}
 
    //Takes the type of network and the object to visualize as input.
-   var styleFunction = function(visualize, network_type) {
-    return styles[network_type][visualize];
+   var styleFunction = function(visualize, network_type, broken) {
+    if(broken==true){
+      return brokenStyles[network_type][visualize];
+    }else{
+      return styles[network_type][visualize];
+    }
+    
   };
 
   //Makes HTTP-request to the file, via the python http server.
@@ -164,8 +214,8 @@ var gas = {
     '933000':{'type':'gas','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
     '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'},
-    '112233':{'type':'installation','color':'#3F51B5', 'icon':'\uf1e6', 'rotation':0}, 
-    '123123':{'type':'reparation','color':'#EC407A', 'icon':'\uf0ad','rotation':3*Math.PI/2},
+    '112233':{'type':'installation','color':'#FFC107', 'icon':'\uf1e6', 'rotation':0}, 
+    '123123':{'type':'reparation','color':'#FF5722', 'icon':'\uf0ad','rotation':3*Math.PI/2},
     '333333':{'type':'customer','color':'pink', 'icon':'\uf007','rotation':3*Math.PI/2}
   }
 
@@ -175,7 +225,7 @@ var gas = {
   }
 
   var iconSizes = {
-    0:'normal 20px FontAwesome',1:'normal 25px FontAwesome', 2:'normal 25px FontAwesome', 3:'normal 30px FontAwesome', 4:'normal 30px FontAwesome'
+    1:'normal 20px FontAwesome',2:'normal 30px FontAwesome', 3:'normal 30px FontAwesome', 4:'normal 30px FontAwesome', 5:'normal 30px FontAwesome', 6:'normal 35px FontAwesome',7:'normal 35px FontAwesome', 8:'normal 35px FontAwesome', 9:'normal 35px FontAwesome', 10:'normal 35px FontAwesome'
   }
 
   init = function() {
@@ -290,7 +340,7 @@ function layerMaker(data,layers,connection,network,showArc, showNode, showConn,l
   }
   tmpArc = new ol.layer.Vector({
     source: data.arcSource,
-    style: styleFunction('arc', network),
+    style: styleFunction('arc', network, bool_broken),
     visible: showArc,
     network: network,
     title: swe_eng['full'][network]['arc'],
@@ -299,7 +349,7 @@ function layerMaker(data,layers,connection,network,showArc, showNode, showConn,l
 
   tmpNode = new ol.layer.Vector({
     source: data.nodeSource,
-    style: styleFunction('node', network),
+    style: styleFunction('node', network, bool_broken),
     visible: showNode,
     network: network,
     title: swe_eng[broken][network]['node']+title,
@@ -311,7 +361,7 @@ function layerMaker(data,layers,connection,network,showArc, showNode, showConn,l
   }
   tmpConn = new ol.layer.Vector({
     source: connection.connSource,
-    style: styleFunction('connection',network),
+    style: styleFunction('connection',network, bool_broken),
     visible: showConn,
     title: swe_eng['full'][network]['conn'],
     network: network,
@@ -352,7 +402,7 @@ function workCluster(responses, title, visibility, styleF){
 
 function brokenCluster(inConn, visibility, inGroup, styleF){
   var clusterSource = new ol.source.Cluster({
-    distance: 200,
+    distance: 2000,
     source: inConn
   });
 
@@ -434,14 +484,14 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
   var customerGroup = new ol.layer.Group({ 'title': 'Kunder', layers: [customers]})
   ol.proj.addProjection(myProjection);
   var map = new ol.Map({
-    layers: _.flatten([basemap, heatmapGroup, repairsGroup,inGroups, customerGroup]),
+    layers: _.flatten([basemap, heatmapGroup, inGroups, customerGroup, repairsGroup]),
     target: 'map',
     interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
     view: new ol.View({
       center: [670162.497556056,6579305.28607494],
       resolution: 10,
       projection: myProjection,
-      resolutions: [10,5,4,3,2,1.5,1,0.5,0.25]
+      resolutions: [7.5,5,4,3,2,1.5,1,0.5,0.25]
 
     })
   });
@@ -547,7 +597,7 @@ function popupMaker(feature,popup){
       })))
     } else {
       title = pointTexts[key].title
-      content = 'Antal '+pointTexts[key].type+': '.concat(_.flatten(_.map(data, function(num, key){
+      content = 'Antal: '.concat(_.flatten(_.map(data, function(num, key){
         return num + "st"
       })))
 
@@ -566,7 +616,6 @@ function popupMaker(feature,popup){
       //Kund
       //if-clause broken
       if(key==='333333'){
-
         title = pointTexts[key].title
         content = 'ID: '+feature.get('gid')+ '\
         Namn: '+ feature.get('firstname')+' '+feature.get('lastname') + '\
@@ -766,7 +815,7 @@ function workStyler(feature) {
   style = new ol.style.Style({
    text: new ol.style.Text({
     text: pointColors[type].icon,
-    font: iconSizes[size%5],
+    font: iconSizes[size],
     rotation: pointColors[type].rotation,
     textBaseline: 'Bottom',
     fill: new ol.style.Fill({
@@ -836,7 +885,7 @@ function disableNode(feature, inLayers, map, layerGroups, customers) {
         return key.get("cust_id")
       })
       fillCustomer(conn_id_list, networkType, customers, map)
-      layerMaker(data[0],inLayers,connection[0], networkType, true, true, true, layerGroups, feature.get("gid"), true);
+      layerMaker(data[0],inLayers,connection[0], networkType, true, true, false, layerGroups, feature.get("gid"), true);
       brokenCluster(connection[0].connSource, true, layerGroups[layerGroups.length-1], polyMaker)      
       //Fixa stöd för grupper
       map.addLayer(layerGroups[layerGroups.length-1])
@@ -874,7 +923,10 @@ function heatmapMaker(responses){
     visible: false,
     title: 'Avbrottshistorik',
     type: 'cust',
-    radius: 5,
+    radius: 20,
+    blur: 10,
+    gradient: ['#FFEBEE','#E57373', '#EF5350','#F44336', '#E53935', '#C62828'],
+    //gradient: ['rgba(244, 67, 54, 0.2)','rgba(244, 67, 54, 0.3)','rgba(244, 67, 54, 0.4)','rgba(244, 67, 54, 0.6)','rgba(244, 67, 54, 0.75)','rgba(244, 67, 54, 0.9)','rgba(244, 67, 54, 1)'],
     opacity: 0.8
   })
   return heatLayer
