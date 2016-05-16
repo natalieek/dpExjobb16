@@ -42,9 +42,18 @@ def nodeGetter(filename):
 def menuCustomers(custList):
     with conn.cursor() as cursor:    
         #menuCurs = conn.cursor()
-        query = "SELECT row_to_json(fc) FROM (SELECT firstname, lastname, address, gid, gas_id, heating_id, water_id FROM customers) fc WHERE fc.gid IN {0};".format(str(custList))
+        query = "SELECT row_to_json(fc) FROM (SELECT * FROM customers) fc WHERE fc.gid IN {0};".format(str(custList))
         cursor.execute(query)
         inVar = [w[0] for w in cursor.fetchall()]
+    return json.dumps(inVar)
+
+@app.route('/customers')
+def allCustomers():
+    with conn.cursor() as cursor:    
+        #menuCurs = conn.cursor()
+        query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(ST_Centroid(lg.the_geom))::json As geometry, row_to_json((SELECT l FROM (SELECT gid, firstname, lastname, address, gas_id, water_id, heating_id, dp_otype) as l )) as properties FROM customers as lg) as f ) as fc"
+        cursor.execute(query)
+        inVar = [w[0] for w in cursor.fetchall()][0]
     return json.dumps(inVar)
 
 @app.route('/heatmap')

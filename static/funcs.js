@@ -108,6 +108,17 @@ var gas = {
       })
     })
 
+     var customerStyle = new ol.style.Style({
+       text: new ol.style.Text({
+        text: '\uf007',
+        font: 'normal 20px FontAwesome',
+        textBaseline: 'Bottom',
+        fill: new ol.style.Fill({
+          color: 'pink',
+        })
+      })   
+     })
+
      var styles = {'heating':heating, 'gas':gas, 'water':water}
 
    //Takes the type of network and the object to visualize as input.
@@ -153,7 +164,9 @@ var gas = {
     '933000':{'type':'gas','color':'#006f00'}, '606000':{'type':'heating','color':'#000000'}, 
     '890400':{'type':'water','color':'#0066ff'}, '614000':{'type':'heating','color':'#ff69b4'},
     '804000':{'type':'water','color':'#0066ff'}, '934000':{'type':'gas','color':'#00FF00'},
-    '112233':{'type':'installation','color':'#3F51B5', 'icon':'\uf1e6', 'rotation':0}, '123123':{'type':'reparation','color':'#EC407A', 'icon':'\uf0ad','rotation':3*Math.PI/2}
+    '112233':{'type':'installation','color':'#3F51B5', 'icon':'\uf1e6', 'rotation':0}, 
+    '123123':{'type':'reparation','color':'#EC407A', 'icon':'\uf0ad','rotation':3*Math.PI/2},
+    '333333':{'type':'customer','color':'pink', 'icon':'\uf007','rotation':3*Math.PI/2}
   }
 
   var lineColors = {
@@ -191,7 +204,9 @@ var gas = {
   'repairs': 
   makeRequest('GET', '/repairs'),
   'installations': 
-  makeRequest('GET', '/installations')
+  makeRequest('GET', '/installations'),
+  'customers': 
+  makeRequest('GET', '/customers')
 }
 Promise
 .props(requests)
@@ -220,10 +235,11 @@ Promise
       //Stores the raw data
     }
     heatmap = heatmapMaker(responses.heatmap)
+    customers = customerMaker(responses.customers)
     workLayers.push(workCluster(responses.repairs, 'Pågående Reparationer', true, workStyler))
     workLayers.push(workCluster(responses.installations, 'Pågående Installationer', true, workStyler))
     
-    map = mapMaker(layerGroups, layers, heatmap, workLayers);   
+    map = mapMaker(layerGroups, layers, heatmap, workLayers, customers);   
   })
 .catch(function (err) {
   console.error('Augh, there was an error!', err.statusText);
@@ -326,12 +342,9 @@ function workCluster(responses, title, visibility, styleF){
     visible: true,
     type: 'cluster'
   });
-  
   if(workSource.getFeatures()[0].get("dp_otype")===112233){
-  
     $('#numInstalls').text('Installationer: '+workSource.getFeatures().length);
   }else if(workSource.getFeatures()[0].get("dp_otype")===123123){
-  
     $('#numRepairs').text('Reparationer: '+workSource.getFeatures().length);
   }
   return clusterLayer
@@ -403,7 +416,7 @@ function hexToRgbA(hex){
 
 // Creates the final map, along with two mouse events.
 // To-do: Set correct data on load.
-function mapMaker(inGroups, inLayers, heatmap, workLayers){
+function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
   proj4.defs("EPSG:3006","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
   var myProjection = ol.proj.get('EPSG:3006');
   var raster = new ol.layer.Tile({  
@@ -418,9 +431,10 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers){
   var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster]})
   var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
   var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
+  var customerGroup = new ol.layer.Group({ 'title': 'Kunder', layers: [customers]})
   ol.proj.addProjection(myProjection);
   var map = new ol.Map({
-    layers: _.flatten([basemap, heatmapGroup, repairsGroup,inGroups]),
+    layers: _.flatten([basemap, heatmapGroup, repairsGroup,inGroups, customerGroup]),
     target: 'map',
     interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
     view: new ol.View({
@@ -457,7 +471,7 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers){
     if(layerGroup.getLayers().getArray()[0] instanceof ol.layer.Vector){      
       _.each(layerGroup.getLayers().getArray(), function(layer){
         if(layer.get("type")==='node'){
-          bindNodeInputs(layer, inLayers, map, inGroups);
+          bindNodeInputs(layer, inLayers, map, inGroups, customers);
         }
       })
     }
@@ -491,32 +505,71 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers){
   });
 
 }
+
+var pointTexts = {
+  '606000':{'type':'fjärrvärmenät','body':'Heatinganslutning', 'title':'Fjärrvärmenät'}, 
+  '890400':{'type':'vattennät','body':'Vattenanslutning', 'title':'Vattennät'},
+  '934000':{'type':'gasnät','body':'Gasanslutning', 'title':'Gasnät'},
+  '112233':{'type':'installation','body':'#3F51B5', 'title':'Installation'}, 
+  '123123':{'type':'reparation','body':'#EC407A', 'title':'Reparation'},
+  '333333':{'type':'kund','body':'pink', 'title':'Kund'}
+}
+
+
+
 //'703000':['el','#006f00'], '606000':['heating','#000000'], '890400':['water','#0066ff']
 function popupMaker(feature,popup){
+
   var coord
   var title = "2"
   var content = "1"
   //If polygon
+  console.log(feature.get('features'))
   if(typeof feature.get('features') != 'undefined'){
     data = _.countBy(_.map(feature.get('features'), function(num){
       return num.get('dp_otype')
     }), _.identity);
-    console.log(data)
-    title = 'I am a Cluster',
-    content = 'containing: '.concat(_.flatten(_.map(data, function(num, key){
-      return pointColors[key].type + ":" + num + "st"
-    })))
-    console.log(content)
+    key = _.keys(data)[0]
+    count = _.values(data)[0]
+    
+    if(key === '606000' || key === '890400' || key === '934000'){
+      title = 'Avbrott i '+pointTexts[key].type
+      content = 'Drabbade: '.concat(_.flatten(_.map(data, function(num, key){
+        return num + "st"
+      })))
+    } else {
+      title = pointTexts[key].title
+      content = 'Antal '+pointTexts[key].type+': '.concat(_.flatten(_.map(data, function(num, key){
+        return num + "st"
+      })))
+
+    }
+    
     coord = feature.getGeometry().getCoordinates()
   } else {
+
     if(feature.getGeometry().getType() == 'Point'){
-      title = 'I am a '.concat(feature.getGeometry().getType())
-      content = 'Of the type: '.concat(pointColors[feature.get("dp_otype")].type)
-      coord = feature.getGeometry().getCoordinates()
+      var key = feature.get("dp_otype").toString()
+      //Kund
+      //if-clause broken
+      if(key==='333333'){
+
+        title = pointTexts[key].title
+        content = 'ID: '+feature.get('gid')+ '\
+        Namn: '+ feature.get('firstname')+' '+feature.get('lastname') + '\
+        Adress: '+feature.get('address')+' \
+        Anslutningspunkter: '+ feature.get('gas_id') +' '+feature.get('water_id')+' '+feature.get('heating_id')
+        coord = feature.getGeometry().getCoordinates()
+
+      }else if(key === '606000' || key === '890400' || key === '934000'){
+        title = 'Anslutningspunkt i '+pointTexts[key].type
+        content = 'Tillhör kund med ID: '+feature.get('cust_id')
+        coord = feature.getGeometry().getCoordinates()
+      }
     } else {
       title = 'I am a '.concat(feature.getGeometry().getType())
       console.log(feature.get("dp_otype"), lineColors)
-      content = 'Of the type: '.concat(lineColors[feature.get("dp_otype")].type)
+      content = 'Of the type2: '.concat(lineColors[feature.get("dp_otype")].type)
       coord = feature.getGeometry().getCoordinateAt(0.5)      
     }
   }
@@ -707,11 +760,8 @@ function styleFunc(feature) {
     return ol.get('dp_otype');
   })
   var share_array = _.values(proportions(all_otypes));
-  
   var fixedColors = _.map(_.keys(proportions(all_otypes)), function(type) {return pointColors[type].color});
-  
   var expCanvas = canvasFunction(feature, share_array, fixedColors);    
-
   style =  new ol.style.Style({
     image: new ol.style.Icon(({
       img: expCanvas,
@@ -727,19 +777,19 @@ function styleFunc(feature) {
   return style;
 }
 
-function bindNodeInputs(layer, inLayers, inMap, layerGroups) {
+function bindNodeInputs(layer, inLayers, inMap, layerGroups, customers) {
   var textbox = $('input#usr');
   textbox.on('change', function() {
     console.log('CHANGE')
     var selectedText = $('#Networks').find("option:selected").text();
     if(layer.get("network") === selectedText.toLowerCase()){
       feature = _.find(layer.getSource().getFeatures(),function(feat){return feat.get("gid").toString()===textbox.val()})
-      disableNode(feature, inLayers, inMap, layerGroups)
+      disableNode(feature, inLayers, inMap, layerGroups, customers)
     }    
   })
 };
 
-function disableNode(feature, inLayers, map, layerGroups) {
+function disableNode(feature, inLayers, map, layerGroups, customers) {
   networkType = pointColors[feature.get("dp_otype")].type
   requests = {'broken': makeRequest('GET', '/broken/'+networkType+'/'+feature.get("gid"))}
   Promise.props(requests).then(function(responses) {
@@ -760,7 +810,7 @@ function disableNode(feature, inLayers, map, layerGroups) {
       conn_id_list = _.map(connection[0].connSource.getFeatures(), function(key, value){
         return key.get("cust_id")
       })
-      fillCustomer(conn_id_list, networkType)
+      fillCustomer(conn_id_list, networkType, customers, map)
       layerMaker(data[0],inLayers,connection[0], networkType, true, true, true, layerGroups, feature.get("gid"), true);
       brokenCluster(connection[0].connSource, true, layerGroups[layerGroups.length-1], polyMaker)      
       //Fixa stöd för grupper
@@ -773,11 +823,23 @@ function disableNode(feature, inLayers, map, layerGroups) {
         var extent = inLayers.Clusters[inLayers.Clusters.length-1].getSource().getExtent()
         map.getView().fit(extent,map.getSize());
       });
-      //zoomButton
-
     }
   })
 };
+
+function customerMaker(responses){
+  var custSource = new ol.source.Vector()
+  custSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
+  custLayer = new ol.layer.Vector({
+    source: custSource,
+    visible: false,
+    style: customerStyle,
+    title: 'Kunder',
+    type: 'Old',
+  })
+  return custLayer
+}
+
 
 function heatmapMaker(responses){
   var heatSource = new ol.source.Vector()
@@ -786,38 +848,46 @@ function heatmapMaker(responses){
     source: heatSource,
     visible: false,
     title: 'Avbrottshistorik',
-    type: 'Old',
+    type: 'cust',
     radius: 5,
     opacity: 0.8
   })
   return heatLayer
 }
 
-function fillCustomer(gidList, network_type){ 
+function fillCustomer(gidList, network_type, customers, map){ 
   requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
   Promise.props(requests).then(function(responses) {
-    customerArray = JSON.parse(responses.cust)
     var table = document.getElementById("custTable");
-    console.log(gidList, 'inList')
-    requests = {'cust': makeRequest('GET', '/menu/cust/('+gidList+')')}
-    Promise.props(requests).then(function(responses) {
-      customerArray = JSON.parse(responses.cust)
-      console.log(customerArray)
-      console.log(customerArray[0])
-      console.log(customerArray[0].address)
-      for(i=0; i<customerArray.length; i++) {
-        var row = custTable.insertRow(i+1);
-        row.insertCell(0).innerHTML="<p>"+customerArray[i].gid+"</p>";
-        row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
-        row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
-        row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
-        row.insertCell(4).innerHTML="<p>"+customerArray[i].gas_id+"</p>";
-        row.insertCell(5).innerHTML="<p>"+customerArray[i].water_id+"</p>";
-        row.insertCell(5).innerHTML="<p>"+customerArray[i].heating_id+"</p>";
+    customerArray = JSON.parse(responses.cust)
+    for(i=0; i<customerArray.length; i++) {
+      var row = custTable.insertRow(i+1);
+      var custID = customerArray[i].gid
+      row.insertCell(0).innerHTML="<p id='rowClick'>"+customerArray[i].gid+"</p>";
+      row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
+      row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
+      row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
+      row.insertCell(4).innerHTML="<p>"+customerArray[i].gas_id+"</p>";
+      row.insertCell(5).innerHTML="<p>"+customerArray[i].water_id+"</p>";
+      row.insertCell(5).innerHTML="<p>"+customerArray[i].heating_id+"</p>";
+      $("#rowClick").click(function(){
+        zoomToCust(map, custID, customers)})
+    }
 
-      }
-    //Returns nothing at the moment. Either fill table from here, or return and call secondary function that fills the table?
-  })})};
+  })};
+
+  function zoomToCust(map,custID, customers){
+    console.log(custID, 'id')
+    var foundCust = _.filter(customers.getSource().getFeatures(), function(feature){
+      return feature.get("gid") == custID
+    })
+    
+    extent = foundCust[0].getGeometry().getExtent()
+    map.getView().fit(extent,map.getSize());
+    popup = map.getOverlays().item(0)
+    console.log(popup, map.getOverlays())
+    popupMaker(foundCust[0],popup)
+  }
 
   function deleteLayers(inLayers, layer, map, layerGroups){
     layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'conn':inLayers.Connections}
