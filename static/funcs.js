@@ -73,7 +73,7 @@ var gas = {
         stroke: new ol.style.Stroke({
           color: 'black',
           lineDash: [5,1,5],
-          width: 6
+          width: 4
         })
       }),
        'node': new ol.style.Style({
@@ -135,8 +135,8 @@ var gas = {
        'arc': new ol.style.Style({
         stroke: new ol.style.Stroke({
           color: '#2196F3',
-          lineDash: [5,5],
-          width: 5
+          lineDash: [8,8],
+          width: 4
         })
       }),
        'node': new ol.style.Style({
@@ -478,7 +478,14 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
       crossOrigin: 'anonymous'
     })
   });
-  var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster]})
+  var osm_bg =  new ol.layer.Tile({
+      source: new ol.source.OSM(),
+      type:'base',
+      title:'Bakgrund OSM'
+    })
+  
+  var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster, osm_bg]})
+
   var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
   var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
   var customerGroup = new ol.layer.Group({ 'title': 'Kunder', layers: [customers]})
@@ -642,7 +649,7 @@ function popupMaker(feature,popup){
       }
     } else {
       key = feature.get("dp_otype").toString()
-      title = lineTexts[key].title
+      title = lineTexts[key].title+'nät'
       content = ''
       coord = feature.getGeometry().getCoordinateAt(0.5)      
     }
