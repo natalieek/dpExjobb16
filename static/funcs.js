@@ -158,8 +158,11 @@ var gas = {
           font: 'normal 20px FontAwesome',
           textBaseline: 'Bottom',
           fill: new ol.style.Fill({
-            color: 'pink',
-          })
+            color: '#FFFFFF',
+          }),
+           stroke: new ol.style.Stroke({
+            color: '#000000',
+            width: 2}),
         })   
        })
 
@@ -478,13 +481,24 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
       crossOrigin: 'anonymous'
     })
   });
+
+  var darkRaster = new ol.layer.Tile({  
+    type:'base',
+    title:'Bakgrund dark', 
+    source: new ol.source.XYZ({
+      tileSize: [512, 512],
+      url: 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
+      crossOrigin: 'anonymous'
+    })
+  });
+
   var osm_bg =  new ol.layer.Tile({
       source: new ol.source.OSM(),
       type:'base',
       title:'Bakgrund OSM'
     })
   
-  var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [raster, osm_bg]})
+  var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [osm_bg,raster, darkRaster]})
 
   var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
   var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
@@ -623,11 +637,11 @@ function popupMaker(feature,popup){
       //Kund
       //if-clause broken
       if(key==='333333'){
-        title = pointTexts[key].title
+        title = '<b>ID:</b>'+pointTexts[key].title
         content = 'ID: '+feature.get('gid')+ '\
-        Namn: '+ feature.get('firstname')+' '+feature.get('lastname') + '\
-        Adress: '+feature.get('address')+' \
-        Anslutningspunkter: '+ feature.get('gas_id') +' '+feature.get('water_id')+' '+feature.get('heating_id')
+        <br>Namn: '+ feature.get('firstname')+' '+feature.get('lastname') + '\
+        <br><b>Adress:</b> '+feature.get('address')+' \
+        <br><b>Anslutningspunkter:</b> '+ feature.get('gas_id') +' '+feature.get('water_id')+' '+feature.get('heating_id')
         coord = feature.getGeometry().getCoordinates()
       }else if(key === '606000' || key === '890400' || key === '934000'){
         title = 'Anslutningspunkt i '+pointTexts[key].type
@@ -654,7 +668,6 @@ function popupMaker(feature,popup){
       coord = feature.getGeometry().getCoordinateAt(0.5)      
     }
   }
-  console.log(title, content, coord)
   popup.setPosition(coord);
   $(popup.getElement()).attr( 'data-placement', 'top' );
   $(popup.getElement()).attr( 'data-original-title', title );
@@ -930,9 +943,9 @@ function heatmapMaker(responses){
     visible: false,
     title: 'Avbrottshistorik',
     type: 'cust',
-    radius: 20,
-    blur: 10,
-    gradient: ['#FFEBEE','#E57373', '#EF5350','#F44336', '#E53935', '#C62828'],
+    radius: 8,
+    blur: 15,
+    gradient: ['#FFF3E0','#FFCC80','#FF9800','#E65100'],
     //gradient: ['rgba(244, 67, 54, 0.2)','rgba(244, 67, 54, 0.3)','rgba(244, 67, 54, 0.4)','rgba(244, 67, 54, 0.6)','rgba(244, 67, 54, 0.75)','rgba(244, 67, 54, 0.9)','rgba(244, 67, 54, 1)'],
     opacity: 0.8
   })
