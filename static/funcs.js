@@ -160,7 +160,7 @@ var gas = {
           fill: new ol.style.Fill({
             color: '#FFFFFF',
           }),
-           stroke: new ol.style.Stroke({
+          stroke: new ol.style.Stroke({
             color: '#000000',
             width: 2}),
         })   
@@ -278,10 +278,10 @@ Promise
     //For each "network type"(nyttighet): creates the data, creates the network, creates connections and adds the layers.
     for (var i = 0; i < layers.Types.length; i++) {
       data.push(dataMaker(inLayers.Arcs[i], inLayers.Nodes[i]));
-      //console.log(data[i].arcSource.getFeatures(), 'data')
+      
       network.push(networkMaker(data[i].arcSource.getFeatures(), data[i].nodeSource.getFeatures()));
       layers.Data.push(data[i]);
-      //console.log(layers.Data[i].arcSource.getFeatures(), 'lagerdata')
+      
       layers.Networks.push(network[i]);
       connection.push(connectionMaker(inLayers.Connections[i]));
       layerMaker(data[i],layers,connection[i], layers.Types[i], false,false,false, layerGroups, layers.Types[i]+'_Full', false);
@@ -305,7 +305,7 @@ Promise
 function dataMaker(json_arc, json_node){
   var arcSource_in = new ol.source.Vector()
   var nodeSource_in = new ol.source.Vector()
-  //console.log(JSON.parse(json_arc), 'jsarc')
+  
   arcSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_arc)))
   nodeSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_node)))
   return {'arcSource': arcSource_in, 'nodeSource':nodeSource_in}
@@ -409,7 +409,7 @@ function brokenCluster(inConn, visibility, inGroup, styleF){
     source: inConn
   });
 
-  //console.log(clusterSource)
+  
   //If single cluster creation, keep this layer creation
   var clusterLayer = new ol.layer.Vector({
     source: clusterSource,
@@ -497,41 +497,40 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
       type:'base',
       title:'Bakgrund OSM'
     })*/
-  
-  var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
 
-  var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
-  var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
-  var customerGroup = new ol.layer.Group({ 'title': 'Kunder', layers: [customers]})
-  ol.proj.addProjection(myProjection);
-  var map = new ol.Map({
-    layers: _.flatten([basemap, heatmapGroup, inGroups, customerGroup, repairsGroup]),
-    target: 'map',
-    interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
-    view: new ol.View({
-      center: [670162.497556056,6579305.28607494],
-      resolution: 10,
-      projection: myProjection,
-      resolutions: [7.5,5,4,3,2,1.5,1,0.5,0.25]
+    var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
 
-    })
-  });
-  var element = document.getElementById('popup');
-  var popup = new ol.Overlay({
-    element: element,
-    positioning: 'bottom-center',
-    stopEvent: false
-  });
-  map.addOverlay(popup);
+    var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
+    var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
+    var customerGroup = new ol.layer.Group({ 'title': 'Kunder', layers: [customers]})
+    ol.proj.addProjection(myProjection);
+    var map = new ol.Map({
+      layers: _.flatten([basemap, heatmapGroup, inGroups, customerGroup, repairsGroup]),
+      target: 'map',
+      interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
+      view: new ol.View({
+        center: [670162.497556056,6579305.28607494],
+        resolution: 10,
+        projection: myProjection,
+        resolutions: [5,4,3,2,1.5,1,0.5,0.25]
 
-  var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
+      })
+    });
+    var element = document.getElementById('popup');
+    var popup = new ol.Overlay({
+      element: element,
+      positioning: 'bottom-center',
+      stopEvent: false
+    });
+    map.addOverlay(popup);
+
+    var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
         tipLabel: 'Legend' // Optional label for button
       });
-  map.addControl(layerSwitcher);
+    map.addControl(layerSwitcher);
 
   //To extract info about what you click on
   map.on('singleclick', function(evt) {                         
-    console.log(map.getView().getResolution());
     var feature = map.forEachFeatureAtPixel(evt.pixel,
      function(feature, layer) {
       popupMaker(feature,popup)
@@ -561,7 +560,6 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
   //UPDATE heat_nodes SET gid=post.id FROM heat_arcs_vertices_pgr post WHERE ST_intersects(heat_nodes.the_geom, ST_Buffer(post.the_geom,0.5))
   //When zooming, re-assesses what data to show, depending on the current resolution.
   map.getView().on('change:resolution', function(e) {
-    console.log(e.oldValue);
     var cur_res = e.target.get('resolution');
     var restraints = resolutionEvaluator(cur_res,inLayers);
     trimData(restraints, inLayers, inGroups);
@@ -652,7 +650,7 @@ function popupMaker(feature,popup){
         content = 'ID på trasig nod: '+feature.get('gid')
         coord = feature.getGeometry().getCoordinates()
       } else{
-        console.log(feature, 'debug')
+        
         title = pointTexts[key].title
         if(key==='112233'){
           content = 'Startdatum: 2016-05-18 \ Beräknat slutdatum: 2016-05-25 \ Typ: Nyanslutning'  
@@ -704,41 +702,30 @@ function trimData(restraints, layers, inGroups){
     })
     pointsOnLinesource.sort();
   }
-  _.each(inGroups, function(layerGroup){
-    if(layerGroup.getLayers().getArray()[0] instanceof ol.layer.Vector){      
-      _.each(layerGroup.getLayers().getArray(), function(layer){
-        if(layer.get("type")==='conn'){
-          if(restraints[0]['connection']==true){
-            layer.setVisible(false);
-          } else {
-            layer.setVisible(false);
-          }
+  //_.each(inGroups, function(layerGroup){
+    if(inGroups.length>3){
+      for(var i=3;i<inGroups.length;i++){
+        group = inGroups[i]
+        for(var j=0;j<group.getLayers().getLength();j++){
+          layer = group.getLayers().item(j)
+          if(layer.get("type")==='conn'){
+            if(restraints[0]['connection']==true){
+              layer.setVisible(true);
+            } else {
+              layer.setVisible(false);
+            }
 
-        } else if (layer.get("type")==='cluster'){
-          if(restraints[0]['connection']==true){
-            layer.setVisible(false);
-          } else {
-            layer.setVisible(true);
+          } else if (layer.get("type")==='cluster'){
+            if(restraints[0]['connection']==true){
+              layer.setVisible(false);
+            } else {
+              layer.setVisible(true);
+            }
           }
         }
-      })
+      }
     }
-  })
     //Shows connections for the correct zoom-levels.
-
-
-    // Om vi skall visa upp noder, slutför förändringen här
-    // Restraints innehåller inget om connectivity nu - är det verkligen relevant? Blev inga bra visualiseringar.
-    /*
-    _.each(restraints, function(rest){
-      nodes.getSource().addFeatures(_.filter(networks.nodeArray, function(point){ 
-        if(point.get('connectivity')>restraints.Connect && _.some(point.get('lineArray'), function(x) { return (_.indexOf(pointsOnLinesource, x, true) >= 0) })
-        ) {
-        return point
-        }
-      }))
-    })*/
-
   }
 
 
@@ -960,29 +947,26 @@ function fillCustomer(gidList, network_type, customers, map){
     for(i=0; i<customerArray.length; i++) {
       var row = custTable.insertRow(i+1);
       var custID = customerArray[i].gid
-      row.insertCell(0).innerHTML="<p id='rowClick'>"+customerArray[i].gid+"</p>";
+      row.insertCell(0).innerHTML="<p id="+customerArray[i].gid+">"+customerArray[i].gid+"</p>";
       row.insertCell(1).innerHTML="<p>"+customerArray[i].firstname+"</p>";
       row.insertCell(2).innerHTML="<p>"+customerArray[i].lastname+"</p>";
       row.insertCell(3).innerHTML="<p>"+customerArray[i].address+"</p>";
       row.insertCell(4).innerHTML="<p>"+customerArray[i].gas_id+"</p>";
       row.insertCell(5).innerHTML="<p>"+customerArray[i].water_id+"</p>";
       row.insertCell(5).innerHTML="<p>"+customerArray[i].heating_id+"</p>";
-      $("#rowClick").click(function(){
-        zoomToCust(map, custID, customers)})
+      $("#"+customerArray[i].gid+"").click(function(test){
+        console.log('abc', test.target.outerText)
+        zoomToCust(map, test.target.outerText, customers)})
     }
-
   })};
 
   function zoomToCust(map,custID, customers){
-    console.log(custID, 'id')
     var foundCust = _.filter(customers.getSource().getFeatures(), function(feature){
       return feature.get("gid") == custID
     })
-    
     extent = foundCust[0].getGeometry().getExtent()
     map.getView().fit(extent,map.getSize());
     popup = map.getOverlays().item(0)
-    console.log(popup, map.getOverlays())
     popupMaker(foundCust[0],popup)
   }
 

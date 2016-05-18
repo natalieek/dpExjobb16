@@ -77,7 +77,6 @@ function hidestatus(id) {
 
 
 function showkill() {
-	console.log("hej");
 	$("#bg4").click(function(){
 		$("#kill").toggle();
 	});
