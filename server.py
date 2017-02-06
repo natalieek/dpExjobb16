@@ -14,6 +14,7 @@ def custGetter(filename):
     
     with conn.cursor() as cursor:
         #custCurs = conn.cursor()
+	#TEST!"#
         query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid, cust_id) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
         cursor.execute(query)
         inVar = (cursor.fetchone()[0])
