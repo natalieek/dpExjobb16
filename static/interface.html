@@ -6,9 +6,11 @@
   <link rel="stylesheet" href="ol3-layerswitcher.css" type="text/css">
   <link rel="stylesheet" href="http://openlayers.org/en/v3.14.2/css/ol.css" type="text/css">
   <link rel="stylesheet" href="interface.css" type="text/css">
-    
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!--   <link rel="stylesheet" href="/resources/demos/style.css" > -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-2.2.3.js" integrity="sha256-laXWtGydpwqJ8JA+X9x2miwmaiKhn8tVmOVEigRNtP4=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
   <script src="https://cdn.rawgit.com/bjornharrtell/jsts/gh-pages/1.1.0/jsts.min.js"></script>
@@ -20,7 +22,7 @@
   <script src="ol3-layerswitcher.js"></script>
   <script src="http://underscorejs.org/underscore-min.js"></script>
   <script src="interface.js"></script>
-    
+  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/ui-lightness/jquery-ui.css">
 </head>
 <body>
 
@@ -219,8 +221,66 @@
       </ul>
       <button class="btn-xs btn-default btn-stat" id="infcust" onclick="showmsg('bg3')">Informera kunder</button>
     </div>
-
   </div>
+  
+<button class="testKnapp" onClick="showForm('paramForm')"> Klicka</button>
+
+<div class="testForm" id="paramForm">
+<h1>Välj parametrar</h1>
+<form>
+    <div class="section"><span>1</span>Parameter</div>
+    <div class="inner-wrap">
+        <select name="para1">
+            <option value="alder">Ålder</option>
+            <option value="anm">Anmärkning</option>
+            <option value="kmiskog">Km i skog</option>
+        </select>
+    </div>
+
+    <div class="section"><span>2</span>Parameter</div>
+    <div class="inner-wrap">
+        <select name="para1">
+            <option value="alder">Ålder</option>
+            <option value="anm">Anmärkning</option>
+            <option value="kmiskog">Km i skog</option>
+        </select>
+    </div>
+
+    <div class="section"><span>3</span>Parameter</div>
+        <div class="inner-wrap">
+            <select name="para1">
+                <option value="alder">Ålder</option>
+                <option value="anm">Anmärkning</option>
+                <option value="kmiskog">Km i skog</option>
+            </select>
+    </div>
+    <button class="nextBtn" type="button" onClick="showForm('weightForm'); hideForm('paramForm')"> Nästa</button>
+</form>
+</div>
+
+<div class="testForm" id="weightForm">
+<h1>Välj vikter</h1>
+<form>
+    <div id="sliders">
+            <div class="section"><span>1</span>Parameter</div>
+                <div class="inner-wrap">
+                    <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                    <span class="value">0</span>
+            </div>
+            <div class="section"><span>2</span>Parameter</div>
+            <div class="inner-wrap">
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="value">0</span>
+            </div>
+            <div class="section"><span>3</span>Parameter</div>
+            <div class="inner-wrap">
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="value">0</span>
+            </div>
+    </div>
+    <button class="nextBtn" type="submit"> OK</button>
+</form>
+</div>
 
 </div>
 

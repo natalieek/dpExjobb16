@@ -1,13 +1,20 @@
 
 
 function hide(id) {
-
 	document.getElementById(id).style.visibility='hidden';
 }
 
 
 function show(id) {
 	document.getElementById(id).style.visibility='visible';
+}
+
+function showForm(id){
+	document.getElementById(id).style.display='block';
+}
+
+function hideForm(id){
+	document.getElementById(id).style.display='none';
 }
 
 function indicateChoice(id) {
@@ -19,6 +26,47 @@ function hideChoice(id) {
 	document.getElementById(id).style.background = 'transparent';
 	document.getElementById(id).style.border = 'none';
 }
+
+//Copied from http://jsfiddle.net/XFeQb/
+$(window).load(function(){
+var sliders = $("#sliders .slider");
+
+sliders.each(function() {
+    var value = parseInt($(this).text(), 1),
+        availableTotal = 100;
+
+    $(this).empty().slider({
+        value: 0,
+        min: 0,
+        max: 100,
+        range: "max",
+        step: 1,
+        animate: 100,
+        slide: function(event, ui) {
+
+            // Get current total
+            var total = 0;    
+            
+            sliders.not(this).each(function() {
+                total += $(this).slider("option", "value");
+            });    
+            
+
+            var max = availableTotal - total;            
+                
+            if (max - ui.value >= 0) {
+                // Need to do this because apparently jQ UI
+                // does not update value until this event completes
+                total += ui.value;
+                console.log(max-ui.value);
+                $(this).siblings().text(ui.value);
+            } else {
+                return false;
+            }
+        }
+    });
+});
+});
 
 function showpanel(id) {
 	hidemsg('bg3');
