@@ -13,11 +13,11 @@ html, body, .map {
 
 .ol-attribution {
 	width:0;
-}
-
+} 
+        
 .ol-zoom-in, .ol-zoom-out {
-	display: none !important;
-}
+	display: none !important; 
+} 
 
 .search {
 	position: fixed;
@@ -487,7 +487,12 @@ th {
     top:2.5%;
     right:1.5%;
 }
-
+.testKnapp:hover{
+    background: #2A6881;
+    -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+    -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+}
 .testForm {
 	    display:none;
     width:450px;
@@ -507,6 +512,7 @@ th {
     background: #F8F8F8;
     border-radius: 6px;
     margin-bottom: 15px;
+    
 }
 .testForm h1{
     background: #2A88AD;
@@ -588,13 +594,6 @@ th {
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
 }
 
-  
-#sliders {
-    width: 100%;
-}
-
-#sliders div {
-    margin-bottom: 5px;
-}
+ 
 
 
