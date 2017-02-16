@@ -491,7 +491,7 @@ th {
 .testForm {
 	    display:none;
     width:450px;
-    padding:30px;
+    padding:10px 30px;
     margin:40px auto;
     background: #FFF;
     border-radius: 10px;
@@ -500,6 +500,7 @@ th {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
+    overflow:hidden;
 }
 .testForm .inner-wrap{
     padding: 30px;
@@ -547,6 +548,7 @@ th {
     font: normal 20px 'Bitter', serif;
     color: #2A88AD;
     margin-bottom: 5px;
+
 }
 .testForm .section span {
     background: #2A88AD;
@@ -575,6 +577,9 @@ th {
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
     border: 1px solid #257C9E;
     font-size: 15px;
+    float: right;
+    margin: 0px 2px;
+    
 }
 .testForm .nextBtn:hover{
     background: #2A6881;
@@ -582,43 +587,14 @@ th {
     -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
 }
-.testForm .submitBtn{
-	    background: #2A88AD;
-    padding: 8px 20px 8px 20px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
-    font: normal 30px 'Bitter', serif;
-    -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
-    -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
-    box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
-    border: 1px solid #257C9E;
-    font-size: 15px;
-}
 
-#custom-handle {
-    width: 3em;
-    height: 1.6em;
-    top: 50%;
-    margin-top: -.8em;
-    text-align: center;
-    line-height: 1.6em;
-  }
   
 #sliders {
-    width: 200px;
-}
-
-#sliders li {
-    margin-bottom: 10px;
+    width: 100%;
 }
 
 #sliders div {
     margin-bottom: 5px;
 }
 
-ol,ul {
-  list-style:none;
-}
+
