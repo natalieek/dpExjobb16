@@ -68,7 +68,7 @@ sliders.each(function() {
 });
 });
 
-function checkWeights(){
+function checkWeights(id){
 	var sum = 0
 	var sliders = $("#sliders .slider");
 	sliders.each(function(){
@@ -77,6 +77,9 @@ function checkWeights(){
 	
 	if (sum < 100) {
 		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
+	}
+	else {
+		hideForm(id);
 	}
 }
 
