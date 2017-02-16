@@ -58,7 +58,7 @@ sliders.each(function() {
                 // Need to do this because apparently jQ UI
                 // does not update value until this event completes
                 total += ui.value;
-                console.log(max-ui.value);
+                //console.log(max-ui.value);
                 $(this).siblings().text(ui.value);
             } else {
                 return false;
@@ -67,6 +67,18 @@ sliders.each(function() {
     });
 });
 });
+
+function checkWeights(){
+	var sum = 0
+	var sliders = $("#sliders .slider");
+	sliders.each(function(){
+		 sum += $(this).slider("option","value");
+	});
+	
+	if (sum < 100) {
+		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
+	}
+}
 
 function showpanel(id) {
 	hidemsg('bg3');
