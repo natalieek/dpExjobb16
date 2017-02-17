@@ -446,6 +446,10 @@ img {
 	background-color: rgb(210,210,210);
 	border: 0.3px solid rgba(160,160,160, 0.3)
 }
+.bg:hover {
+	background-color: rgb(210,210,210);
+	border: 0.3px solid rgba(160,160,160, 0.3)
+}
 
 #custTable {
 	font-size: 12px;
@@ -594,11 +598,27 @@ th {
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
 }
 
+<<<<<<< HEAD
 p {
     color: blue;
     margin: 8px;
   }
 
  
+=======
+.testForm .backBtn{
+	background: transparent;
+    border: none !important;
+    font-size:0;
+	
+}
+.fa-chevron-left{
+	color:#2A88AD
+ }
+
+.fa-chevron-left:hover{
+	color:#2A6881;
+} 
+>>>>>>> Added back button
 
 
