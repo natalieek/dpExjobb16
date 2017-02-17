@@ -13,6 +13,19 @@ function showForm(id){
 	document.getElementById(id).style.display='block';
 }
 
+function resetForm(form) {
+	document.getElementById(form).reset();
+};
+
+function getSelectedPara(){
+	var selectedPara1 = $('#para1 option:selected').text();
+	$('#w1').html('<span>1</span>'+ selectedPara1);
+	var selectedPara2 = $('#para2 option:selected').text();
+	$('#w2').html('<span>2</span>'+ selectedPara2);
+	var selectedPara3 = $('#para3 option:selected').text();
+	$('#w3').html('<span>3</span>'+ selectedPara3);
+}
+
 function hideForm(id){
 	document.getElementById(id).style.display='none';
 }
@@ -25,6 +38,14 @@ function indicateChoice(id) {
 function hideChoice(id) {
 	document.getElementById(id).style.background = 'transparent';
 	document.getElementById(id).style.border = 'none';
+}
+
+function resetSliders(){
+	var sliders = $("#sliders .slider");
+	sliders.each(function() {
+		$(this).slider( 'value', 0 );
+	});
+	$('.sliderValue').html('0');
 }
 
 //Copied from http://jsfiddle.net/XFeQb/
@@ -79,7 +100,11 @@ function checkWeights(id){
 		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
 	}
 	else {
+		//Kör analysen när den funktionen finns
 		hideForm(id);
+		resetForm('paraForm')
+		resetForm('weightForm1')
+		resetSliders()
 	}
 }
 

@@ -38,7 +38,6 @@
           <input type="text" class="searchtext" value="Sök">
         </div>
 
-
         <div class="dropdown">
           <div id="exp" class="searchexpand">
             <i id="downarrow" class="fa fa-angle-double-down" aria-hidden="true">
@@ -227,62 +226,62 @@
 
 <div class="testForm" id="paramForm">
 <h1>Välj parametrar</h1>
-<form>
-    <div class="section"><span>1</span>Parameter</div>
+<form id="paraForm">
+    <div class="section"><span>1</span></div>
     <div class="inner-wrap">
-        <select name="para1">
+        <select id="para1" name="para1">
             <option value="alder">Ålder</option>
             <option value="anm">Anmärkning</option>
             <option value="kmiskog">Km i skog</option>
         </select>
     </div>
 
-    <div class="section"><span>2</span>Parameter</div>
+    <div class="section"><span>2</span></div>
     <div class="inner-wrap">
-        <select name="para1">
+        <select id="para2" name="para2">
             <option value="alder">Ålder</option>
             <option value="anm">Anmärkning</option>
             <option value="kmiskog">Km i skog</option>
         </select>
     </div>
 
-    <div class="section"><span>3</span>Parameter</div>
+    <div class="section"><span>3</span></div>
         <div class="inner-wrap">
-            <select name="para1">
+            <select id="para3" name="para3">
                 <option value="alder">Ålder</option>
                 <option value="anm">Anmärkning</option>
                 <option value="kmiskog">Km i skog</option>
             </select>
     </div>
     
-    <button class="nextBtn" type="button" onClick="showForm('weightForm'); hideForm('paramForm')"> Nästa</button>
-    <button class="nextBtn" type="button" onClick="hideForm('paramForm')"> Avbryt</button>
+    <button class="nextBtn" type="button" onClick="showForm('weightForm'); hideForm('paramForm'); getSelectedPara()"> Nästa</button>
+    <button class="nextBtn" type="button" onClick="hideForm('paramForm'); resetForm('paraForm')"> Avbryt</button>
     
 </form>
 </div>
 
 <div class="testForm" id="weightForm">
 <h1>Välj vikter</h1>
-<form>
+<form id="weightForm1">
     <div id="sliders">
-            <div class="section"><span>1</span>Parameter</div>
+            <div class="section" id=w1><span>1</span>Parameter</div>
                 <div class="inner-wrap">
                     <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
-                    <span class="value">0</span>
+                    <span class="sliderValue" >0</span>
             </div>
-            <div class="section"><span>2</span>Parameter</div>
+            <div class="section" id=w2><span>2</span>Parameter</div>
             <div class="inner-wrap">
                 <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
-                <span class="value">0</span>
+                <span class="sliderValue" >0</span>
             </div>
-            <div class="section"><span>3</span>Parameter</div>
+            <div class="section" id=w3><span>3</span>Parameter</div>
             <div class="inner-wrap">
                 <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
-                <span class="value">0</span>
+                <span class="sliderValue" >0</span>
             </div>
     </div>
     <button class="nextBtn" type="button" onClick="checkWeights('weightForm')"> OK</button>
-    <button class="nextBtn" type="button" onClick="hideForm('weightForm')"> Avbryt</button>
+    <button class="nextBtn" type="button" onClick="hideForm('weightForm'); resetSliders(); resetForm('paraForm'); resetForm('weightForm1')"> Avbryt</button>
 </form>
 </div>
 
