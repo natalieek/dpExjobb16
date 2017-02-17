@@ -598,14 +598,6 @@ th {
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
 }
 
-<<<<<<< HEAD
-p {
-    color: blue;
-    margin: 8px;
-  }
-
- 
-=======
 .testForm .backBtn{
 	background: transparent;
     border: none !important;
@@ -619,6 +611,6 @@ p {
 .fa-chevron-left:hover{
 	color:#2A6881;
 } 
->>>>>>> Added back button
+
 
 
