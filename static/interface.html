@@ -292,17 +292,19 @@
 <div class="testForm" id="checkDiv">
 <h1>Välj parametrar</h1>
 <form id="checkParamForm">
-    <div class="section"><span>1</span></div>
+    <!-- <div class="section"><span>1</span></div> -->
     <div class="inner-wrap">
-        <input type="checkbox" name="chk_group" value="value1" />Value 1<br />
-        <input type="checkbox" name="chk_group" value="value2" />Value 2<br />
-        <input type="checkbox" name="chk_group" value="value3" />Value 3<br />
-        <input type="checkbox" name="chk_group" value="value4" />Value 4<br />
-        <input type="checkbox" name="chk_group" value="value5" />Value 5<br />
-        <input type="checkbox" name="chk_group" value="value6" />Value 6<br />
-        <input type="checkbox" name="chk_group" value="value7" />Value 7<br />
-        <input type="checkbox" name="chk_group" value="value8" />Value 8<br />
-        <input type="checkbox" name="chk_group" value="value9" />Value 9<br />
+  		<ul class="checkbox" > 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value1" />value1</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value2" />value2</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value3" />value3</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value4" />value4</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value5" />value5</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value6" />value6</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value7" />value7</label></li> 
+	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value8" />value8</label></li> 
+       		<li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value9" />value9</label></li> 
+    	</ul> 
     </div>
     <button class="nextBtn" type="button" onClick="showForm('weightForm'); hideForm('checkDiv'); getSelectedParams()"> Nästa</button>
     <button class="nextBtn" type="button" onClick="hideForm('checkDiv'); resetForm('checkDiv')"> Avbryt</button>

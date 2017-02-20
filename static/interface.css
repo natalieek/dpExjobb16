@@ -569,6 +569,20 @@ th {
     color: #fff;
     margin-top: -3px;
 }
+
+ul.checkbox {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: none;
+}
+
+ul.checkbox li {
+    float: left;
+    width: 33%;
+} 
+
 .testForm .nextBtn{
     background: #2A88AD;
     padding: 8px 20px 8px 20px;
