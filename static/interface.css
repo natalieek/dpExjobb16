@@ -570,7 +570,7 @@ th {
     margin-top: -3px;
 }
 
-ul.checkbox {
+ul.control {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -578,10 +578,60 @@ ul.checkbox {
     background-color: none;
 }
 
-ul.checkbox li {
+ul.control li {
     float: left;
     width: 33%;
 } 
+.control label { 
+  font: 16px Arial, Helvetica, sans-serif; 
+}
+.control {
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.control input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+.control__indicator {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background: #e6e6e6;
+}
+
+ul.control li:hover input ~ .control__indicator {
+  background: #ccc;
+}
+
+.control input:not([disabled]):checked ~ .control__indicator {
+  background: #0e647d;
+} 
+
+.control__indicator:after {
+  content: '';
+  position: absolute;
+  display: none;
+} 
+.control input:checked ~ .control__indicator:after {
+  display: block;
+} 
+.control--checkbox .control__indicator:after {
+  left: 8px;
+  top: 0px;
+  width: 6px;
+  height: 16px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
 
 .testForm .nextBtn{
     background: #2A88AD;
