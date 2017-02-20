@@ -17,13 +17,13 @@ function resetForm(form) {
 	document.getElementById(form).reset();
 };
 
-function getSelectedPara(){
-	var selectedPara1 = $('#para1 option:selected').text();
-	$('#w1').html('<span>1</span>'+ selectedPara1);
-	var selectedPara2 = $('#para2 option:selected').text();
-	$('#w2').html('<span>2</span>'+ selectedPara2);
-	var selectedPara3 = $('#para3 option:selected').text();
-	$('#w3').html('<span>3</span>'+ selectedPara3);
+function getSelectedParams(){
+	var selectedParam1 = $('#param1 option:selected').text();
+	$('#w1').html('<span>1</span>'+ selectedParam1);
+	var selectedParam2 = $('#param2 option:selected').text();
+	$('#w2').html('<span>2</span>'+ selectedParam2);
+	var selectedParam3 = $('#param3 option:selected').text();
+	$('#w3').html('<span>3</span>'+ selectedParam3);
 }
 
 function hideForm(id){
@@ -45,7 +45,7 @@ function resetSliders(){
 	sliders.each(function() {
 		$(this).slider( 'value', 0 );
 	});
-	$('.sliderValue').html('0');
+	$('.sliderValue').html('0%');
 }
 
 //Copied from http://jsfiddle.net/XFeQb/
@@ -80,7 +80,7 @@ sliders.each(function() {
                 // does not update value until this event completes
                 total += ui.value;
                 //console.log(max-ui.value);
-                $(this).siblings().text(ui.value);
+                $(this).siblings().text(ui.value + "%");
             } else {
                 return false;
             }
