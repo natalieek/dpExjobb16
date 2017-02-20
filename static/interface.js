@@ -46,6 +46,15 @@ function resetSliders(){
 		$(this).slider( 'value', 0 );
 	});
 	$('.sliderValue').html('0%');
+	$('#s1').hide();
+	$('#s2').hide();
+	$('#s3').hide();
+	$('#s4').hide();
+	$('#s5').hide();
+	$('#s6').hide();
+	$('#s7').hide();
+	$('#s8').hide();
+	$('#s9').hide();
 }
 
 //Copied from http://jsfiddle.net/XFeQb/
@@ -87,6 +96,38 @@ sliders.each(function() {
         }
     });
 });
+});
+
+$(document).ready(function(){
+	$("#nextButton").on("click", function(){
+		if(value1.checked){
+			$("#s1").show();
+		}
+		if (value2.checked){
+			$("#s2").show();
+		}
+		if (value3.checked){
+			$("#s3").show();
+		}
+		if (value4.checked){
+			$("#s4").show();
+		}
+		if (value5.checked){
+			$("#s5").show();
+		}
+		if (value6.checked){
+			$("#s6").show();
+		}
+		if (value7.checked){
+			$("#s7").show();
+		}
+		if (value8.checked){
+			$("#s8").show();
+		}
+		if (value9.checked){
+			$("#s9").show();
+		}
+	});
 });
 
 function checkWeights(id){

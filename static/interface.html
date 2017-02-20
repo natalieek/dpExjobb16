@@ -267,18 +267,39 @@
 <h1>Välj vikter</h1>
 <form id="weightForm1">
     <div id="sliders">
-            <div class="section" id=w1><span>1</span>Parameter</div>
-                <div class="inner-wrap">
-                    <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
-                    <span class="sliderValue" >0%</span>
-            </div>
-            <div class="section" id=w2><span>2</span>Parameter</div>
-            <div class="inner-wrap">
+            <div class="inner-wrap" id="s1"> Value1
                 <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
                 <span class="sliderValue" >0%</span>
             </div>
-            <div class="section" id=w3><span>3</span>Parameter</div>
-            <div class="inner-wrap">
+            <div class="inner-wrap" id="s2"> Value2
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s3"> Value3
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s4"> Value4
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s5"> Value5
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s6"> Value6
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s7"> Value7
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s8"> Value8
+                <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
+                <span class="sliderValue" >0%</span>
+            </div>
+            <div class="inner-wrap" id="s9"> Value9
                 <div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-slider-range-max ui-widget-header" style="width: 100%;"></div><a href="#" class="ui-slider-handle ui-state-default ui-corner-all" style="left: 0%;"></a></div>
                 <span class="sliderValue" >0%</span>
             </div>
@@ -295,19 +316,19 @@
     <!-- <div class="section"><span>1</span></div> -->
     <div class="inner-wrap">
   		<ul class="checkbox" > 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value1" />value1</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value2" />value2</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value3" />value3</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value4" />value4</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value5" />value5</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value6" />value6</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value7" />value7</label></li> 
-	        <li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value8" />value8</label></li> 
-       		<li><label><input class="checkBoxes" type="checkbox" name="chk_group" value="value9" />value9</label></li> 
+	        <li><label><input class="checkBoxes" id="value1" type="checkbox" name="chk_group" value="value1" />value1</label></li> 
+	        <li><label><input class="checkBoxes" id="value2" type="checkbox" name="chk_group" value="value2" />value2</label></li> 
+	        <li><label><input class="checkBoxes" id="value3" type="checkbox" name="chk_group" value="value3" />value3</label></li> 
+	        <li><label><input class="checkBoxes" id="value4" type="checkbox" name="chk_group" value="value4" />value4</label></li> 
+	        <li><label><input class="checkBoxes" id="value5" type="checkbox" name="chk_group" value="value5" />value5</label></li> 
+	        <li><label><input class="checkBoxes" id="value6" type="checkbox" name="chk_group" value="value6" />value6</label></li> 
+	        <li><label><input class="checkBoxes" id="value7" type="checkbox" name="chk_group" value="value7" />value7</label></li> 
+	        <li><label><input class="checkBoxes" id="value8" type="checkbox" name="chk_group" value="value8" />value8</label></li> 
+       		<li><label><input class="checkBoxes" id="value9" type="checkbox" name="chk_group" value="value9" />value9</label></li> 
     	</ul> 
     </div>
-    <button class="nextBtn" type="button" onClick="showForm('weightForm'); hideForm('checkDiv'); getSelectedParams()"> Nästa</button>
-    <button class="nextBtn" type="button" onClick="hideForm('checkDiv'); resetForm('checkDiv')"> Avbryt</button>
+    <button class="nextBtn" id=nextButton type="button" onClick="showForm('weightForm'); hideForm('checkDiv'); getSelectedParams()"> Nästa</button>
+    <button class="nextBtn" type="button" onClick="hideForm('checkDiv'); resetForm('checkParamForm')"> Avbryt</button>
 </form>
 </div>
 

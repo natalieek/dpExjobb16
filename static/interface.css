@@ -512,8 +512,8 @@ th {
     background: #F8F8F8;
     border-radius: 6px;
     margin-bottom: 15px;
-    
 }
+
 .testForm h1{
     background: #2A88AD;
     padding: 20px 30px 15px 30px;
@@ -621,6 +621,32 @@ ul.checkbox li {
 .fa-chevron-left:hover{
 	color:#2A6881;
 } 
-
+#s1{
+    display: none;
+}
+#s2{
+    display: none;
+}
+#s3{
+    display: none;
+}
+#s4{
+    display: none;
+}
+#s5{
+    display: none;
+}
+#s6{
+    display: none;
+}
+#s7{
+    display: none;
+}
+#s8{
+    display: none;
+}
+#s9{
+    display: none;
+}
 
 
