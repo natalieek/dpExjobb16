@@ -494,7 +494,7 @@ th {
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
 }
 .testForm {
-	  display:none;
+	display:none;
     width:450px;
     padding:10px 30px;
     margin:40px auto;
@@ -570,6 +570,15 @@ th {
     margin-top: -3px;
 }
 
+.control {
+  	display: block;
+  	position: relative;
+  	padding-left: 30px;
+ 	margin-bottom: 15px;
+  	cursor: pointer;
+  	font-size: 18px;
+  
+}
 ul.control {
     list-style-type: none;
     margin: 0;
@@ -581,26 +590,21 @@ ul.control {
 ul.control li {
     float: left;
     width: 33%;
-} 
-.control label { 
-  font: 16px Arial, Helvetica, sans-serif; 
-}
-.control {
-  display: block;
-  position: relative;
-  padding-left: 30px;
-  margin-bottom: 15px;
-  cursor: pointer;
-  font-size: 18px;
-}
+}  
+
+ul.control label {
+    font: 18px Arial, Helvetica, sans-serif;
+}  
+
 .control input {
   position: absolute;
   z-index: -1;
   opacity: 0;
 }
+
 .control__indicator {
   position: absolute;
-  top: 2px;
+  top: 0;
   left: 0;
   height: 20px;
   width: 20px;
