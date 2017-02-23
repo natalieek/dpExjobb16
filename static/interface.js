@@ -17,15 +17,6 @@ function resetForm(form) {
 	document.getElementById(form).reset();
 };
 
-function getSelectedParams(){
-	var selectedParam1 = $('#param1 option:selected').text();
-	$('#w1').html('<span>1</span>'+ selectedParam1);
-	var selectedParam2 = $('#param2 option:selected').text();
-	$('#w2').html('<span>2</span>'+ selectedParam2);
-	var selectedParam3 = $('#param3 option:selected').text();
-	$('#w3').html('<span>3</span>'+ selectedParam3);
-}
-
 function hideForm(id){
 	document.getElementById(id).style.display='none';
 }
@@ -102,30 +93,48 @@ $(document).ready(function(){
 	$("#nextButton").on("click", function(){
 		if(value1.checked){
 			$("#s1").show();
+			var text = $("#v1").text();
+			$("#sect1").html(text);
 		}
 		if (value2.checked){
 			$("#s2").show();
+			var text = $("#v2").text();
+			$("#sect2").html(text);
 		}
 		if (value3.checked){
 			$("#s3").show();
+			var text = $("#v3").text();
+			$("#sect3").html(text);
 		}
 		if (value4.checked){
 			$("#s4").show();
+			var text = $("#v4").text();
+			$("#sect4").html(text);
 		}
 		if (value5.checked){
 			$("#s5").show();
+			var text = $("#v5").text();
+			$("#sect5").html(text);
 		}
 		if (value6.checked){
 			$("#s6").show();
+			var text = $("#v6").text();
+			$("#sect6").html(text);
 		}
 		if (value7.checked){
 			$("#s7").show();
+			var text = $("#v7").text();
+			$("#sect7").html(text);
 		}
 		if (value8.checked){
 			$("#s8").show();
+			var text = $("#v8").text();
+			$("#sect8").html(text);
 		}
 		if (value9.checked){
 			$("#s9").show();
+			var text = $("#v9").text();
+			$("#sect9").html(text);
 		}
 	});
 });
