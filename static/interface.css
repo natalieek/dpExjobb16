@@ -513,6 +513,9 @@ th {
     border-radius: 6px;
     margin-bottom: 15px;
 }
+#sliderValue{
+
+}
 
 .testForm h1{
     background: #2A88AD;
@@ -554,7 +557,6 @@ th {
     font: normal 20px 'Bitter', serif;
     color: #2A88AD;
     margin-bottom: 5px;
-
 }
 .testForm .section span {
     background: #2A88AD;
@@ -566,7 +568,7 @@ th {
     border: 4px solid #fff;
     font-size: 14px;
     margin-left: -45px;
-    color: #fff;
+    color: #FFA500;
     margin-top: -3px;
 }
 
@@ -702,5 +704,8 @@ ul.control li:hover input ~ .control__indicator {
 #s9{
     display: none;
 }
-
+#sliders{
+	max-height: 600px;
+	overflow: auto;
+}
 
