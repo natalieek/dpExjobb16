@@ -495,9 +495,11 @@ th {
 }
 .testForm {
 	display:none;
-    width:450px;
+	min-width: 40%;
+  	width: fit-content;
+  	hight:fit-content;
     padding:10px 30px;
-    margin:40px auto;
+    margin:100px auto;
     background: #FFF;
     border-radius: 10px;
     -webkit-border-radius:10px;
@@ -506,15 +508,13 @@ th {
     -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     overflow:hidden;
+    
 }
 .testForm .inner-wrap{
     padding: 30px;
     background: #F8F8F8;
     border-radius: 6px;
     margin-bottom: 15px;
-}
-#sliderValue{
-
 }
 
 .testForm h1{
@@ -581,18 +581,43 @@ th {
   	font-size: 18px;
   
 }
+
 ul.control {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+	list-style-type: none;
+	padding:0;
     background-color: none;
+    overflow:hidden;
+    
 }
+/* 	column-count: 3;
+    flex-direction: column;
+  	flex-wrap: wrap;
+  	display: flex;
+  	height: 100%;
+    
+    -moz-column-count: 3;
+    -webkit-column-count: 3;
+   	-moz-column-gap: 5%;   
+    -webkit-column-gap: 5%;
+    column-gap: 5%;
+    hight: 100%;
+    column-width:auto; */
+    
+
 
 ul.control li {
-    float: left;
-    width: 33%;
-}  
+	display: inline-block;
+    width: fit-content;
+	width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: -ms-fit-content;
+    width: -o-fit-content;
+    width: fit-content;
+    margin: 0 auto;
+	float:left;
+	width:33%;
+  
+}
 
 ul.control label {
     font: 18px Arial, Helvetica, sans-serif;
@@ -630,13 +655,13 @@ ul.control li:hover input ~ .control__indicator {
   display: block;
 } 
 .control--checkbox .control__indicator:after {
-  left: 8px;
-  top: 0px;
-  width: 6px;
-  height: 16px;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+	left: 8px;
+  	top: 0px;
+  	width: 6px;
+ 	height: 16px;
+ 	border: solid #fff;
+  	border-width: 0 2px 2px 0;
+  	transform: rotate(45deg);
 }
 
 .testForm .nextBtn{

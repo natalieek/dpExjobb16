@@ -224,43 +224,54 @@
   
 <button class="testKnapp" onClick="showForm('checkDiv')"> Klicka</button>
 
-<div class="testForm" id="paramForm">
-<h1>Välj parametrar</h1>
-<form id="paraForm">
-    <div class="section"><span>1</span></div>
-    <div class="inner-wrap">
-        <select id="param1" name="param1">
-            <option selected>Välj parameter</option>
-            <option value="alder">Ålder</option>
-            <option value="anm">Anmärkning</option>
-            <option value="kmiskog">Km i skog</option>
-        </select>
-    </div>
-
-    <div class="section"><span>2</span></div>
-    <div class="inner-wrap">
-        <select id="param2" name="param2">
-            <option selected>Välj parameter</option>
-            <option value="alder">Ålder</option>
-            <option value="anm">Anmärkning</option>
-            <option value="kmiskog">Km i skog</option>
-        </select>
-    </div>
-
-    <div class="section"><span>3</span></div>
-        <div class="inner-wrap">
-            <select id="param3" name="param3">
-                <option selected>Välj parameter</option>
-                <option value="alder">Ålder</option>
-                <option value="anm">Anmärkning</option>
-                <option value="kmiskog">Km i skog</option>
-            </select>
-    </div>
-    
-    <button class="nextBtn" type="button" onClick="showForm('weightForm'); hideForm('paramForm'); getSelectedParams()"> Nästa</button>
-    <button class="nextBtn" type="button" onClick="hideForm('paramForm'); resetForm('paraForm')"> Avbryt</button>
-    
-</form>
+<div class="testForm" id="checkDiv">
+		<h1>Välj parametrar</h1>
+		<form id="checkParamForm">
+    <!-- <div class="section"><span>1</span></div> -->
+    			<div class="inner-wrap">
+  						<ul class="control">
+  								<li><label class="control control--checkbox" id="v1" >Avbrottsminuter & timmar<input id="value1" type="checkbox" value="value1"/>
+  											<span class="control__indicator"></span>
+  									</label>
+  								</li>
+    							<li><label class="control control--checkbox" id="v2">Value 2 <input id="value2" type="checkbox" value="value2"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    							<li><label class="control control--checkbox" id="v3">Value 3 <input id="value3" type="checkbox" value="value3"/>
+    										<span class="control__indicator"></span> 
+    								</label>
+    							</li>
+    							<li><label class="control control--checkbox" id="v4">Value 4 <input id="value4" type="checkbox" value="value4"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    							
+    							<li><label class="control control--checkbox" id="v5" >Value 5 <input id="value5" type="checkbox" value="value5"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    							<li><label class="control control--checkbox" id="v6">Value 6 <input id="value6" type="checkbox" value="value6"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    							<li><label class="control control--checkbox" id="v7">Value 7 <input id="value7" type="checkbox" value="value7"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    							<li><label class="control control--checkbox" id="v8">Value 8 <input id="value8" type="checkbox" value="value8"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    							<li><label class="control control--checkbox" id="v9">Value 9 <input id="value9" type="checkbox" value="value9"/>
+    										<span class="control__indicator"></span>
+    								</label>
+    							</li>
+    					</ul>
+    			</div>
+    			<button class="nextBtn" id=nextButton type="button" onClick="showForm('weightForm'); hideForm('checkDiv'); getSelectedParams()"> Nästa</button>
+   		 		<button class="nextBtn" type="button" onClick="hideForm('checkDiv'); resetForm('checkParamForm')"> Avbryt</button>
+		</form>
 </div>
 
 <div class="testForm" id="weightForm">
@@ -334,55 +345,6 @@
     <button class="nextBtn" type="button" onClick="checkWeights('weightForm')"> OK</button>
     <button class="nextBtn" type="button" onClick="hideForm('weightForm'); resetSliders(); resetForm('checkParamForm')"> Avbryt</button>
     <button class="backBtn" type="button" onClick="showForm('checkDiv'); hideForm('weightForm'); resetSliders()"><i class="fa fa-chevron-left" style="font-size:30px" ></i></button>
-</form>
-</div>
-
-<div class="testForm" id="checkDiv">
-<h1>Välj parametrar</h1>
-<form id="checkParamForm">
-    <!-- <div class="section"><span>1</span></div> -->
-    <div class="inner-wrap">
-  		<ul class="control">
-  			<li><label class="control control--checkbox " id="v1">Value 1<input id="value1" type="checkbox" value="value1"/>
-  					<span class="control__indicator"></span>
-  				</label>
-  			</li>
-    		<li><label class="control control--checkbox" id="v2">Value 2 <input id="value2" type="checkbox" value="value2"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v3">Value 3 <input id="value3" type="checkbox" value="value3"/>
-    				<span class="control__indicator"></span> 
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v4">Value 4 <input id="value4" type="checkbox" value="value4"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v5">Value 5 <input id="value5" type="checkbox" value="value5"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v6">Value 6 <input id="value6" type="checkbox" value="value6"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v7">Value 7 <input id="value7" type="checkbox" value="value7"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v8">Value 8 <input id="value8" type="checkbox" value="value8"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    		<li><label class="control control--checkbox" id="v9">Value 9 <input id="value9" type="checkbox" value="value9"/>
-    				<span class="control__indicator"></span>
-    			</label>
-    		</li>
-    	</ul>
-    </div>
-    <button class="nextBtn" id=nextButton type="button" onClick="showForm('weightForm'); hideForm('checkDiv')"> Nästa</button>
-    <button class="nextBtn" type="button" onClick="hideForm('checkDiv'); resetForm('checkParamForm')"> Avbryt</button>
 </form>
 </div>
 
