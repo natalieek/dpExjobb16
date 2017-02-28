@@ -234,7 +234,7 @@
   											<span class="control__indicator"></span>
   									</label>
   								</li>
-    							<li><label class="control control--checkbox" id="v2">Value 2 <input id="value2" type="checkbox" value="value2"/>
+    							<li><label class="control control--checkbox" id="v2">Km i skog <input id="value2" type="checkbox" value="value2"/>
     										<span class="control__indicator"></span>
     								</label>
     							</li>
@@ -269,7 +269,7 @@
     							</li>
     					</ul>
     			</div>
-    			<button class="nextBtn" id=nextButton type="button" onClick="showForm('weightForm'); hideForm('checkDiv'); getSelectedParams()"> Nästa</button>
+    			<button class="nextBtn" id=nextButton type="button" onClick="showForm('weightForm'); hideForm('checkDiv')"> Nästa</button>
    		 		<button class="nextBtn" type="button" onClick="hideForm('checkDiv'); resetForm('checkParamForm')"> Avbryt</button>
 		</form>
 </div>
@@ -342,7 +342,7 @@
             </div>
         </div>
     </div>
-    <button class="nextBtn" type="button" onClick="checkWeights('weightForm')"> OK</button>
+    <button class="nextBtn" id= runBtn type="button" onClick="checkWeights('weightForm')"> OK</button>
     <button class="nextBtn" type="button" onClick="hideForm('weightForm'); resetSliders(); resetForm('checkParamForm')"> Avbryt</button>
     <button class="backBtn" type="button" onClick="showForm('checkDiv'); hideForm('weightForm'); resetSliders()"><i class="fa fa-chevron-left" style="font-size:30px" ></i></button>
 </form>

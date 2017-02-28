@@ -139,25 +139,6 @@ $(document).ready(function(){
 	});
 });
 
-function checkWeights(id){
-	var sum = 0
-	var sliders = $("#sliders .slider");
-	sliders.each(function(){
-		 sum += $(this).slider("option","value");
-	});
-	
-	if (sum < 100) {
-		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
-	}
-	else {
-		//Kör analysen när den funktionen finns
-		hideForm(id);
-		resetForm('paraForm')
-		resetForm('weightForm1')
-		resetSliders()
-	}
-}
-
 function showpanel(id) {
 	hidemsg('bg3');
 	//hidestatus('bg5');

@@ -492,12 +492,6 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
     })
   });
 
-  /*var osm_bg =  new ol.layer.Tile({
-      source: new ol.source.OSM(),
-      type:'base',
-      title:'Bakgrund OSM'
-    })*/
-
     var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
 
     var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
@@ -593,7 +587,82 @@ var lineTexts = {
   '808000':{'type':'vatten','title':'Vatten'},'901000':{'type':'gas','title':'Gas'},
 }
 
+function getParamValue(){
+	//Make a request to the server -- returns json
+	requests = {'gasCust': makeRequest('GET', '/conn/gas_cust')}
+	Promise.props(requests).then(function(responses) {
+		//Create json object from respond
+		json_object = JSON.parse(responses.gasCust);
+		json_length = (json_object.features.length);
+		//Create empty arrays
+		outages = [];
+		weightOutages = [];
+		replaced = [];
+		weightReplaced = [];
+		totalValue = [];
+		var sliderValues = getSliderValue(); //Get value from each slider
+		//For every parameter...
+		for (i=0; i<json_length; i++){
+			//..push value into array
+			outages.push(json_object.features[i].properties.gid);
+			replaced.push(json_object.features[i].properties.cust_id);		
+		}
+		var minOutage = Math.min.apply(null,outages);
+		var maxOutage = Math.max.apply(null,outages);
+		//Sum all parameters togheter to get a total score
+		for ( j=0; j<outages.length; j++){
+			//console.log(outages[j]);
+			var normedOutage = normValues(outages[j], minOutage, maxOutage);
+			console.log(normedOutage);
+			//weightOutages.push(outages[i]*sliderValue[1]);
+			//weightReplaced.push(replaced[i]*sliderValue[1]);
+			
+			//totalValue.push(outages[j] + replaced[j]);
+		}
+		resetForm('checkParamForm')
+		resetForm('weightForm1')
+		resetSliders()
+		//TODO: Uppdatera databasen med värdet som fåtts fram genom att lägga ihop alla parametrar och vikter.
+	});
+	//Reset parameters
+}
 
+function normValues(value, min, max){
+	var normedValue = (value-min)*(255/(max-min))
+	return normedValue;
+	
+}
+
+function checkWeights(id){
+	var sum = 0
+	//For each slider..
+	var sliders = $("#sliders .slider");
+	sliders.each(function(){
+		//..add value of slider to sum variable
+		sum += $(this).slider("option","value");
+	});
+	
+	if (sum < 100) {
+		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
+	}
+	else {
+		getParamValue();
+		hideForm(id);
+	}
+}
+
+function getSliderValue(){
+	//Create empty array
+	sliderValues = [];
+	//For each slider...
+	var sliders = $("#sliders .slider");
+	sliders.each(function(){
+		//...get value of slider and push it into array
+		var value = $(this).slider("option","value");
+		sliderValues.push(value);
+	});
+	return sliderValues;
+}
 //'703000':['el','#006f00'], '606000':['heating','#000000'], '890400':['water','#0066ff']
 function popupMaker(feature,popup){
 
