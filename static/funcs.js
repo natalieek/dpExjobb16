@@ -593,7 +593,6 @@ function getParamValue(){
 	Promise.props(requests).then(function(responses) {
 		//Create json object from respond
 		json_object = JSON.parse(responses.gasCust);
-		json_length = (json_object.features.length);
 		//Create empty arrays
 		outages = [];
 		weightOutages = [];
@@ -601,36 +600,49 @@ function getParamValue(){
 		weightReplaced = [];
 		totalValue = [];
 		var sliderValues = getSliderValue(); //Get value from each slider
+
 		//For every parameter...
-		for (i=0; i<json_length; i++){
+		for (i=0; i<json_object.features.length; i++){
 			//..push value into array
 			outages.push(json_object.features[i].properties.gid);
 			replaced.push(json_object.features[i].properties.cust_id);		
 		}
 		var minOutage = Math.min.apply(null,outages);
 		var maxOutage = Math.max.apply(null,outages);
-		//Sum all parameters togheter to get a total score
+		var minReplaced = Math.min.apply(null,replaced);
+		var maxReplaced = Math.max.apply(null,replaced);
+		
 		for ( j=0; j<outages.length; j++){
 			//console.log(outages[j]);
 			var normedOutage = normValues(outages[j], minOutage, maxOutage);
-			console.log(normedOutage);
-			//weightOutages.push(outages[i]*sliderValue[1]);
-			//weightReplaced.push(replaced[i]*sliderValue[1]);
+			var normedReplaced = normValues(replaced[j], minReplaced, maxReplaced);
+			//Multiply normed value with weight
+			weightOutages.push(normedOutage*sliderValues[0]);
+			weightReplaced.push(normedReplaced*sliderValues[1]);
+			//Sum the weighted parameters to a total score
+			totalValue.push(weightOutages[j] + weightReplaced[j]);
 			
-			//totalValue.push(outages[j] + replaced[j]);
 		}
+		//TODO: Uppdatera databasen med totalValue.
+		console.log(totalValue.length);
+/*		var request = $.ajax({
+            url: "/updateTotalValue",
+            type: "POST",
+            data: {totalValue: totalValue},
+            cache: false
+        }); */
+            
 		resetForm('checkParamForm')
 		resetForm('weightForm1')
 		resetSliders()
-		//TODO: Uppdatera databasen med värdet som fåtts fram genom att lägga ihop alla parametrar och vikter.
 	});
 	//Reset parameters
 }
 
+//TODO:Normerar värden, hur ska denna göras? Just nu är det linear stretching
 function normValues(value, min, max){
 	var normedValue = (value-min)*(255/(max-min))
-	return normedValue;
-	
+	return normedValue;	
 }
 
 function checkWeights(id){
