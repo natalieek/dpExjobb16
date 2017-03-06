@@ -9,6 +9,14 @@ tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'conn': '
 'water': {'arcs': 'vatten_arc', 'nodes':'vatten_arc_vertices_pgr', 'conn': 'vatten_cust', 'station_id':1394}}
 
 app = Flask(__name__)
+@app.route('/updateTotalValue/<id>/<value>') #127.0.0.1/cool/677
+def updateValue(id,value):
+    cursor=conn.cursor()
+    query = 'UPDATE gas_arcs SET dp_lock={1} WHERE gid={0}'.format(id, value)
+    cursor.execute(query)
+    conn.commit()
+    return "success"
+
 @app.route('/conn/<filename>')
 def custGetter(filename):
     

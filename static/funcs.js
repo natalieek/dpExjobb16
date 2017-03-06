@@ -587,56 +587,55 @@ var lineTexts = {
   '808000':{'type':'vatten','title':'Vatten'},'901000':{'type':'gas','title':'Gas'},
 }
 
-function getParamValue(){
-	//Make a request to the server -- returns json
-	requests = {'gasCust': makeRequest('GET', '/conn/gas_cust')}
-	Promise.props(requests).then(function(responses) {
-		//Create json object from respond
-		json_object = JSON.parse(responses.gasCust);
-		//Create empty arrays
-		outages = [];
-		weightOutages = [];
-		replaced = [];
-		weightReplaced = [];
-		totalValue = [];
-		var sliderValues = getSliderValue(); //Get value from each slider
+function getParamValue(layers){
+	//Get faetures from layers 
+	var features = layers.Arcs[0].getSource().getFeatures();
+	//Create empty arrays
+	id = [];
+	outages = [];
+	weightOutages = [];
+	replaced = [];
+	weightReplaced = [];
+	totalValue = [];
+	var sliderValues = getSliderValue(); //Get value from each slider
 
-		//For every parameter...
-		for (i=0; i<json_object.features.length; i++){
-			//..push value into array
-			outages.push(json_object.features[i].properties.gid);
-			replaced.push(json_object.features[i].properties.cust_id);		
-		}
-		var minOutage = Math.min.apply(null,outages);
-		var maxOutage = Math.max.apply(null,outages);
-		var minReplaced = Math.min.apply(null,replaced);
-		var maxReplaced = Math.max.apply(null,replaced);
-		
-		for ( j=0; j<outages.length; j++){
-			//console.log(outages[j]);
-			var normedOutage = normValues(outages[j], minOutage, maxOutage);
-			var normedReplaced = normValues(replaced[j], minReplaced, maxReplaced);
-			//Multiply normed value with weight
-			weightOutages.push(normedOutage*sliderValues[0]);
-			weightReplaced.push(normedReplaced*sliderValues[1]);
-			//Sum the weighted parameters to a total score
-			totalValue.push(weightOutages[j] + weightReplaced[j]);
-			
-		}
-		//TODO: Uppdatera databasen med totalValue.
-		console.log(totalValue.length);
-/*		var request = $.ajax({
-            url: "/updateTotalValue",
-            type: "POST",
-            data: {totalValue: totalValue},
-            cache: false
-        }); */
-            
-		resetForm('checkParamForm')
-		resetForm('weightForm1')
-		resetSliders()
-	});
+	//For every parameter...
+	for (i=0; i<features.length; i++){
+		//..push value into array
+		id.push(features[i].get("gid"));
+		outages.push(features[i].get("dp_ctype"));
+		replaced.push(features[i].get("dp_otype"));		
+	}
+	//console.log(outages);
+	//console.log(replaced);
+	var minOutage = Math.min.apply(null,outages); //Get minimum value
+	var maxOutage = Math.max.apply(null,outages); //Get maximum value
+	var minReplaced = Math.min.apply(null,replaced); 
+	var maxReplaced = Math.max.apply(null,replaced);
+
+	for ( j=0; j<outages.length; j++){
+		//Norm values
+		var normedOutage = normValues(outages[j], minOutage, maxOutage);
+		var normedReplaced = normValues(replaced[j], minReplaced, maxReplaced);
+		//Multiply normed value with weight
+		weightOutages.push(normedOutage*sliderValues[0]);
+		weightReplaced.push(normedReplaced*sliderValues[1]);
+		//Sum the weighted parameters to a total score
+		totalValue.push(weightOutages[j] + weightReplaced[j]);
+
+	}
+	//console.log(totalValue);
+	for (k=0; k<totalValue.length; k++){
+		//Update arc id[i] with totalValue[k]
+		requests = {'GET': makeRequest('GET', '/updateTotalvalue/'+id[k]+'/'+totalValue[k]+'')}
+			Promise.props(requests).then(function(responses) {
+				console.log("TEST")
+		});
+	}
 	//Reset parameters
+	resetForm('checkParamForm')
+	resetForm('weightForm1')
+	resetSliders()
 }
 
 //TODO:Normerar värden, hur ska denna göras? Just nu är det linear stretching
@@ -658,7 +657,7 @@ function checkWeights(id){
 		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
 	}
 	else {
-		getParamValue();
+		getParamValue(layers);
 		hideForm(id);
 	}
 }
