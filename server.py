@@ -9,10 +9,10 @@ tables = {'gas': {'arcs': 'gas_arcs', 'nodes':'gas_arcs_vertices_pgr', 'conn': '
 'water': {'arcs': 'vatten_arc', 'nodes':'vatten_arc_vertices_pgr', 'conn': 'vatten_cust', 'station_id':1394}}
 
 app = Flask(__name__)
-@app.route('/updateTotalValue/<id>/<value>') #127.0.0.1/cool/677
+@app.route('/updateTotalValue/<id>/<value>') #127.0.0.1:5000/updateTotalValue/677/100
 def updateValue(id,value):
     cursor=conn.cursor()
-    query = 'UPDATE gas_arcs SET dp_lock={1} WHERE gid={0}'.format(id, value)
+    query = 'UPDATE gas_arcs SET totalvalue={1} WHERE gid={0}'.format(id, value)
     cursor.execute(query)
     conn.commit()
     return "success"
@@ -33,7 +33,7 @@ def arcGetter(filename):
     cursor=conn.cursor()
     #with conn.cursor() as cursor:
         #arcCurs = conn.cursor()
-    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, gid) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
+    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, source, target, gid) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
     cursor.execute(query)
     inVar = (cursor.fetchone()[0])
     return json.dumps(inVar)

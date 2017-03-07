@@ -603,8 +603,8 @@ function getParamValue(layers){
 	for (i=0; i<features.length; i++){
 		//..push value into array
 		id.push(features[i].get("gid"));
-		outages.push(features[i].get("dp_ctype"));
-		replaced.push(features[i].get("dp_otype"));		
+		outages.push(features[i].get("source"));
+		replaced.push(features[i].get("target"));		
 	}
 	//console.log(outages);
 	//console.log(replaced);
@@ -622,20 +622,27 @@ function getParamValue(layers){
 		weightReplaced.push(normedReplaced*sliderValues[1]);
 		//Sum the weighted parameters to a total score
 		totalValue.push(weightOutages[j] + weightReplaced[j]);
-
 	}
-	//console.log(totalValue);
+	$('#loading').show();
 	for (k=0; k<totalValue.length; k++){
+		var totVal = parseFloat((totalValue[k]).toFixed(2));
 		//Update arc id[i] with totalValue[k]
-		requests = {'GET': makeRequest('GET', '/updateTotalvalue/'+id[k]+'/'+totalValue[k]+'')}
-			Promise.props(requests).then(function(responses) {
-				console.log("TEST")
+		requests = {'GET': makeRequest('GET', '/updateTotalValue/'+id[k]+'/'+totVal+'')}
+		Promise.props(requests).then(function(responses) {
+			if (k=totalValue.length){
+				console.log("wei");
+			}
 		});
-	}
+	}	
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
 	resetSliders()
+	//
+}
+
+function showList(layers){
+	console.log(layers);
 }
 
 //TODO:Normerar värden, hur ska denna göras? Just nu är det linear stretching
