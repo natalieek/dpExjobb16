@@ -1,4 +1,5 @@
-//Visual settings for el 
+//Visual settings for el
+
 var gas = {
  'connection': new ol.style.Style({
   image: new ol.style.Circle({
@@ -288,6 +289,7 @@ Promise
       //Stores the raw data
     }
     heatmap = heatmapMaker(responses.heatmap)
+    //MCElayer = MCEmapMaker(responses.gasArc)
     customers = customerMaker(responses.customers)
     workLayers.push(workCluster(responses.repairs, 'Pågående Reparationer', true, workStyler))
     workLayers.push(workCluster(responses.installations, 'Pågående Installationer', true, workStyler))
@@ -469,6 +471,7 @@ function hexToRgbA(hex){
 
 // Creates the final map, along with two mouse events.
 // To-do: Set correct data on load.
+
 function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
   proj4.defs("EPSG:3006","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
   var myProjection = ol.proj.get('EPSG:3006');
@@ -481,6 +484,7 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
       crossOrigin: 'anonymous'
     })
   });
+  console.log(inGroups);
 
   var darkRaster = new ol.layer.Tile({  
     type:'base',
@@ -495,11 +499,12 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
     var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
 
     var heatmapGroup = new ol.layer.Group({ 'title': 'Gamla Avbrott', layers: [heatmap]})
+    //var MCEgroup = new ol.layer.Group({ 'title': 'MCE', layers: [MCElayer]})
     var repairsGroup = new ol.layer.Group({ 'title': 'Pågående aktiviteter', layers: workLayers})
     var customerGroup = new ol.layer.Group({ 'title': 'Kunder', layers: [customers]})
     ol.proj.addProjection(myProjection);
     var map = new ol.Map({
-      layers: _.flatten([basemap, heatmapGroup, inGroups, customerGroup, repairsGroup]),
+      layers: _.flatten([basemap, inGroups, heatmapGroup, customerGroup, repairsGroup]),
       target: 'map',
       interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
       view: new ol.View({
@@ -566,7 +571,23 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
       return;
     }
   });
+  $("#runBtn").click(function(){
+	  var sum = 0
+	  //For each slider..
+	  var sliders = $("#sliders .slider");
+	  sliders.each(function(){
+		  //..add value of slider to sum variable
+		  sum += $(this).slider("option","value");
+	  });
 
+	  if (sum < 100) {
+		  alert ("Totala vikten är " + sum + "%. Måste vara 100%")
+	  }
+	  else {
+		  getParamValue(layers,map);
+		  hideForm('weightForm');
+	  }
+  })
 }
 
 var pointTexts = {
@@ -587,9 +608,54 @@ var lineTexts = {
   '808000':{'type':'vatten','title':'Vatten'},'901000':{'type':'gas','title':'Gas'},
 }
 
-function getParamValue(layers){
+function MCEmapMaker(feature, map){
+	for (i=0; i<feature.length; i++){
+		console.log(feature[i].get('totalvalue'));
+	}
+	featureSource = new ol.source.Vector();
+	featureSource.addFeatures(feature);
+	var featureLayer = new ol.layer.Vector({
+		visible: true,
+		source: featureSource,
+		style: function(feature,resolution){
+			var styleRed = new ol.style.Style({
+				stroke: new ol.style.Stroke({
+					color: '#FF0000',
+					width: 2
+				})
+			});
+			var styleGreen = new ol.style.Style({
+				stroke: new ol.style.Stroke({
+					color: '#008000',
+					width: 2
+				})
+			});
+			var styleYellow = new ol.style.Style({
+				stroke: new ol.style.Stroke({
+					color: '#FFFF00',
+					width: 2
+				})
+			});
+			if (feature.get('totalvalue') >= 20000){
+				return [styleRed];
+			} 
+			else if (10000 <= feature.get('totalvalue') && feature.get('totalvalue') < 20000){
+				return [styleYellow];
+			} 
+			else {
+				return [styleGreen];
+			}
+		}
+	})
+	map.addLayer(featureLayer);
+	showList(feature);
+}
+
+function getParamValue(layers,map){
+	console.log(layers);
 	//Get faetures from layers 
 	var features = layers.Arcs[0].getSource().getFeatures();
+	console.log(features[1]);
 	//Create empty arrays
 	id = [];
 	outages = [];
@@ -606,10 +672,9 @@ function getParamValue(layers){
 		outages.push(features[i].get("source"));
 		replaced.push(features[i].get("target"));		
 	}
-	//console.log(outages);
-	//console.log(replaced);
-	var minOutage = Math.min.apply(null,outages); //Get minimum value
-	var maxOutage = Math.max.apply(null,outages); //Get maximum value
+	//get minimum and maximum value
+	var minOutage = Math.min.apply(null,outages);
+	var maxOutage = Math.max.apply(null,outages);
 	var minReplaced = Math.min.apply(null,replaced); 
 	var maxReplaced = Math.max.apply(null,replaced);
 
@@ -623,22 +688,22 @@ function getParamValue(layers){
 		//Sum the weighted parameters to a total score
 		totalValue.push(weightOutages[j] + weightReplaced[j]);
 	}
-	$('#loading').show();
+	var requests = [];
 	for (k=0; k<totalValue.length; k++){
 		var totVal = parseFloat((totalValue[k]).toFixed(2));
+		features[k].set("totalvalue", totVal);
 		//Update arc id[i] with totalValue[k]
-		requests = {'GET': makeRequest('GET', '/updateTotalValue/'+id[k]+'/'+totVal+'')}
-		Promise.props(requests).then(function(responses) {
-			if (k=totalValue.length){
-				console.log("wei");
-			}
-		});
-	}	
+		requests.push({'GET': makeRequest('GET', '/updateTotalValue/'+id[k]+'/'+totVal+'')});
+	}
+	//console.log(requests);
+	Promise.all(requests).then(function() {
+		console.log("Klar");
+		MCEmapMaker(features, map);
+	});
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
 	resetSliders()
-	//
 }
 
 function showList(layers){

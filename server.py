@@ -15,6 +15,9 @@ def updateValue(id,value):
     query = 'UPDATE gas_arcs SET totalvalue={1} WHERE gid={0}'.format(id, value)
     cursor.execute(query)
     conn.commit()
+    testQ = "SELECT totalvalue FROM gas_arcs WHERE gid={0}".format(id)
+    cursor.execute(testQ)
+    print(cursor.fetchone()[0])
     return "success"
 
 @app.route('/conn/<filename>')
@@ -33,7 +36,7 @@ def arcGetter(filename):
     cursor=conn.cursor()
     #with conn.cursor() as cursor:
         #arcCurs = conn.cursor()
-    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, source, target, gid) as l )) as properties FROM {0} as lg ) as f ) as fc;".format(filename)
+    query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) as features FROM (SELECT 'Feature' as type, ST_AsGeoJSON(lg.the_geom)::json As geometry, row_to_json((SELECT l FROM (SELECT dp_otype, dp_ctype, dp_subtype, source, target, totalvalue, gid) as l )) as properties FROM gas_arcs as lg ) as f ) as fc;".format(filename)
     cursor.execute(query)
     inVar = (cursor.fetchone()[0])
     return json.dumps(inVar)
