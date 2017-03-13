@@ -19,6 +19,35 @@ html, body, .map {
 	display: none !important; 
 } 
 
+.rightbar {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: #FFFFFF;
+    overflow:auto;
+    display: inline-block;
+    visibility: hidden;
+}
+
+#MCEtable th{
+	  background-color: #2A88AD;
+    color: white;
+}
+
+#MCEtable tr{
+    border: 1px #000000;
+    cursor: pointer;
+}
+
+/* #MCEtable{
+	position: fixed;
+  right: 0%;
+  width: 10%;
+  border: 1px #000000;
+
+} */
+
 #loading {
     position:relative;
 /*     margin:0 auto 0 auto; */
@@ -32,9 +61,9 @@ html, body, .map {
     margin-left: -15px; // Half images width;
     position:absolute; 
     height: 30px;
-	width: 30px;
-	bottom:50%;
-	left:50%
+	  width: 30px;
+	  bottom:50%;
+	  left:50%
 }
 
 .search {

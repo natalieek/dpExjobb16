@@ -484,7 +484,6 @@ function mapMaker(inGroups, inLayers, heatmap, workLayers, customers){
       crossOrigin: 'anonymous'
     })
   });
-  console.log(inGroups);
 
   var darkRaster = new ol.layer.Tile({  
     type:'base',
@@ -609,9 +608,6 @@ var lineTexts = {
 }
 
 function MCEmapMaker(feature, map){
-	for (i=0; i<feature.length; i++){
-		console.log(feature[i].get('totalvalue'));
-	}
 	featureSource = new ol.source.Vector();
 	featureSource.addFeatures(feature);
 	var featureLayer = new ol.layer.Vector({
@@ -689,7 +685,7 @@ function getParamValue(layers,map){
 		totalValue.push(weightOutages[j] + weightReplaced[j]);
 	}
 	var requests = [];
-	for (k=0; k<totalValue.length; k++){
+	for (k=0; k<10; k++){
 		var totVal = parseFloat((totalValue[k]).toFixed(2));
 		features[k].set("totalvalue", totVal);
 		//Update arc id[i] with totalValue[k]
@@ -706,8 +702,42 @@ function getParamValue(layers,map){
 	resetSliders()
 }
 
-function showList(layers){
-	console.log(layers);
+function showList(features){
+	//console.log(layers);
+/*	$('#MCEtable').show();
+	$('#MCEtable tr').click(function(){
+    	console.log("hej");
+    });*/
+	populateTable(features);
+	
+
+}
+
+function populateTable(features){
+	var obj = features;
+    var table = $("<table />");
+    table[0].border = "1";
+    var columns = Object.keys(obj[0]);
+    var columnCount = columns.length;
+    var row = $(table[0].insertRow(-1));
+    for (var i = 0; i < columnCount; i++) {
+        var headerCell = $("<th />");
+        headerCell.html([columns[i]]);
+        row.append(headerCell);
+    }
+
+    for (var i = 0; i < obj.length; i++) {
+        row = $(table[0].insertRow(-1));
+        for (var j = 0; j < columnCount; j++) {
+            var cell = $("<td />");
+            cell.html(obj[i][columns[j]]);
+            row.append(cell);
+        }
+    }
+    
+    var dvTable = $("#dvCSV");
+    dvTable.html("");
+    dvTable.append(table);
 }
 
 //TODO:Normerar värden, hur ska denna göras? Just nu är det linear stretching
