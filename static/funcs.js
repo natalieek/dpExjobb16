@@ -644,14 +644,12 @@ function MCEmapMaker(feature, map){
 		}
 	})
 	map.addLayer(featureLayer);
-	showList(feature);
+	populateTable(feature,map);
 }
 
 function getParamValue(layers,map){
-	console.log(layers);
 	//Get faetures from layers 
 	var features = layers.Arcs[0].getSource().getFeatures();
-	console.log(features[1]);
 	//Create empty arrays
 	id = [];
 	outages = [];
@@ -702,22 +700,15 @@ function getParamValue(layers,map){
 	resetSliders()
 }
 
-function showList(features){
-	//console.log(layers);
-/*	$('#MCEtable').show();
-	$('#MCEtable tr').click(function(){
-    	console.log("hej");
-    });*/
-	populateTable(features);
-	
-
-}
-
-function populateTable(features){
+function populateTable1(features,map){
 	var obj = features;
-    var table = $("<table />");
+	//Sort features with highest totalvalue first.
+	obj.sort(function(obj1, obj2) {
+		return obj2.get("totalvalue") - obj1.get("totalvalue")
+	});
+    var table = $("<table id="+"featureTable"+" />");
     table[0].border = "1";
-    var columns = Object.keys(obj[0]);
+    var columns = ["Gid","Total value"];
     var columnCount = columns.length;
     var row = $(table[0].insertRow(-1));
     for (var i = 0; i < columnCount; i++) {
@@ -727,17 +718,48 @@ function populateTable(features){
     }
 
     for (var i = 0; i < obj.length; i++) {
-        row = $(table[0].insertRow(-1));
-        for (var j = 0; j < columnCount; j++) {
-            var cell = $("<td />");
-            cell.html(obj[i][columns[j]]);
-            row.append(cell);
-        }
+    	row = $(table[0].insertRow(-1));
+    	row.id=id=obj[i].get("gid");
+    	var cell1 = $("<td />");
+    	var cell2 = $("<td />");
+    	cell1.html(obj[i].get("gid"));
+    	cell2.html(obj[i].get("totalvalue"));
+    	row.append(cell1,cell2);
+    	$("#featureTable").click(function (test){
+    		console.log("Klickar på rad");
+    		//zoomToMap(map, row.id, features);
+    	});
     }
-    
     var dvTable = $("#dvCSV");
     dvTable.html("");
     dvTable.append(table);
+}
+
+function populateTable(features, map){
+	features.sort(function(obj1, obj2) {
+		return obj2.get("totalvalue") - obj1.get("totalvalue")
+	});
+	var table = document.getElementById("featureTable");
+	for(i=1; i<features.length; i++) {
+		var row = featureTable.insertRow(i+1);
+		var featureID = features[i].get("gid")
+	    row.insertCell(0).innerHTML="<p>"+i+"</p>";
+		row.insertCell(1).innerHTML="<p id="+features[i].get("gid")+">"+features[i].get("gid")+"</p>";
+		row.insertCell(2).innerHTML="<p>"+features[i].get("totalvalue")+"</p>";
+		$("#"+features[i].get("gid")+"").click(function(test){
+			console.log('abc', test.target.outerText)
+			zoomToMap(map, test.target.outerText, features)})
+		};
+	$("#tableDiv").show();
+}
+
+function zoomToMap(map,featureID, features){
+	var foundFeat = features.filter(function(features){
+		return features.get("gid") == featureID
+	});
+	console.log(foundFeat);
+	extent = foundFeat[0].getGeometry().getExtent()
+	map.getView().fit(extent,map.getSize());
 }
 
 //TODO:Normerar värden, hur ska denna göras? Just nu är det linear stretching

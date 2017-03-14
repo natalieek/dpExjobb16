@@ -1,8 +1,8 @@
 html, body, .map {
 	width: 100%; 
 	height: 100%; 
-	position:fixed;
-	margin:0px; 
+	position: fixed;
+	margin: 0px; 
 	padding:0px;
 	z-index: -1;
 }
@@ -19,51 +19,34 @@ html, body, .map {
 	display: none !important; 
 } 
 
-.rightbar {
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    background-color: #FFFFFF;
-    overflow:auto;
-    display: inline-block;
-    visibility: hidden;
+#tableDiv
+{
+	width: 160px;
+	height: 100%;
+	overflow: auto;
+	position: absolute;
+	right: 0;
+	top: 0;
+	background: #fff;
+	display: none;
 }
 
-#MCEtable th{
-	  background-color: #2A88AD;
+#featureTable th{
+	background-color: #2A88AD;
     color: white;
+    cursor: default;
 }
 
-#MCEtable tr{
-    border: 1px #000000;
-    cursor: pointer;
+#featureTable tr:hover
+{
+	cursor: pointer;
+	background: #ccc;
 }
 
-/* #MCEtable{
-	position: fixed;
-  right: 0%;
-  width: 10%;
-  border: 1px #000000;
-
-} */
-
-#loading {
-    position:relative;
-/*     margin:0 auto 0 auto; */
-    width:100%;
-    height:100%;
-    display: none; 
-}
-
-#loading img {
-    margin-top: -15px; // Half images height;
-    margin-left: -15px; // Half images width;
-    position:absolute; 
-    height: 30px;
-	  width: 30px;
-	  bottom:50%;
-	  left:50%
+#featureTable{
+	
+  	background-color: #FFFFFF;
+ 
 }
 
 .search {
