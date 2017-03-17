@@ -1,8 +1,8 @@
 html, body, .map {
-	width: 100%; 
-	height: 100%; 
+	width: 100%;
+	height: 100%;
 	position: fixed;
-	margin: 0px; 
+	margin: 0px;
 	padding:0px;
 	z-index: -1;
 }
@@ -13,11 +13,11 @@ html, body, .map {
 
 .ol-attribution {
 	width:0;
-} 
-        
+}
+
 .ol-zoom-in, .ol-zoom-out {
-	display: none !important; 
-} 
+	display: none !important;
+}
 
 #tableDiv
 {
@@ -44,9 +44,9 @@ html, body, .map {
 }
 
 #featureTable{
-	
+
   	background-color: #FFFFFF;
- 
+
 }
 
 .search {
@@ -75,7 +75,7 @@ html, body, .map {
 	width:240px;
 	height: 40px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	
+
 }
 
 .circle {
@@ -161,7 +161,7 @@ a {
 
 .dropdown-content a:hover {
 	background-color: #757575;
-	color:white !important; 
+	color:white !important;
 	text-decoration: none;
 }
 
@@ -214,7 +214,7 @@ a {
 }
 
 #cust {
-	margin-top:-49px; 
+	margin-top:-49px;
 	margin-left:50px;
 	margin-bottom: 30px;
 }
@@ -234,7 +234,7 @@ a {
 	visibility: hidden;
 	font-size: 11px;
 	margin: 25px;
-	
+
 }
 
 th {
@@ -272,7 +272,7 @@ td  {
 	padding-top: 9px;
 	padding-left: 12.5px !important;
 	/*0.3px solid rgba(160,160,160, 0.3)*/
-	border: none; 
+	border: none;
 	height: 100%;
 
 }
@@ -426,8 +426,8 @@ input {
 	padding: 5px;
 }
 
-::-webkit-scrollbar { 
-    display: none; 
+::-webkit-scrollbar {
+    display: none;
 }
 img {
 	height: 16px;
@@ -471,7 +471,7 @@ img {
 .close {
 	margin: 10px;
 }
-  
+
 .bg:hover {
 	background-color: rgb(210,210,210);
 	border: 0.3px solid rgba(160,160,160, 0.3)
@@ -524,10 +524,10 @@ th {
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
 }
 .testForm {
-	display:none;
-	min-width: 40%;
+		display:none;
+		min-width: 40%;
   	width: fit-content;
-  	hight:fit-content;
+  	height:fit-content;
     padding:10px 30px;
     margin:100px auto;
     background: #FFF;
@@ -538,7 +538,7 @@ th {
     -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     overflow:hidden;
-    
+
 }
 .testForm .inner-wrap{
     padding: 30px;
@@ -609,7 +609,7 @@ th {
  	margin-bottom: 15px;
   	cursor: pointer;
   	font-size: 18px;
-  
+
 }
 
 ul.control {
@@ -617,22 +617,22 @@ ul.control {
 	padding:0;
     background-color: none;
     overflow:hidden;
-    
+
 }
 /* 	column-count: 3;
     flex-direction: column;
   	flex-wrap: wrap;
   	display: flex;
   	height: 100%;
-    
+
     -moz-column-count: 3;
     -webkit-column-count: 3;
-   	-moz-column-gap: 5%;   
+   	-moz-column-gap: 5%;
     -webkit-column-gap: 5%;
     column-gap: 5%;
     hight: 100%;
     column-width:auto; */
-    
+
 
 
 ul.control li {
@@ -646,12 +646,12 @@ ul.control li {
     margin: 0 auto;
 	float:left;
 	width:33%;
-  
+
 }
 
 ul.control label {
     font: 18px Arial, Helvetica, sans-serif;
-}  
+}
 
 .control input {
   position: absolute;
@@ -674,16 +674,16 @@ ul.control li:hover input ~ .control__indicator {
 
 .control input:not([disabled]):checked ~ .control__indicator {
   background: #0e647d;
-} 
+}
 
 .control__indicator:after {
   content: '';
   position: absolute;
   display: none;
-} 
+}
 .control input:checked ~ .control__indicator:after {
   display: block;
-} 
+}
 .control--checkbox .control__indicator:after {
 	left: 8px;
   	top: 0px;
@@ -710,7 +710,7 @@ ul.control li:hover input ~ .control__indicator {
     font-size: 15px;
     float: right;
     margin: 0px 2px;
-    
+
 }
 .testForm .nextBtn:hover{
     background: #2A6881;
@@ -723,7 +723,7 @@ ul.control li:hover input ~ .control__indicator {
 	background: transparent;
     border: none !important;
     font-size:0;
-	
+
 }
 .fa-chevron-left{
 	color:#2A88AD;
@@ -732,7 +732,7 @@ ul.control li:hover input ~ .control__indicator {
 
 .fa-chevron-left:hover{
 	color:#2A6881;
-} 
+}
 #s1{
     display: none;
 }
@@ -764,4 +764,3 @@ ul.control li:hover input ~ .control__indicator {
 	max-height: 600px;
 	overflow: auto;
 }
-
