@@ -726,7 +726,8 @@ ul.control li:hover input ~ .control__indicator {
 	
 }
 .fa-chevron-left{
-	color:#2A88AD
+	color:#2A88AD;
+	font-size:30px;
  }
 
 .fa-chevron-left:hover{
