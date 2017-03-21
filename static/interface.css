@@ -19,9 +19,43 @@ html, body, .map {
 	display: none !important;
 }
 
+.colcircle_red {
+    width:10px;
+    height:10px;
+    border-radius:50px;
+    font-size:20px;
+    color:#fff;
+    line-height:100px;
+    background-color: #ff0000;
+}
+.colcircle_yellow {
+    width:10px;
+    height:10px;
+    border-radius:50px;
+    font-size:20px;
+    color:#fff;
+    line-height:100px;
+    background-color: #ffff00;
+}
+
+.colcircle_green {
+    width:10px;
+    height:10px;
+    border-radius:50px;
+    font-size:20px;
+    color:#fff;
+    line-height:100px;
+    background-color: #008000;
+}
+
+#rankwrapper{
+	width:100%;
+	margin:0
+}
+
 #tableDiv
 {
-	width: 160px;
+	width: 200px;
 	height: 100%;
 	overflow: auto;
 	position: absolute;
@@ -32,7 +66,7 @@ html, body, .map {
 }
 
 #featureTable th{
-	background-color: #2A88AD;
+    background-color: #2A88AD;
     color: white;
     cursor: default;
 }
@@ -44,9 +78,21 @@ html, body, .map {
 }
 
 #featureTable{
-
   	background-color: #FFFFFF;
 
+}
+
+[class*='close-'] {
+  color: #424242;
+  font: 14px/100% arial, sans-serif;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  top: 2px;
+}
+
+.close-thin:after {
+  content: 'X'; /* UTF-8 symbol */
 }
 
 .search {
@@ -120,7 +166,7 @@ html, body, .map {
 
 a {
 	padding: 10px;
-	color: black !important;
+	color: black;
 
 }
 

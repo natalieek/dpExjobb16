@@ -700,65 +700,48 @@ function getParamValue(layers,map){
 	resetSliders()
 }
 
-function populateTable1(features,map){
-	var obj = features;
-	//Sort features with highest totalvalue first.
-	obj.sort(function(obj1, obj2) {
-		return obj2.get("totalvalue") - obj1.get("totalvalue")
-	});
-    var table = $("<table id="+"featureTable"+" />");
-    table[0].border = "1";
-    var columns = ["Gid","Total value"];
-    var columnCount = columns.length;
-    var row = $(table[0].insertRow(-1));
-    for (var i = 0; i < columnCount; i++) {
-        var headerCell = $("<th />");
-        headerCell.html([columns[i]]);
-        row.append(headerCell);
-    }
-
-    for (var i = 0; i < obj.length; i++) {
-    	row = $(table[0].insertRow(-1));
-    	row.id=id=obj[i].get("gid");
-    	var cell1 = $("<td />");
-    	var cell2 = $("<td />");
-    	cell1.html(obj[i].get("gid"));
-    	cell2.html(obj[i].get("totalvalue"));
-    	row.append(cell1,cell2);
-    	$("#featureTable").click(function (test){
-    		console.log("Klickar på rad");
-    		//zoomToMap(map, row.id, features);
-    	});
-    }
-    var dvTable = $("#dvCSV");
-    dvTable.html("");
-    dvTable.append(table);
-}
-
 function populateTable(features, map){
+	//Sort features based on totalvalue --> highest value on top
 	features.sort(function(obj1, obj2) {
 		return obj2.get("totalvalue") - obj1.get("totalvalue")
 	});
 	var table = document.getElementById("featureTable");
+	//For each feature...
 	for(i=1; i<features.length; i++) {
+		//Create a row
 		var row = featureTable.insertRow(i+1);
-		var featureID = features[i].get("gid")
+		//Get ID of feature
+		var featureID = features[i].get("gid");
+		//Insert columns for
 	    row.insertCell(0).innerHTML="<p>"+i+"</p>";
 		row.insertCell(1).innerHTML="<p id="+features[i].get("gid")+">"+features[i].get("gid")+"</p>";
 		row.insertCell(2).innerHTML="<p>"+features[i].get("totalvalue")+"</p>";
+		if (features[i].get("totalvalue")>=20000){
+			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
+		}
+		else if (10000 <=features[i].get("totalvalue") && features[i].get("totalvalue")< 20000){
+			row.insertCell(3).innerHTML="<div class='colcircle_yellow'> </div>";
+		}
+		else {
+			console.log("hej");
+			row.insertCell(3).innerHTML="<div class='colcircle_green'> </div>";
+		}
+		//When click on column with ID features[i].get("gid")
 		$("#"+features[i].get("gid")+"").click(function(test){
-			console.log('abc', test.target.outerText)
-			zoomToMap(map, test.target.outerText, features)})
-		};
-	$("#tableDiv").show();
+			zoomToMap(map, test.target.outerText, features)
+		});
+	};
 }
 
 function zoomToMap(map,featureID, features){
+	//Filter out feature - return the ones that match feature ID
 	var foundFeat = features.filter(function(features){
 		return features.get("gid") == featureID
 	});
 	console.log(foundFeat);
+	//Get extent of feature
 	extent = foundFeat[0].getGeometry().getExtent()
+	//Zoom to extent
 	map.getView().fit(extent,map.getSize());
 }
 
