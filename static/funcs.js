@@ -730,7 +730,9 @@ function populateTable(features, map){
 		$("#"+features[i].get("gid")+"").click(function(test){
 			zoomToMap(map, test.target.outerText, features)
 		});
+		
 	};
+	$('#tableDiv').show();
 }
 
 function zoomToMap(map,featureID, features){
