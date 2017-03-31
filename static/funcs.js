@@ -268,6 +268,7 @@ Promise
   $(function () {
     $('[data-toggle="popover"]').popover()
   })
+  console.log(JSON.parse(responses.gasArc));
   layers = {'Arcs': [], 'Nodes': [], 'Connections':[], 'Networks':[], 'Data':[], 'Types':['gas', 'heating', 'water'], 'Clusters':[]}
   layerGroups = [];
   inLayers = {'Arcs': [responses.gasArc, responses.heatArc, responses.waterArc], 'Nodes': [responses.gasNode, responses.heatNode, responses.waterNode], 'Connections':[responses.gasConn, responses.heatConn, responses.waterConn]}
