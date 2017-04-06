@@ -268,7 +268,7 @@ Promise
   $(function () {
     $('[data-toggle="popover"]').popover()
   })
-  console.log(JSON.parse(responses.gasArc));
+  //console.log(JSON.parse(responses.gasArc));
   layers = {'Arcs': [], 'Nodes': [], 'Connections':[], 'Networks':[], 'Data':[], 'Types':['gas', 'heating', 'water'], 'Clusters':[]}
   layerGroups = [];
   inLayers = {'Arcs': [responses.gasArc, responses.heatArc, responses.waterArc], 'Nodes': [responses.gasNode, responses.heatNode, responses.waterNode], 'Connections':[responses.gasConn, responses.heatConn, responses.waterConn]}
@@ -707,16 +707,23 @@ function populateTable(features, map){
 		return obj2.get("totalvalue") - obj1.get("totalvalue")
 	});
 	var table = document.getElementById("featureTable");
+	var header = table.createTHead();
+	var headerRow = header.insertRow(0);
+	headerRow.insertCell(0).innerHTML="<th>Rank</th>";
+	headerRow.insertCell(1).innerHTML="<th>Gid</th>";
+	headerRow.insertCell(2).innerHTML="<th>Total value</th>";
+	headerRow.insertCell(3).innerHTML="<th></th>";
 	//For each feature...
+	var tBody = document.getElementById("tbody")
 	for(i=1; i<features.length; i++) {
 		//Create a row
-		var row = featureTable.insertRow(i+1);
+		var row = tBody.insertRow(i+1);
 		//Get ID of feature
 		var featureID = features[i].get("gid");
 		//Insert columns for
-	    row.insertCell(0).innerHTML="<p>"+i+"</p>";
-		row.insertCell(1).innerHTML="<p id="+features[i].get("gid")+">"+features[i].get("gid")+"</p>";
-		row.insertCell(2).innerHTML="<p>"+features[i].get("totalvalue")+"</p>";
+	    row.insertCell(0).innerHTML="<td>"+i+"</td>";
+		row.insertCell(1).innerHTML="<td id="+features[i].get("gid")+">"+features[i].get("gid")+"</td>";
+		row.insertCell(2).innerHTML="<td>"+features[i].get("totalvalue")+"</td>";
 		if (features[i].get("totalvalue")>=20000){
 			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
 		}
@@ -734,7 +741,31 @@ function populateTable(features, map){
 		
 	};
 	$('#tableDiv').show();
+	$('#tableDiv').scroll(moveScroll);
 }
+
+function moveScroll(){
+    var scroll = $('#tableDiv').scrollTop();
+    var anchor_top = $("#featureTable").offset().top;
+    var anchor_bottom = $("#bottom_anchor").offset().top;
+    if (scroll>anchor_top && scroll<anchor_bottom) {
+    clone_table = $("#clone");
+    if(clone_table.length == 0){
+        clone_table = $("#featureTable").clone();
+        clone_table.attr('id', 'clone');
+        clone_table.css({position:'fixed',
+                 'pointer-events': 'none',
+                 top:0});
+        clone_table.width($("#featureTable").width());
+        $("#tableDiv").append(clone_table);
+        $("#clone").css({visibility:'hidden'});
+        $("#clone thead").css({visibility:'visible'});
+    }
+    } else {
+    $("#clone").remove();
+    }
+}
+
 
 function zoomToMap(map,featureID, features){
 	//Filter out feature - return the ones that match feature ID

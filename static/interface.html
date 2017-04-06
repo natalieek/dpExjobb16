@@ -18,7 +18,7 @@
   <script src="http://openlayers.org/en/v3.14.2/build/ol-debug.js"></script>
   <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4-src.js"></script>
-  <script src="func_17.js"></script>
+  <script src="funcs.js"></script>
   <script src="ol3-layerswitcher.js"></script>
   <script src="http://underscorejs.org/underscore-min.js"></script>
   <script src="interface.js"></script>
@@ -356,18 +356,15 @@
 </div>
 
 <div id="tableDiv" class="scroll">
-	<table id="featureTable">
-	<thead>
-    	<tr class="header">
-    		<th>Rank</th>
-        	<th>Gid</th>
-            <th>Total value</th>
-        </tr >
-     </thead>
-     <tbody >
-     	<tr>
-     </tbody>
+	<table id="featureTable" >
+	<thead id="thead">
+	</thead>
+	<tbody id="tbody">
+		<tr></tr>
+		<tr>
+	</tbody>
 	</table>
+	<div id="bottom_anchor"></div>
 </div>
 
 
