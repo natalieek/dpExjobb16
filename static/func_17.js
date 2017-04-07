@@ -264,6 +264,31 @@ function layerMaker(data,layers,network,showArc, showNode, showConn,layerGroups,
 	//If multiple clusters, add clustering vector creation here
 }
 
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+}
+
+/*function extendMenu(){
+var acc = document.getElementsByClassName("accordion");
+for (i = 0; i < acc.length; i++) {
+  acc[i].onclick = function() {
+    this.classList.toggle("active");
+    var panel = this.nextElementSibling;
+    if (panel.style.maxHeight){
+      panel.style.maxHeight = null;
+    } else {
+      panel.style.maxHeight = panel.scrollHeight + "px";
+    } 
+  }
+}
+}*/
+
 function workCluster(responses, title, visibility, styleF){
 	var workSource = new ol.source.Vector()
 	workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
@@ -458,10 +483,17 @@ function populateTable(features, map){
 		return obj2.get("totalvalue") - obj1.get("totalvalue")
 	});
 	var table = document.getElementById("featureTable");
+	var header = table.createTHead();
+	var headerRow = header.insertRow(0);
+	headerRow.insertCell(0).innerHTML="<th>Rank</th>";
+	headerRow.insertCell(1).innerHTML="<th>Fack</th>";
+	headerRow.insertCell(2).innerHTML="<th>Total value</th>";
+	headerRow.insertCell(3).innerHTML="<th></th>";
 	//For each feature...
+	var tBody = document.getElementById("tbody")
 	for(i=1; i<features.length; i++) {
 		//Create a row
-		var row = featureTable.insertRow(i+1);
+		var row = tBody.insertRow(i+1);
 		//Get ID of feature
 		var featureID = features[i].get("gid");
 		//Insert columns for
@@ -482,6 +514,30 @@ function populateTable(features, map){
 			zoomToMap(map, test.target.outerText, features)
 		});
 	};
+	$('#tableDiv').show();
+	$('#tableDiv').scroll(moveScroll);
+}
+
+function moveScroll(){
+    var scroll = $('#tableDiv').scrollTop();
+    var anchor_top = $("#featureTable").offset().top;
+    var anchor_bottom = $("#bottom_anchor").offset().top;
+    if (scroll>anchor_top && scroll<anchor_bottom) {
+    clone_table = $("#clone");
+    if(clone_table.length == 0){
+        clone_table = $("#featureTable").clone();
+        clone_table.attr('id', 'clone');
+        clone_table.css({position:'fixed',
+                 'pointer-events': 'none',
+                 top:0});
+        clone_table.width($("#featureTable").width());
+        $("#tableDiv").append(clone_table);
+        $("#clone").css({visibility:'hidden'});
+        $("#clone thead").css({visibility:'visible'});
+    }
+    } else {
+    $("#clone").remove();
+    }
 }
 
 function zoomToMap(map,featureID, features){

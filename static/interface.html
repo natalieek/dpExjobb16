@@ -18,7 +18,7 @@
   <script src="http://openlayers.org/en/v3.14.2/build/ol-debug.js"></script>
   <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4-src.js"></script>
-  <script src="funcs.js"></script>
+  <script src="func_17.js"></script>
   <script src="ol3-layerswitcher.js"></script>
   <script src="http://underscorejs.org/underscore-min.js"></script>
   <script src="interface.js"></script>
@@ -26,204 +26,27 @@
   
 </head>
 <body>
+<div class="container">
+<div class="row map" id="map" ></div>
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#">About</a>
+  <a href="#">Services</a>
+  <a href="#" onClick="showForm('checkDiv')">Analys</a>
+  <a href="#">Contact</a>
+</div>
 
+<div id="main">
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+</div>
 
+<!-- <button class="testKnapp" onClick="showForm('checkDiv')"> Klicka</button> -->
 
-  <div class="container">
-    <div id="popup"></div>
-    <div class="row map" id="map" ></div>
-
-    <div class="row">
-      <div class="col-sm-6">
-        <div class= "search">
-          <input type="text" class="searchtext" value="Sök">
-        </div>
-
-        <div class="dropdown">
-          <div id="exp" class="searchexpand">
-            <i id="downarrow" class="fa fa-angle-double-down" aria-hidden="true">
-            </i>
-          </div>
-          <div class="dropdown-content">
-            <a href="#">Sök anslutningspunkt</a>
-            <a href="#">Sök mätare</a>
-            <a href="#" onclick="show('searchoptions')">Sök kund</a>
-            <a href="#">Sök abonnemang</a>
-            <a href="#">Sök fastighet</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div id="searchoptions" class="searchoptions">
-        <div id="hidearea" onclick="hide('searchoptions')"> 
-          <i id="leftarrow"  class="fa fa-angle-left" aria-hidden="true"></i>
-        </div>
-        <p id="cust">Sök kund</p>    
-        <div class="form-group">
-          <div class="col-sm-10">
-            <input class="form-control" id="ID" placeholder="ID">
-            <input class="form-control" id="Namn" placeholder="Namn">
-            <div class="btns ">
-              <button class="btn btn-default" onclick="show('searchresult')">Sök</button>
-              <button class="btn btn-default" onclick="hide('searchresult')">Rensa</button>
-            </div>
-          </div>
-        </div>
-
-        <table class="tbl" id="searchresult">
-          <tr>
-            <th>ID</th>
-            <th>Namn</th> 
-            <th>Adress</th>
-            <th>Anslutningspunkt</th>
-          </tr>
-          <tr>
-            <td>20</td>
-            <td>Karl Blom</td> 
-            <td>Rabattvägen 94</td>
-            <td>72108001</td>
-          </tr>
-          <tr>
-            <td>23</td>
-            <td>Elin Karlsson</td> 
-            <td>Videgränd 8</td>
-            <td>P00326595</td>
-          </tr>
-          <tr>
-            <td>60</td>
-            <td>Malin Jonsson</td> 
-            <td>Fleminggatan 50</td>
-            <td>72222991</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-
-    <div class="row">
       <div class="tools" id="tools">
         <div class="col-xs-2 bg" id="bg1">
           <img src="layers.svg">
         </div>
-        <div class="col-xs-2 bg" id="bg2" onclick="showpanel('bg2')">
-          <i id="user" class="fa fa-user" aria-hidden="true"></i>
-        </div>
-        <div class="col-xs-2 bg" id="bg3" onclick="showmsg('bg3')">
-          <i class="fa fa-envelope" aria-hidden="true" onclick="indicateChoice('bg3')"></i>
-        </div>
-        <div class="col-xs-2 bg" id="bg4" onclick="showkill()">
-          <i class="fa fa-bolt" aria-hidden="true"></i>
-        </div>
-        <div class="col-xs-2 bg" id="bg5" onclick="showstatus('bg5')">
-          <div id="status" class="circle"> 
-            <i class="fa fa-info" aria-hidden="true" style="color:white;"></i>
-          </div>
-        </div>
-        <div class="col-xs-2">
-          <i id="arrow" onclick="hidepanel('bg2');hidemsg('bg3');" class="fa fa-angle-double-up" aria-hidden="true"></i>
-        </div>
       </div>
-
-      <div class="row" id="customers">
-        <div class="top-panel">
-          <input type="text" value="Filtrera">
-          <label class="checkbox-inline"><input type="checkbox" value="">Ickekund</label>
-          <label class="checkbox-inline"><input type="checkbox" value="">Användare</label>
-          <label class="checkbox-inline"><input type="checkbox" value="">Beställare</label>
-          <label class="checkbox-inline"><input type="checkbox" value="">Installatör</label>
-          <label class="checkbox-inline"><input type="checkbox" value="">Abonnent</label>
-        </div>
-
-        <div class="row" style="height:100%;overflow-y:scroll;overflow-x:auto;margin-left:5px;">
-        <table class="table table-striped " id="custTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Förnamn</th>
-              <th>Efternamn</th>
-              <th>Adress</th>
-              <th>Anslutning Gas</th>
-              <th>Anslutning Fjärrvärme</th>
-              <th>Anslutning Vatten</th>
-              <!--<th>Anslutningspunkt</th>-->
-            <tr>
-          </thead>
-        </table>
-        </div>
-      </div>
-
-      <div class="row" >
-        <div class="col-sm-4" id="msg" >
-
-          <div id="topmsg">
-            <p>Nytt meddelande</p>
-          </div>
-          <input class="form-control" id="to" placeholder="Till">
-          <input class="form-control" id="subj" placeholder="Ämne">
-          <button class="btn btn-default" id="send">Skicka</button>
-        </div>
-
-      </div>
-
-      <div class="row"  id="statusbox1">
-        <!--<div class="col-sm-4" id="statusbox">-->
-        <i class="fa fa-times close" aria-hidden="true" onclick="hidestatus('bg5')"></i>
-        <div class="col-sm-4 col" id="stat">
-          <div class="row">
-            <div class="circle" id="circstat"></div>
-            <p class="statustext">Inga avbrott</p>
-          </div>
-        </div>
-
-        <div class="col-sm-4 col">
-          <p>Aktiviteter</p>
-          <ul class="act">
-            <li id=numRepairs>0</li>
-            <li id=numInstalls>0</li>
-          </ul>
-        </div>
-
-        <!-- </div> --> 
-      </div>
-
-    </div>
-
-    <div class="row" id="kill">
-     <div class="form-group">
-      <label for="usr">Nod att ha sönder: </label>
-      <input type="text" class="form-control" id="usr">
-    </div>
-    <select class="form-control" id="Networks" name="Networks">
-      <option selected="selected" value="0">Water</option>
-      <option value="1">Gas</option>
-      <option value="2">Heating</option>
-    </select>
-  </div>
-
-<div class="row" id="statusbox2">
-  <i class="fa fa-times close" aria-hidden="true" onclick="hidestatus('bg5')"></i>
-   <div class="col-sm-4 col">
-      <div class="row">
-        <div class="circle2" id="circstat2"></div>
-        <p class="statustext">Avbrott!</p>
-      </div>
-      <ul class="info">
-        <li id=networkList>Nätverk: Fjärrvärme</li>
-        <li id=idList>Trasig nod: 1246</li>
-      </ul>
-    <button id=zoomButton class="btn-xs btn-default btn-stat">Zooma till avbrott</button>
-    </div> 
-    <div class="col-sm-4 col">
-      <ul class="info2">
-        <li id=numList>Antal drabbade: 500</li>
-      </ul>
-      <button class="btn-xs btn-default btn-stat" id="infcust" onclick="showmsg('bg3')">Informera kunder</button>
-    </div>
-  </div>
-  
-<button class="testKnapp" onClick="showForm('checkDiv')"> Klicka</button>
 
 <div class="testForm" id="checkDiv">
 		<h1>Välj parametrar</h1>
