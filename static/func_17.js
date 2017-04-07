@@ -93,9 +93,9 @@ init = function() {
 	//To be implemeted: somehow group them together already in the requests-phase.
 	requests = {
 			'nodes':
-				makeRequest('GET', '/test/fpp.symg'),
+				makeRequest('GET', '/node/fpp.symg/fpp.elcbx'),
 			'lines':
-				makeRequest('GET', '/test/fpp.grag')
+				makeRequest('GET', '/cbl/fpp.grag/fpp.elcbl')
 	}
 	Promise
 	.props(requests)
@@ -103,17 +103,14 @@ init = function() {
 		$(function () {
 			$('[data-toggle="popover"]').popover()
 		})
-		//console.log(JSON.parse(JSON.parse(responses.nodes)))
-		var lineObject = JSON.parse(responses.lines)
-		var nodeObject = JSON.parse(responses.nodes)
-
+		var lineObject = JSON.parse(responses.lines);
+		var nodeObject = JSON.parse(responses.nodes);
 		var lineSource = new ol.source.Vector({
 			features: (new ol.format.GeoJSON()).readFeatures(lineObject)
 		})
 		var nodeSource = new ol.source.Vector({
 			features: (new ol.format.GeoJSON()).readFeatures(nodeObject)
 		})
-
 		var lineLayer = new ol.layer.Vector({
 			source: lineSource,
 			style: styleFunction
@@ -122,63 +119,7 @@ init = function() {
 			source: nodeSource,
 			style: styleFunction
 		});
-		//console.log(nodeLayer)
-		console.log(lineSource.getFeatures())
-		console.log(nodeSource.getFeatures())
-        
-		proj4.defs("EPSG:3009","+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
-		var myProjection = ol.proj.get('EPSG:3009');
-		var raster = new ol.layer.Tile({  
-			type:'base',
-			title:'Bakgrund ljus', 
-			source: new ol.source.XYZ({
-				tileSize: [512, 512],
-				url: 'https://api.mapbox.com/styles/v1/fhilding/cin084lbc004mc9maksu66pyt/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
-				crossOrigin: 'anonymous'
-			})
-		});
-		var darkRaster = new ol.layer.Tile({  
-			type:'base',
-			title:'Bakgrund mörk', 
-			source: new ol.source.XYZ({
-				tileSize: [512, 512],
-				url: 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
-				crossOrigin: 'anonymous'
-			})
-		});
-	    var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
-	    ol.proj.addProjection(myProjection);
-	    var map = new ol.Map({
-	      layers: [basemap, lineLayer, nodeLayer],
-	      target: 'map',
-	      interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
-	      view: new ol.View({
-	        center: [138577,6307000],
-	        resolution: 50,
-	        projection: myProjection,
-	      })
-	    });
-	    var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
-	        tipLabel: 'Legend' // Optional label for button
-	      });
-	    map.addControl(layerSwitcher);
-	    $("#runBtn").click(function(){
-	  	  var sum = 0
-	  	  //For each slider..
-	  	  var sliders = $("#sliders .slider");
-	  	  sliders.each(function(){
-	  		  //..add value of slider to sum variable
-	  		  sum += $(this).slider("option","value");
-	  	  });
-
-	  	  if (sum < 100) {
-	  		  alert ("Totala vikten är " + sum + "%. Måste vara 100%")
-	  	  }
-	  	  else {
-	  		  getParamValue(layers,map);
-	  		  hideForm('weightForm');
-	  	  }
-	    })
+		map = mapMaker(nodeLayer, lineLayer)
 
 	})
 /*	.catch(function (err) {
@@ -187,15 +128,87 @@ init = function() {
 	});*/
 };
 
+function mapMaker(nodeLayer, lineLayer){
+	proj4.defs("EPSG:3009","+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
+	var myProjection = ol.proj.get('EPSG:3009');
+	var raster = new ol.layer.Tile({  
+		type:'base',
+		title:'Bakgrund ljus', 
+		source: new ol.source.XYZ({
+			tileSize: [512, 512],
+			url: 'https://api.mapbox.com/styles/v1/fhilding/cin084lbc004mc9maksu66pyt/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
+			crossOrigin: 'anonymous'
+		})
+	});
+	var darkRaster = new ol.layer.Tile({  
+		type:'base',
+		title:'Bakgrund mörk', 
+		source: new ol.source.XYZ({
+			tileSize: [512, 512],
+			url: 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
+			crossOrigin: 'anonymous'
+		})
+	});
+    var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
+    ol.proj.addProjection(myProjection);
+    var map = new ol.Map({
+      layers: [basemap, lineLayer, nodeLayer],
+      target: 'map',
+      interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
+      view: new ol.View({
+        center: [138577,6307000],
+        resolution: 50,
+        projection: myProjection,
+      })
+    });
+    var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
+        tipLabel: 'Legend' // Optional label for button
+      });
+    var element = document.getElementById('popup');
+    var popup = new ol.Overlay({
+        element: element,
+        positioning: 'bottom-center',
+        stopEvent: false
+    });
+    map.addOverlay(popup);
+    map.on('click', function (evt) {
+        var feature = map.forEachFeatureAtPixel(evt.pixel,
 
-//Creates OL-sources and fills them with freshly read json
-function dataMaker(json_arc, json_node){
-	var arcSource_in = new ol.source.Vector()
-	var nodeSource_in = new ol.source.Vector()
+        function (feature, layer) {
+            return feature;
+        });
+        if (feature) {
+            var geometry = feature.getGeometry();
+            var coord = geometry.getCoordinates();
+            popup.setPosition(coord);
+            $(element).popover({
+                'placement': 'top',
+                'html': true,
+                'content': "<p>" + 'ID: ' + feature.get("id")+"</p>" + "<p>"+'Anmärkningsgrad: ' + feature.get("anmarkningsgrad")+"</p>"
+            });
+            $(element).popover('show');
+        } else {
+            $(element).popover('destroy');
+        }
+    });
+    map.addControl(layerSwitcher);
+    $("#runBtn").click(function(){
+  	  var sum = 0
+  	  //For each slider..
+  	  var sliders = $("#sliders .slider");
+  	  sliders.each(function(){
+  		  //..add value of slider to sum variable
+  		  sum += $(this).slider("option","value");
+  	  });
 
-	arcSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_arc)))
-	nodeSource_in.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(json_node)))
-	return {'arcSource': arcSource_in, 'nodeSource':nodeSource_in}
+  	  if (sum < 100) {
+  		  alert ("Totala vikten är " + sum + "%. Måste vara 100%")
+  	  }
+  	  else {
+  		  getParamValue(nodeLayer,lineLayer,map);
+  		  hideForm('weightForm');
+  	  }
+    })
 }
 
 
@@ -324,154 +337,6 @@ function polyMaker(feature) {
 	return style;
 }
 
-
-function hexToRgbA(hex){
-	var c;
-	if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-		c= hex.substring(1).split('');
-		if(c.length== 3){
-			c= [c[0], c[0], c[1], c[1], c[2], c[2]];
-		}
-		c= '0x'+c.join('');
-		return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',0.3)';
-	}
-	throw new Error('Bad Hex');
-}
-
-//Creates the final map, along with two mouse events.
-//To-do: Set correct data on load.
-
-function mapMaker(inGroups, inLayers){
-	proj4.defs("EPSG:3006","+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
-	var myProjection = ol.proj.get('EPSG:3006');
-	var raster = new ol.layer.Tile({  
-		type:'base',
-		title:'Bakgrund ljus', 
-		source: new ol.source.XYZ({
-			tileSize: [512, 512],
-			url: 'https://api.mapbox.com/styles/v1/fhilding/cin084lbc004mc9maksu66pyt/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
-			crossOrigin: 'anonymous'
-		})
-	});
-
-	var darkRaster = new ol.layer.Tile({  
-		type:'base',
-		title:'Bakgrund mörk', 
-		source: new ol.source.XYZ({
-			tileSize: [512, 512],
-			url: 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
-			crossOrigin: 'anonymous'
-		})
-	});
-
-	var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
-
-	ol.proj.addProjection(myProjection);
-	var map = new ol.Map({
-		layers: _.flatten([basemap, inGroups]),
-		target: 'map',
-		interactions : ol.interaction.defaults({doubleClickZoom :false}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
-		view: new ol.View({
-			center: [670162.497556056,6579305.28607494],
-			resolution: 10,
-			projection: myProjection,
-			resolutions: [5,4,3,2,1.5,1,0.5,0.25]
-
-		})
-	});
-	var element = document.getElementById('popup');
-	var popup = new ol.Overlay({
-		element: element,
-		positioning: 'bottom-center',
-		stopEvent: false
-	});
-	map.addOverlay(popup);
-
-	var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
-		tipLabel: 'Legend' // Optional label for button
-	});
-	map.addControl(layerSwitcher);
-
-	//To extract info about what you click on
-	map.on('singleclick', function(evt) {                         
-		var feature = map.forEachFeatureAtPixel(evt.pixel,
-				function(feature, layer) {
-			popupMaker(feature,popup)
-		});                                                         
-	});
-
-	map.getLayers().forEach(function(layerGroup) {
-		if(layerGroup.getLayers().getArray()[0] instanceof ol.layer.Vector){      
-			_.each(layerGroup.getLayers().getArray(), function(layer){
-				if(layer.get("type")==='node'){
-					bindNodeInputs(layer, inLayers, map, inGroups);
-				}
-			})
-		}
-	}); 
-
-	map.on('dblclick', function(evt) {    
-		var networkType = map.forEachLayerAtPixel(evt.pixel,
-				function(layer) {
-			if(layer instanceof ol.layer.Vector){
-				deleteLayers(inLayers, layer, map, inGroups)
-			}
-		},null, function(layer) {
-			return _.contains(inLayers.Arcs, layer);
-		});
-	}); 
-	//UPDATE heat_nodes SET gid=post.id FROM heat_arcs_vertices_pgr post WHERE ST_intersects(heat_nodes.the_geom, ST_Buffer(post.the_geom,0.5))
-	//When zooming, re-assesses what data to show, depending on the current resolution.
-	map.getView().on('change:resolution', function(e) {
-		var cur_res = e.target.get('resolution');
-		var restraints = resolutionEvaluator(cur_res,inLayers);
-		trimData(restraints, inLayers, inGroups);
-		$(element).popover('destroy');
-	});
-
-	map.on('pointermove', function(e) {
-		if (e.dragging) {
-			$(element).popover('destroy');
-			return;
-		}
-	});
-	$("#runBtn").click(function(){
-		var sum = 0
-		//For each slider..
-		var sliders = $("#sliders .slider");
-		sliders.each(function(){
-			//..add value of slider to sum variable
-			sum += $(this).slider("option","value");
-		});
-
-		if (sum < 100) {
-			alert ("Totala vikten är " + sum + "%. Måste vara 100%")
-		}
-		else {
-			getParamValue(layers,map);
-			hideForm('weightForm');
-		}
-	})
-}
-
-var pointTexts = {
-		'606000':{'type':'fjärrvärmenät','body':'Heatinganslutning', 'title':'Fjärrvärmenät'}, 
-		'890400':{'type':'vattennät','body':'Vattenanslutning', 'title':'Vattennät'},
-		'804000':{'type':'vattennod','body':'Vattennod', 'title':'Avbrott i vattennät'},
-		'933000':{'type':'gasnod','body':'Gasnod', 'title':'Avbrott i gasnät'},
-		'800004':{'type':'fjärrvärmenod','body':'Fjärrvärmenod', 'title':'Avbrott i fjärrvärmenät'},
-		'934000':{'type':'gasnät','body':'Gasanslutning', 'title':'Gasnät'},
-		'112233':{'type':'installation','body':'#3F51B5', 'title':'Installation'}, 
-		'123123':{'type':'reparation','body':'#EC407A', 'title':'Reparation'},
-		'333333':{'type':'kund','body':'pink', 'title':'Kund'}
-}
-
-
-var lineTexts = {
-		'901000':{'type':'gas','title':'Gas'}, '602000':{'type':'fjärrvärme','title':'Fjärrvärme'}, 
-		'808000':{'type':'vatten','title':'Vatten'},'901000':{'type':'gas','title':'Gas'},
-}
-
 function MCEmapMaker(feature, map){
 	featureSource = new ol.source.Vector();
 	featureSource.addFeatures(feature);
@@ -512,43 +377,65 @@ function MCEmapMaker(feature, map){
 	populateTable(feature,map);
 }
 
-function getParamValue(layers,map){
+function getAge(features){
+	ageList = [];
+	var currentYear = new Date().getFullYear();
+	for (i=0; i<features.length; i++){
+		if (!!features[i].get("installerad")){
+			var age = currentYear - features[i].get("installerad")
+			ageList.push(age);
+		}
+	}
+	return ageList;
+}
+
+function getParamValue(nodeLayer, lineLayer, map){
 	//Get faetures from layers 
-	var features = layers.Arcs[0].getSource().getFeatures();
-	//Create empty arrays
+	var features = lineLayer.getSource().getFeatures();
 	id = [];
+	getAge(features);
 	outages = [];
 	weightOutages = [];
-	replaced = [];
-	weightReplaced = [];
+	insp = [];
+	weightAge = [];
+	weightInsp = [];
 	totalValue = [];
 	var sliderValues = getSliderValue(); //Get value from each slider
 
 	//For every parameter...
 	for (i=0; i<features.length; i++){
 		//..push value into array
-		id.push(features[i].get("gid"));
-		outages.push(features[i].get("source"));
-		replaced.push(features[i].get("target"));		
+		id.push(features[i].get("id"));
+		outages.push(features[i].get("dp_otype"));
+		insp.push(features[i].get("anmarkningsgrad"));		
 	}
 	//get minimum and maximum value
+	var minAge = Math.min.apply(null,ageList);
+	var maxAge = Math.max.apply(null,ageList);
 	var minOutage = Math.min.apply(null,outages);
 	var maxOutage = Math.max.apply(null,outages);
-	var minReplaced = Math.min.apply(null,replaced); 
-	var maxReplaced = Math.max.apply(null,replaced);
+	var minInsp = Math.min.apply(null,insp); 
+	var maxInsp = Math.max.apply(null,insp);
 
 	for ( j=0; j<outages.length; j++){
 		//Norm values
+		var normedAge = normValues(ageList[j], minAge, maxAge);
 		var normedOutage = normValues(outages[j], minOutage, maxOutage);
-		var normedReplaced = normValues(replaced[j], minReplaced, maxReplaced);
+		var normedInsp = normValues(insp[j], minInsp, maxInsp);
+		
 		//Multiply normed value with weight
 		weightOutages.push(normedOutage*sliderValues[0]);
-		weightReplaced.push(normedReplaced*sliderValues[1]);
+		weightInsp.push(normedInsp*sliderValues[1]);
+		weightAge.push(normedAge*sliderValues[2]);
 		//Sum the weighted parameters to a total score
-		totalValue.push(weightOutages[j] + weightReplaced[j]);
+		totalValue.push(weightOutages[j] + weightInsp[j]+weightAge[j]);
 	}
+
 	var requests = [];
-	for (k=0; k<10; k++){
+	for (k=0; k<features.length; k++){
+		console.log(features[k].attributes);
+	}
+/*	for (k=0; k<10; k++){
 		var totVal = parseFloat((totalValue[k]).toFixed(2));
 		features[k].set("totalvalue", totVal);
 		//Update arc id[i] with totalValue[k]
@@ -558,7 +445,7 @@ function getParamValue(layers,map){
 	Promise.all(requests).then(function() {
 		console.log("Klar");
 		MCEmapMaker(features, map);
-	});
+	});*/
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
@@ -588,7 +475,6 @@ function populateTable(features, map){
 			row.insertCell(3).innerHTML="<div class='colcircle_yellow'> </div>";
 		}
 		else {
-			console.log("hej");
 			row.insertCell(3).innerHTML="<div class='colcircle_green'> </div>";
 		}
 		//When click on column with ID features[i].get("gid")
@@ -614,24 +500,6 @@ function zoomToMap(map,featureID, features){
 function normValues(value, min, max){
 	var normedValue = (value-min)*(255/(max-min))
 	return normedValue;	
-}
-
-function checkWeights(id){
-	var sum = 0
-	//For each slider..
-	var sliders = $("#sliders .slider");
-	sliders.each(function(){
-		//..add value of slider to sum variable
-		sum += $(this).slider("option","value");
-	});
-
-	if (sum < 100) {
-		alert ("Totala vikten är " + sum + "%. Måste vara 100%")
-	}
-	else {
-		getParamValue(layers);
-		hideForm(id);
-	}
 }
 
 function getSliderValue(){
