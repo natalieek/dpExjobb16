@@ -28,13 +28,21 @@
 <body>
 <div class="container">
 <div class="row map" id="map" ></div>
+
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   <a href="#">About</a>
-  <a href="#">Services</a>
+  
+  <a href="#" class = "accordion" onClick="extendMenu()"> Bakgrundskarta</a>
+  <div class="extend">
+  	<div id="layer_panel">
+  	</div>
+  </div>
+  
   <a href="#" onClick="showForm('checkDiv')">Analys</a>
   <a href="#">Contact</a>
 </div>
+
 
 <div id="main">
   <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
@@ -42,11 +50,11 @@
 
 <!-- <button class="testKnapp" onClick="showForm('checkDiv')"> Klicka</button> -->
 
-      <div class="tools" id="tools">
+<!--       <div class="tools" id="tools">
         <div class="col-xs-2 bg" id="bg1">
           <img src="layers.svg">
         </div>
-      </div>
+      </div> -->
 
 <div class="testForm" id="checkDiv">
 		<h1>Välj parametrar</h1>

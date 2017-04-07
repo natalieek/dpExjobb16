@@ -149,7 +149,7 @@ function mapMaker(nodeLayer, lineLayer){
 			crossOrigin: 'anonymous'
 		})
 	});
-    var basemap = new ol.layer.Group({ 'title': 'Basemap', layers: [darkRaster,raster]})
+    var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
     ol.proj.addProjection(myProjection);
     var map = new ol.Map({
       layers: [basemap, lineLayer, nodeLayer],
@@ -161,9 +161,9 @@ function mapMaker(nodeLayer, lineLayer){
         projection: myProjection,
       })
     });
-    var layerSwitcher = new ol.control.LayerSwitcher({target: 'bg1',
-        tipLabel: 'Legend' // Optional label for button
-      });
+    var layerSwitcher = new ol.control.LayerSwitcher({target: 'layer_panel',
+        /*tipLabel: 'Legend' // Optional label for button
+*/      });
     var element = document.getElementById('popup');
     var popup = new ol.Overlay({
         element: element,
@@ -274,20 +274,22 @@ function closeNav() {
     document.getElementById("main").style.marginLeft= "0";
 }
 
-/*function extendMenu(){
+function extendMenu(){
 var acc = document.getElementsByClassName("accordion");
+
 for (i = 0; i < acc.length; i++) {
   acc[i].onclick = function() {
     this.classList.toggle("active");
-    var panel = this.nextElementSibling;
-    if (panel.style.maxHeight){
-      panel.style.maxHeight = null;
+    var extend = this.nextElementSibling;
+    console.log(extend)
+    if (extend.style.maxHeight){
+      extend.style.maxHeight = null;
     } else {
-      panel.style.maxHeight = panel.scrollHeight + "px";
+      extend.style.maxHeight = extend.scrollHeight + "px";
     } 
   }
 }
-}*/
+}
 
 function workCluster(responses, title, visibility, styleF){
 	var workSource = new ol.source.Vector()

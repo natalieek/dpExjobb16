@@ -64,7 +64,7 @@ html, body, .map {
   .sidenav a {font-size: 18px;}
 }
 
-button.accordion {
+.accordion {
     background-color: #eee;
     color: #444;
     cursor: pointer;
@@ -77,11 +77,11 @@ button.accordion {
     transition: 0.4s;
 }
 
-button.accordion.active, button.accordion:hover {
+.accordion.active, .accordion:hover {
     background-color: #ddd;
 }
 
-button.accordion:after {
+.accordion:after {
     content: '\002B';
     color: #777;
     font-weight: bold;
@@ -89,11 +89,11 @@ button.accordion:after {
     margin-left: 5px;
 }
 
-button.accordion.active:after {
+.accordion.active:after {
     content: "\2212";
 }
 
-div.panel {
+div.extend {
     padding: 0 18px;
     background-color: white;
     max-height: 0;
@@ -342,14 +342,14 @@ a {
 }
 
 
-.btn {
+/* .btn {
 	margin: 8px;
 }
 
 .btns {
 	margin-left:-10px;
 	margin-bottom: 30px;
-}
+} */
 
 .form-control {
 	border-right: none !important;
@@ -537,13 +537,13 @@ input {
 
 }
 
-.ol-control button {
+/* .ol-control button {
 	position: absolute;
 	display: visible !important;
 	background-color: transparent;
 	background: transparent;
 	bottom: 55px;
-	/*background-color:red;*/
+	background-color:red;
 	right:210px;
 	z-index: 100 !important;
 
@@ -551,9 +551,9 @@ input {
 
 .ol-control {
 	padding: 0px;
-}
+} */
 
-.layer-switcher {
+/* .layer-switcher {
 	bottom:-45px;
 	right:-200px;
 	width:240px;
@@ -571,7 +571,7 @@ input {
 	border: none;
 	border-radius: 0px;
 	padding: 5px;
-}
+} */
 
 ::-webkit-scrollbar {
     display: block;
@@ -602,12 +602,12 @@ img {
 	margin-top: 30px;
 }
 
-.btn-stat {
+/* .btn-stat {
 	width:120px;
 	border-radius: 5px !important;
 	padding: 3px 8px !important;
 	margin-left: -19px;
-}
+} */
 
 #infcust {
 	margin-left: -10px !important;
@@ -633,7 +633,7 @@ img {
 tr:nth-child(even) {
 	background-color: #f2f2f2
 }
-
+/* 
 .testKnapp{
     background: #2A88AD;
     padding: 8px 20px 8px 20px;
@@ -657,7 +657,7 @@ tr:nth-child(even) {
     -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
     -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
     box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
-}
+} */
 .testForm {
 		display:none;
 		min-width: 40%;

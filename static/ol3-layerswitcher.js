@@ -10,23 +10,13 @@ ol.control.LayerSwitcher = function(opt_options) {
 
     var options = opt_options || {};
 
-    var tipLabel = options.tipLabel ?
-      options.tipLabel : 'Legend';
 
     this.mapListeners = [];
 
-    this.hiddenClassName = 'ol-unselectable ol-control layer-switcher';
-    if (ol.control.LayerSwitcher.isTouchDevice_()) {
-        this.hiddenClassName += ' touch';
-    }
-    this.shownClassName = this.hiddenClassName + ' shown';
+    this.shownClassName = 'ol-unselectable ol-control layer-switcher';
 
     var element = document.createElement('div');
     element.className = this.hiddenClassName;
-
-    var button = document.createElement('button');
-    button.setAttribute('title', tipLabel);
-    element.appendChild(button);
 
     this.panel = document.createElement('div');
     this.panel.className = 'panel';
@@ -34,23 +24,6 @@ ol.control.LayerSwitcher = function(opt_options) {
     ol.control.LayerSwitcher.enableTouchScroll_(this.panel);
 
     var this_ = this;
-
-    button.onmouseover = function(e) {
-        this_.showPanel();
-    };
-
-    button.onclick = function(e) {
-        e = e || window.event;
-        this_.showPanel();
-        e.preventDefault();
-    };
-
-    this_.panel.onmouseout = function(e) {
-        e = e || window.event;
-        if (!this_.panel.contains(e.toElement || e.relatedTarget)) {
-            this_.hidePanel();
-        }
-    };
 
     ol.control.Control.call(this, {
         element: element,
@@ -172,8 +145,6 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
     if (lyr.getLayers && !lyr.get('combine')) {
 
         li.className = 'group';
-        label.innerHTML = lyrTitle;
-        li.appendChild(label);
         var ul = document.createElement('ul');
         li.appendChild(ul);
 
