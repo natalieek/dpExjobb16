@@ -92,10 +92,10 @@ init = function() {
 	//Requests from all the different text files.
 	//To be implemeted: somehow group them together already in the requests-phase.
 	requests = {
-			'nodes':
-				makeRequest('GET', '/node/fpp.symg/fpp.elcbx'),
 			'lines':
-				makeRequest('GET', '/cbl/fpp.grag/fpp.elcbl')
+				makeRequest('GET', '/cbl/'),
+			'bays':
+				makeRequest('GET', '/bay_stats')
 	}
 	Promise
 	.props(requests)
@@ -103,24 +103,16 @@ init = function() {
 		$(function () {
 			$('[data-toggle="popover"]').popover()
 		})
+		var bayObject = JSON.parse(JSON.parse(responses.bays));
 		var lineObject = JSON.parse(responses.lines);
-		var nodeObject = JSON.parse(responses.nodes);
 		var lineSource = new ol.source.Vector({
 			features: (new ol.format.GeoJSON()).readFeatures(lineObject)
-		})
-		var nodeSource = new ol.source.Vector({
-			features: (new ol.format.GeoJSON()).readFeatures(nodeObject)
 		})
 		var lineLayer = new ol.layer.Vector({
 			source: lineSource,
 			style: styleFunction
 		});
-		var nodeLayer = new ol.layer.Vector({
-			source: nodeSource,
-			style: styleFunction
-		});
-		map = mapMaker(nodeLayer, lineLayer)
-
+		map = mapMaker(lineLayer);
 	})
 /*	.catch(function (err) {
 		console.error('Augh, there was an error!', err.statusText);
@@ -128,7 +120,20 @@ init = function() {
 	});*/
 };
 
-function mapMaker(nodeLayer, lineLayer){
+function checkExistance(features,map){
+	idArray = [];
+	for (i=0; i<features.length; i++){
+		var bayID = features[i].get("fack");
+		var idx = $.inArray(bayID, idArray);
+		if (idx == -1) {
+			idArray.push(bayID);
+		}
+	}
+	getExtentofBay(idArray,features,map);
+}
+
+
+function mapMaker(lineLayer){
 	proj4.defs("EPSG:3009","+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
 	var myProjection = ol.proj.get('EPSG:3009');
 	var raster = new ol.layer.Tile({  
@@ -152,12 +157,12 @@ function mapMaker(nodeLayer, lineLayer){
     var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
     ol.proj.addProjection(myProjection);
     var map = new ol.Map({
-      layers: [basemap, lineLayer, nodeLayer],
+      layers: [basemap, lineLayer],
       target: 'map',
       interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
       view: new ol.View({
         center: [138577,6307000],
-        resolution: 50,
+        resolution: 20,
         projection: myProjection,
       })
     });
@@ -184,7 +189,7 @@ function mapMaker(nodeLayer, lineLayer){
             $(element).popover({
                 'placement': 'top',
                 'html': true,
-                'content': "<p>" + 'ID: ' + feature.get("id")+"</p>" + "<p>"+'Anmärkningsgrad: ' + feature.get("anmarkningsgrad")+"</p>"
+                'content': "<p>" + 'Antal anmärkningar: ' + feature.get("antal_anm")+"</p>" + "<p>"+'Anmärkningsgrad: ' + feature.get("grad")+"</p>"
             });
             $(element).popover('show');
         } else {
@@ -192,6 +197,8 @@ function mapMaker(nodeLayer, lineLayer){
         }
     });
     map.addControl(layerSwitcher);
+	var features = lineLayer.getSource().getFeatures();
+	checkExistance(features,map)
     $("#runBtn").click(function(){
   	  var sum = 0
   	  //For each slider..
@@ -205,7 +212,7 @@ function mapMaker(nodeLayer, lineLayer){
   		  alert ("Totala vikten är " + sum + "%. Måste vara 100%")
   	  }
   	  else {
-  		  getParamValue(nodeLayer,lineLayer,map);
+  		  getParamValue(lineLayer,map);
   		  hideForm('weightForm');
   	  }
     })
@@ -364,43 +371,63 @@ function polyMaker(feature) {
 	return style;
 }
 
-function MCEmapMaker(feature, map){
-	featureSource = new ol.source.Vector();
-	featureSource.addFeatures(feature);
-	var featureLayer = new ol.layer.Vector({
-		visible: true,
-		source: featureSource,
-		style: function(feature,resolution){
-			var styleRed = new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: '#FF0000',
-					width: 2
-				})
-			});
-			var styleGreen = new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: '#008000',
-					width: 2
-				})
-			});
-			var styleYellow = new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: '#FFFF00',
-					width: 2
-				})
-			});
-			if (feature.get('totalvalue') >= 20000){
-				return [styleRed];
-			} 
-			else if (10000 <= feature.get('totalvalue') && feature.get('totalvalue') < 20000){
-				return [styleYellow];
-			} 
-			else {
-				return [styleGreen];
-			}
-		}
+function MCEmapMaker(lineLayer,feature, map){
+	var styleRed = {'Point': [new ol.style.Style({
+		image: new ol.style.Circle({
+			radius: 3,
+			fill: new ol.style.Fill({
+				color: 'red'
+			})
+		})
+	})],
+	'LineString': new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: 'red',
+			width: 1
+		})
 	})
-	map.addLayer(featureLayer);
+	};
+	var styleGreen = {'Point': [new ol.style.Style({
+		image: new ol.style.Circle({
+			radius: 3,
+			fill: new ol.style.Fill({
+				color: 'green'
+			})
+		})
+	})],
+	'LineString': new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: 'green',
+			width: 1
+		})
+	})
+	};
+	var styleYellow = {'Point': [new ol.style.Style({
+		image: new ol.style.Circle({
+			radius: 3,
+			fill: new ol.style.Fill({
+				color: 'yellow'
+			})
+		})
+	})],
+	'LineString': new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: 'yellow',
+			width: 1
+		})
+	})
+	};
+	for (i=0; i<feature.length;i++){
+		if (feature[i].get('totval') >= 10000){
+			feature[i].setStyle(styleRed[feature[i].getGeometry().getType()]);
+		} 
+		else if (10000 >= feature[i].get('totval') && feature[i].get('totval') > 5000){
+			feature[i].setStyle(styleYellow[feature[i].getGeometry().getType()]);
+		} 
+		else {
+			feature[i].setStyle(styleGreen[feature[i].getGeometry().getType()]);;
+		}
+	}
 	populateTable(feature,map);
 }
 
@@ -416,51 +443,55 @@ function getAge(features){
 	return ageList;
 }
 
-function getParamValue(nodeLayer, lineLayer, map){
+function getParamValue(lineLayer, map){
 	//Get faetures from layers 
 	var features = lineLayer.getSource().getFeatures();
 	id = [];
 	getAge(features);
-	outages = [];
-	weightOutages = [];
-	insp = [];
+	no_of_obs = [];
+	weightno_of_obs = [];
+	obs_degree = [];
 	weightAge = [];
-	weightInsp = [];
+	weightobs_degree = [];
 	totalValue = [];
 	var sliderValues = getSliderValue(); //Get value from each slider
 
 	//For every parameter...
 	for (i=0; i<features.length; i++){
 		//..push value into array
-		id.push(features[i].get("id"));
-		outages.push(features[i].get("dp_otype"));
-		insp.push(features[i].get("anmarkningsgrad"));		
+		var bayID = (features[i].get("fack"));
+		no_of_obs.push(features[i].get("antal_anm"));
+		obs_degree.push(features[i].get("grad"));
+		//getExtent(bayID,features[i]);
 	}
 	//get minimum and maximum value
 	var minAge = Math.min.apply(null,ageList);
 	var maxAge = Math.max.apply(null,ageList);
-	var minOutage = Math.min.apply(null,outages);
-	var maxOutage = Math.max.apply(null,outages);
-	var minInsp = Math.min.apply(null,insp); 
-	var maxInsp = Math.max.apply(null,insp);
+	var minOutage = Math.min.apply(null,no_of_obs);
+	var maxOutage = Math.max.apply(null,no_of_obs);
+	var minobs_degree = Math.min.apply(null,obs_degree); 
+	var maxobs_degree = Math.max.apply(null,obs_degree);
 
-	for ( j=0; j<outages.length; j++){
+	for ( j=0; j<no_of_obs.length; j++){
 		//Norm values
 		var normedAge = normValues(ageList[j], minAge, maxAge);
-		var normedOutage = normValues(outages[j], minOutage, maxOutage);
-		var normedInsp = normValues(insp[j], minInsp, maxInsp);
+		var normedOutage = normValues(no_of_obs[j], minOutage, maxOutage);
+		var normedobs_degree = normValues(obs_degree[j], minobs_degree, maxobs_degree);
 		
 		//Multiply normed value with weight
-		weightOutages.push(normedOutage*sliderValues[0]);
-		weightInsp.push(normedInsp*sliderValues[1]);
+		weightno_of_obs.push(normedOutage*sliderValues[0]);
+		weightobs_degree.push(normedobs_degree*sliderValues[1]);
 		weightAge.push(normedAge*sliderValues[2]);
 		//Sum the weighted parameters to a total score
-		totalValue.push(weightOutages[j] + weightInsp[j]+weightAge[j]);
+		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]);
 	}
-
+	
 	var requests = [];
-	for (k=0; k<features.length; k++){
-		console.log(features[k].attributes);
+	for (k=0; k<ageList.length; k++){
+		totVal = totalValue[k].toFixed(2);
+		features[k].set('totval', totVal);
+		//features[i].set('id',i);
+		//console.log(features[k]);
 	}
 /*	for (k=0; k<10; k++){
 		var totVal = parseFloat((totalValue[k]).toFixed(2));
@@ -473,6 +504,7 @@ function getParamValue(nodeLayer, lineLayer, map){
 		console.log("Klar");
 		MCEmapMaker(features, map);
 	});*/
+	MCEmapMaker(lineLayer,features, map);
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
@@ -482,7 +514,7 @@ function getParamValue(nodeLayer, lineLayer, map){
 function populateTable(features, map){
 	//Sort features based on totalvalue --> highest value on top
 	features.sort(function(obj1, obj2) {
-		return obj2.get("totalvalue") - obj1.get("totalvalue")
+		return obj2.get("totval") - obj1.get("totval")
 	});
 	var table = document.getElementById("featureTable");
 	var header = table.createTHead();
@@ -500,20 +532,20 @@ function populateTable(features, map){
 		var featureID = features[i].get("gid");
 		//Insert columns for
 		row.insertCell(0).innerHTML="<p>"+i+"</p>";
-		row.insertCell(1).innerHTML="<p id="+features[i].get("gid")+">"+features[i].get("gid")+"</p>";
-		row.insertCell(2).innerHTML="<p>"+features[i].get("totalvalue")+"</p>";
-		if (features[i].get("totalvalue")>=20000){
+		row.insertCell(1).innerHTML="<p id="+features[i].get("fack")+">"+features[i].get("fack")+"</p>";
+		row.insertCell(2).innerHTML="<p>"+features[i].get("totval")+"</p>";
+		if (features[i].get("totval")>=10000){
 			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
 		}
-		else if (10000 <=features[i].get("totalvalue") && features[i].get("totalvalue")< 20000){
+		else if (10000 >=features[i].get("totval") && features[i].get("totval")> 5000){
 			row.insertCell(3).innerHTML="<div class='colcircle_yellow'> </div>";
 		}
 		else {
 			row.insertCell(3).innerHTML="<div class='colcircle_green'> </div>";
 		}
 		//When click on column with ID features[i].get("gid")
-		$("#"+features[i].get("gid")+"").click(function(test){
-			zoomToMap(map, test.target.outerText, features)
+		$("#"+features[i].get("fack")+"").click(function(test){
+			//getExtent(map, test.target.outerText, features)
 		});
 	};
 	$('#tableDiv').show();
@@ -542,10 +574,34 @@ function moveScroll(){
     }
 }
 
+function getExtentofBay(idArray,features,map){
+	var baySource = new ol.source.Vector({});
+	for (i=0; i<idArray.length;i++){
+		var bayID = idArray[i]
+		var foundFeat = features.filter(function(features){
+			return features.get("fack") == bayID
+		});
+		//console.log(foundFeat);
+		extent = foundFeat[0].getGeometry().getExtent();
+		var first =[extent[0],extent[1]];
+		var second =[extent[2],extent[3]];
+		var ring = [first,second];
+		var MBR = new ol.Feature({
+            geometry: new ol.geom.Polygon([ring])
+        });
+		baySource.addFeature(MBR);
+	}
+	var bayLayer = new ol.layer.Vector({
+		source: baySource,
+		style: styleFunction
+	});
+	//map.addLayer(bayLayer);
+}
+
 function zoomToMap(map,featureID, features){
 	//Filter out feature - return the ones that match feature ID
 	var foundFeat = features.filter(function(features){
-		return features.get("gid") == featureID
+		return features.get("fack") == featureID
 	});
 	console.log(foundFeat);
 	//Get extent of feature
