@@ -19,6 +19,11 @@ html, body, .map {
 	display: none !important;
 }
 
+input[type=checkbox], input[type=radio] {
+	margin: -1px 5px 0px 0px !Important;
+	vertical-align:middle !Important;
+}
+
 
 .sidenav {
     height: 100%;
@@ -42,8 +47,8 @@ html, body, .map {
     transition: 0.3s;
 }
 
-.sidenav a:hover, .offcanvas a:focus{
-    color: #f1f1f1;
+.sidenav a:hover, a:focus, .offcanvas a:focus{
+    color: #f1f1f1 !Important;
 }
 
 .sidenav .closebtn {
@@ -65,10 +70,10 @@ html, body, .map {
 }
 
 .accordion {
-    background-color: #eee;
-    color: #444;
+/*     background-color: #eee; */
+/*     color: #444; */
     cursor: pointer;
-    padding: 18px;
+/*     padding: 18px; */
     width: 100%;
     border: none;
     text-align: left;
@@ -77,16 +82,16 @@ html, body, .map {
     transition: 0.4s;
 }
 
-.accordion.active, .accordion:hover {
+/* .accordion.active, .accordion:hover {
     background-color: #ddd;
-}
+} */
 
 .accordion:after {
     content: '\002B';
     color: #777;
     font-weight: bold;
     float: right;
-    margin-left: 5px;
+/*     margin-left: 5px; */
 }
 
 .accordion.active:after {
@@ -94,12 +99,17 @@ html, body, .map {
 }
 
 div.extend {
-    padding: 0 18px;
+/*     padding: 0 18px; */
     background-color: white;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
 }
+
+/* div.layer_panel{
+	width:100%;
+	height:100%;
+} */
 
 .colcircle_red {
     width:10px;
@@ -436,9 +446,9 @@ a {
 }
 
 
-input {
-	margin-right: 30px !important;
-}
+/* input { */
+/* 	margin-right: 30px !important; */
+/* } */
 
 #msg {
 	visibility: hidden;

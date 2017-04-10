@@ -65,6 +65,7 @@ ol.control.LayerSwitcher.prototype.renderPanel = function() {
     }
 
     var ul = document.createElement('ul');
+    ul.className = 'oordadlista';
     this.panel.appendChild(ul);
     this.renderLayers_(this.getMap(), ul);
 
@@ -132,7 +133,6 @@ ol.control.LayerSwitcher.prototype.setVisible_ = function(lyr, visible) {
  * @param {Number} idx Position in parent group list.
  */
 ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
-
     var this_ = this;
 
     var li = document.createElement('li');
@@ -146,7 +146,9 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
 
         li.className = 'group';
         var ul = document.createElement('ul');
+        ul.className = "innerul";
         li.appendChild(ul);
+
 
         this.renderLayers_(lyr, ul);
 
@@ -166,6 +168,7 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
             this_.setVisible_(lyr, e.target.checked);
         };
         li.appendChild(input);
+    
 
         label.htmlFor = lyrId;
         label.innerHTML = lyrTitle;

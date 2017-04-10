@@ -167,8 +167,8 @@ function mapMaker(lineLayer){
       })
     });
     var layerSwitcher = new ol.control.LayerSwitcher({target: 'layer_panel',
-        /*tipLabel: 'Legend' // Optional label for button
-*/      });
+        tipLabel: 'Legend' // Optional label for button
+      });
     var element = document.getElementById('popup');
     var popup = new ol.Overlay({
         element: element,
@@ -288,7 +288,6 @@ for (i = 0; i < acc.length; i++) {
   acc[i].onclick = function() {
     this.classList.toggle("active");
     var extend = this.nextElementSibling;
-    console.log(extend)
     if (extend.style.maxHeight){
       extend.style.maxHeight = null;
     } else {
