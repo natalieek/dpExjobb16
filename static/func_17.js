@@ -1,5 +1,4 @@
 //Visual settings for el
-
 var styles = {
         'Point': [new ol.style.Style({
             image: new ol.style.Circle({
@@ -273,12 +272,10 @@ function layerMaker(data,layers,network,showArc, showNode, showConn,layerGroups,
 
 function openNav() {
     document.getElementById("mySidenav").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
 }
 
 function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("main").style.marginLeft= "0";
 }
 
 function extendMenu(){

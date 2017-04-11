@@ -6,6 +6,7 @@
  * @param {Object} opt_options Control options, extends olx.control.ControlOptions adding:
  *                              **`tipLabel`** `String` - the button tooltip.
  */
+
 ol.control.LayerSwitcher = function(opt_options) {
 
     var options = opt_options || {};

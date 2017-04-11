@@ -1,5 +1,4 @@
 
-
 function hide(id) {
 	document.getElementById(id).style.visibility='hidden';
 }
@@ -29,23 +28,6 @@ function indicateChoice(id) {
 function hideChoice(id) {
 	document.getElementById(id).style.background = 'transparent';
 	document.getElementById(id).style.border = 'none';
-}
-
-function resetSliders(){
-	var sliders = $("#sliders .slider");
-	sliders.each(function() {
-		$(this).slider( 'value', 0 );
-	});
-	$('.sliderValue').html('0%');
-	$('#s1').hide();
-	$('#s2').hide();
-	$('#s3').hide();
-	$('#s4').hide();
-	$('#s5').hide();
-	$('#s6').hide();
-	$('#s7').hide();
-	$('#s8').hide();
-	$('#s9').hide();
 }
 
 //Copied from http://jsfiddle.net/XFeQb/
@@ -88,6 +70,23 @@ sliders.each(function() {
     });
 });
 });
+
+function resetSliders(){
+	var sliders = $("#sliders .slider");
+	sliders.each(function() {
+		$(this).slider( 'value', 0 );
+	});
+	$('.sliderValue').html('0%');
+	$('#s1').hide();
+	$('#s2').hide();
+	$('#s3').hide();
+	$('#s4').hide();
+	$('#s5').hide();
+	$('#s6').hide();
+	$('#s7').hide();
+	$('#s8').hide();
+	$('#s9').hide();
+}
 
 $(document).ready(function(){
 	$("#nextButton").on("click", function(){
