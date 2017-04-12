@@ -28,25 +28,30 @@
 <body>
 <div class="container">
 <div class="row map" id="map" ></div>
-
+<div id="openButton" class="openButton">
+  <span onclick="openNav()">&#9776;</span>
+</div>
 <div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <a href="#">About</a>
-  
+<!--   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a> -->
+  <a href="#">Om</a>
   <a href="#" class = "accordion" onClick="extendMenu()"> Bakgrundskarta</a>
-  <div class="extend">
-  	<div id="layer_panel">
+  	<div class="extend">
+  		<div id="layer_panel">
+  		</div>
   	</div>
-  </div>
-  
-  <a href="#" onClick="showForm('checkDiv')">Analys</a>
-  <a href="#">Contact</a>
+  <a href="#" class = "accordion" onClick="extendMenu()">Filter</a>
+  	<div class="extend">
+  		<div id="layer_panel">
+  		</div>
+  	</div>
+  <a href="#" class = "accordion" onClick="extendMenu()">Analys</a>
+  	  	<div class="extend">
+  		<a href="#" class="underrubrik" onClick="showForm('checkDiv')">Kör analys</a>
+  	</div>
 </div>
 
 
-<div>
-  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
-</div>
+
 
 <!-- <button class="testKnapp" onClick="showForm('checkDiv')"> Klicka</button> -->
 

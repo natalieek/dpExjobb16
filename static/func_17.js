@@ -270,14 +270,27 @@ function layerMaker(data,layers,network,showArc, showNode, showConn,layerGroups,
 	//If multiple clusters, add clustering vector creation here
 }
 
+
 function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
+    var e = document.getElementById("mySidenav");
+    var x = document.getElementById("openButton")
+    if (e.style.width == '250px' && x.style.marginLeft == '251px')
+    	
+    {
+        e.style.width = '0px';
+        x.style.marginLeft = '0px';
+    }
+    else 
+    {
+        e.style.width = '250px';
+        x.style.marginLeft='251px';
+    }
 }
 
-function closeNav() {
+/*function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
 }
-
+*/
 function extendMenu(){
 var acc = document.getElementsByClassName("accordion");
 
@@ -517,7 +530,7 @@ function populateTable(features, map){
 	var headerRow = header.insertRow(0);
 	headerRow.insertCell(0).innerHTML="<th>Rank</th>";
 	headerRow.insertCell(1).innerHTML="<th>Fack</th>";
-	headerRow.insertCell(2).innerHTML="<th>Total value</th>";
+	headerRow.insertCell(2).innerHTML="<th>Värde</th>";
 	headerRow.insertCell(3).innerHTML="<th></th>";
 	//For each feature...
 	var tBody = document.getElementById("tbody")
@@ -527,9 +540,9 @@ function populateTable(features, map){
 		//Get ID of feature
 		var featureID = features[i].get("gid");
 		//Insert columns for
-		row.insertCell(0).innerHTML="<p>"+i+"</p>";
-		row.insertCell(1).innerHTML="<p id="+features[i].get("fack")+">"+features[i].get("fack")+"</p>";
-		row.insertCell(2).innerHTML="<p>"+features[i].get("totval")+"</p>";
+		row.insertCell(0).innerHTML="<td>"+i+"</td>";
+		row.insertCell(1).innerHTML="<td id="+features[i].get("fack")+">"+features[i].get("fack")+"</td>";
+		row.insertCell(2).innerHTML="<td>"+features[i].get("totval")+"</td>";
 		if (features[i].get("totval")>=10000){
 			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
 		}

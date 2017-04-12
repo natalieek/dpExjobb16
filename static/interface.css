@@ -6,6 +6,18 @@ html, body, .map {
 	padding:0px;
 	z-index: -1;
 }
+
+@import "compass/css3";
+
+@import "compass/css3";
+@import url(http://fonts.googleapis.com/css?family=Patua+One|Open+Sans);
+
+* { 
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+    box-sizing: border-box; 
+}
+
 .loader {
 	position: fixed;
 	left: 0px;
@@ -32,39 +44,60 @@ input[type=checkbox], input[type=radio] {
 	vertical-align:middle !Important;
 }
 
+.openButton{
+	transition: 0.5s;
+	
+}
+
+.openButton span{
+	font-size:30px;
+	cursor:pointer;
+}
+
 .sidenav {
+	padding-top: 0;
     height: 100%;
     width: 0;
     position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #DCDCDC;
+    background-color: #FFF;
     overflow-x: hidden;
     transition: 0.5s;
-    padding-top: 60px;
 }
 
 .sidenav a {
-    padding: 8px 8px 8px 32px;
+    padding: 12px 8px 12px 20px;
     text-decoration: none;
-    font-size: 25px;
-    color: #336699;
+    font-size:15px ;
+    font-weight: bold;
+    color: #111;
     display: block;
     transition: 0.3s;
+    border-bottom: 1px solid #D3D3D3;
 }
 
 .sidenav a:hover, a:focus, .offcanvas a:focus{
-    color: #f1f1f1 !Important;
+    color: #336699 !Important;
+    text-decoration:none !Important;
 }
 
-.sidenav .closebtn {
+a.underrubrik {
+	font-size:14px ;
+    font-weight: 500;
+    padding:0 0 5px 32px;
+	
+}
+
+/* .closebtn > a {
     position: absolute;
     top: 0;
     right: 25px;
-    font-size: 36px;
+    font-size: 20px;
     margin-left: 50px;
-}
+    border-bottom:none;
+} */
 
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
@@ -88,11 +121,16 @@ input[type=checkbox], input[type=radio] {
     background-color: #ddd;
 } */
 
+a.accordion.active{
+	border-bottom:none;
+}
+
 .accordion:after {
     content: '\002B';
     color: #777;
     font-weight: bold;
     float: right;
+
 /*     margin-left: 5px; */
 }
 
@@ -137,14 +175,14 @@ div.extend {
 }
 .testForm .inner-wrap{
     padding: 10px 10px 10px 10px;
-    background: #D3D3D3 ;
+    background: #F8F8FF;
     border-radius: 2px;
 /*     margin-bottom: 15px; */
 }
 
 .testForm .wrap-sliders{
 	padding: 20px 10px 10px 10px;
-    background: #D3D3D3 ;
+    background: #F8F8FF ;
     border-radius: 2px;
     margin-bottom: 15px;
 }
@@ -307,7 +345,7 @@ ul.control li:hover input ~ .control__indicator {
 }
 
 .testForm .nextBtn{
-    background:#D3D3D3  ;
+    background:#F8F8FF  ;
     padding: 5px 5px 5px 5px;
     border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -338,7 +376,7 @@ ul.control li:hover input ~ .control__indicator {
 
 }
 .fa-chevron-left{
-	color:#D3D3D3;
+	color:#F8F8FF;
 	font-size:30px;
  }
 
@@ -417,14 +455,14 @@ ul.control li:hover input ~ .control__indicator {
 }
 
 #tableDiv{
-	width:200px;
+	width:250px;
 	height:100%;
 	position:absolute;
 	right:0;
 	top:0;
 	display:none;
 	align-items:center;
-	
+	background-color:#FFF;	
 }
 
 #featureTable{
@@ -433,16 +471,34 @@ ul.control li:hover input ~ .control__indicator {
 	height:100%;
 }
 
-#thead > tr{
-	background-color: #818181#336699;
-	color: #336699;
-	height:50px !Important;
-	width:100%;
+#thead {
+    background: url(http://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+    border-left: 1px solid #555;
+    border-right: 1px solid #777;
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #333;
+    box-shadow: inset 0 1px 0 #999;
+    color: #fff;
+  	font-weight: bold;
+    padding: 10px 15px;
+/*     position: relative; */
+    text-shadow: 0 1px 0 #000;  
 }
 
+#featureTable td {
+    border-right: 1px solid #fff;
+    border-left: 1px solid #e8e8e8;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 10px 10px 10px 5px;
+/*     position: relative; */
+    transition: all 300ms;
+}
+
+
 #thead:hover > tr:hover{  
+	background: url(http://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
 	cursor: pointer;
-	background-color: #336699;
 	}
 
 #featureTable tr:hover{
@@ -451,9 +507,7 @@ ul.control li:hover input ~ .control__indicator {
 }
 
 tr:nth-child(even) {
-	background: #DCDCDC}
-tr:nth-child(odd) {
-	background: #FFF}
+	background:#f0f3f5 }
 
 .scroll {
    overflow-y: scroll;
@@ -480,4 +534,4 @@ background-color:#ccc;
 }
 .scroll::-webkit-scrollbar-thumb:active{
 background-color:#ccc;
-}
+} 
