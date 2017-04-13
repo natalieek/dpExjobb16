@@ -433,8 +433,9 @@ ul.control li:hover input ~ .control__indicator {
     font-size:20px;
     color:#fff;
     line-height:100px;
-    background-color: #ff0000;
     margin-left:5px;
+    background-color: #ff6961;
+    border: 0.5px solid #C23B22;
 }
 .colcircle_yellow {
     width:10px;
@@ -443,8 +444,9 @@ ul.control li:hover input ~ .control__indicator {
     font-size:20px;
     color:#fff;
     line-height:100px;
-    background-color: #ffff00;
     margin-left:5px;
+    background-color: #fdfd7d;
+    border: 0.5px solid #ffc726;
 }
 
 .colcircle_green {
@@ -454,8 +456,9 @@ ul.control li:hover input ~ .control__indicator {
     font-size:20px;
     color:#fff;
     line-height:100px;
-    background-color: #008000;
     margin-left:5px;
+    background-color: #84ffb1;
+    border: 0.5px solid #77dd77;
 }
 
 #tableDiv{

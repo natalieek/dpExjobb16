@@ -30,22 +30,6 @@ var styles = {
 				color: 'rgba(0, 0, 255, 0.1)'
 			})
 		}),
-		'GeometryCollection': new ol.style.Style({
-			stroke: new ol.style.Stroke({
-				color: 'magenta',
-				width: 2
-			}),
-			fill: new ol.style.Fill({
-				color: 'magenta'
-			}),
-			image: new ol.style.Circle({
-				radius: 10,
-				fill: null,
-				stroke: new ol.style.Stroke({
-					color: 'magenta'
-				})
-			})
-		}),
 		'Circle': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: 'red',
@@ -122,13 +106,14 @@ init = function() {
 function checkExistance(features,map){
 	idArray = [];
 	for (i=0; i<features.length; i++){
-		var bayID = features[i].get("fack");
+		var bayID = features[i].get("fack_oid");
 		var idx = $.inArray(bayID, idArray);
 		if (idx == -1) {
 			idArray.push(bayID);
 		}
 	}
-	getExtentofBay(idArray,features,map);
+	var bayLayer = getExtentofBay(idArray,features,map);
+	return bayLayer;
 }
 
 function getBayObject(feature,bayObject){
@@ -163,7 +148,7 @@ function mapMaker(lineLayer,bayObject){
 	var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
-		layers: [basemap, lineLayer],
+		layers: [basemap],
 		target: 'map',
 		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
 		view: new ol.View({
@@ -204,7 +189,7 @@ function mapMaker(lineLayer,bayObject){
 	});
 	map.addControl(layerSwitcher);
 	var features = lineLayer.getSource().getFeatures();
-	checkExistance(features,map)
+	
 	$("#runBtn").click(function(){
 		var sum = 0
 		//For each slider..
@@ -218,7 +203,8 @@ function mapMaker(lineLayer,bayObject){
 			alert ("Totala vikten är " + sum + "%. Måste vara 100%")
 		}
 		else {
-			getParamValue(bayObject,map);
+			var bayLayer = checkExistance(features,map)
+			getParamValue(bayObject,map, bayLayer);
 			hideForm('weightForm');
 		}
 	})
@@ -356,38 +342,46 @@ function brokenCluster(inConn, visibility, inGroup, styleF){
 	layers.Clusters.push(clusterLayer)
 }
 
-function polyMaker(feature) {
+function polyMaker(lineFeat, pointFeat, map, bayID) {
 	var parser = new jsts.io.OL3Parser();
-	var tmpgeom = _.map(feature.get('features'), function(num){
+	var tmpLine = _.map(lineFeat, function(num){
 		return num.getGeometry().getCoordinates();
-	}) 
-	var newGeom = new ol.geom.MultiPoint(tmpgeom)
-	var jstsGeom = parser.read(newGeom);
-	var convexHull = jstsGeom.convexHull();
-	var size = feature.get('features').length;
-	data = _.countBy(_.map(feature.get('features'), function(num){
-		return num.get('dp_otype')
-	}), _.identity);
-	var color = _.flatten(_.map(data, function(num, key){
-		return pointColors[key].color
-	}))
-	style =  new ol.style.Style({
-		geometry: parser.write(convexHull),
-		text: new ol.style.Text({
-			text: size.toString(),
-			fill: new ol.style.Fill({
-				color: '#ffffff'
-			})
-		}),
-		fill: new ol.style.Fill({
-			color: hexToRgbA(color.toString())
-
-		})
+	});
+	var tmpPoint = _.map(pointFeat, function(num){
+		return num.getGeometry().getCoordinates();
+	});
+	var newLine = new ol.geom.MultiLineString(tmpLine);
+	var newPoint = new ol.geom.MultiPoint(tmpPoint);
+	var jstsLine = parser.read(newLine);
+	var jstsPoint = parser.read(newPoint);
+	var chLine = jstsLine.convexHull();
+	var chPoint = jstsPoint.convexHull();
+	
+	var polySource = new ol.source.Vector();
+	var polyLine = new ol.Feature({
+		geometry: parser.write(chLine)
 	})
-	return style;
+	var polyPoint = new ol.Feature({
+		geometry: parser.write(chPoint)
+	})
+	
+	var unionGeom = parser.read(polyLine.getGeometry());
+	unionGeom = unionGeom.union(parser.read(polyPoint.getGeometry()));
+	
+	var unionFeat = new ol.Feature({
+		geometry: parser.write(unionGeom),
+		fack_oid: bayID
+	})
+	
+	polySource.addFeature(unionFeat);
+	var polyLayer = new ol.layer.Vector({
+		source: polySource
+	});
+	map.addLayer(polyLayer);
+	return polySource;
 }
 
-function MCEmapMaker(map, bayObject){
+function MCEmapMaker(map, bayObject, bayLayer){
 	var styleRed = {'Point': [new ol.style.Style({
 		image: new ol.style.Circle({
 			radius: 3,
@@ -433,7 +427,9 @@ function MCEmapMaker(map, bayObject){
 		})
 	})
 	};
-	/*	for (i=0; i<bayObject.length;i++){
+	//var bayFeat = bayLayer.getSource().getFeatures();
+	console.log(bayLayer);
+/*	for (i=0; i<bayObject.length;i++){
 		if (feature[i].get('totval') >= 10000){
 			feature[i].setStyle(styleRed[feature[i].getGeometry().getType()]);
 		} 
@@ -447,7 +443,7 @@ function MCEmapMaker(map, bayObject){
 	populateTable(bayObject,map);
 }
 
-function getParamValue(bayObject, map){
+function getParamValue(bayObject, map, bayLayer){
 	//Get faetures from layers 
 	//var features = lineLayer.getSource().getFeatures();
 	oid = [];
@@ -502,7 +498,6 @@ function getParamValue(bayObject, map){
 		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]+weighttot_out[j]);
 	}
 
-	var requests = [];
 	for (k=0; k<bayObject.length; k++){
 		totVal = totalValue[k].toFixed(2);
 		bayObject[k].totval = totVal;
@@ -520,7 +515,7 @@ function getParamValue(bayObject, map){
 		console.log("Klar");
 		MCEmapMaker(features, map);
 	});*/
-	MCEmapMaker(map,bayObject);
+	MCEmapMaker(map,bayObject, bayLayer);
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
@@ -529,7 +524,6 @@ function getParamValue(bayObject, map){
 
 function populateTable(bayObject, map){
 	//Sort bayObjects based on totalvalue --> highest value on top
-	console.log(bayObject);
 	bayObject.sort(function(obj1, obj2) {
 		return obj2.totval - obj1.totval
 	});
@@ -553,10 +547,10 @@ function populateTable(bayObject, map){
 		row.insertCell(1).innerHTML="<td id="+bayObject[i].fack_oid+">"+bayObject[i].fack_oid+"</td>";
 		row.insertCell(2).innerHTML="<td>"+bayObject[i].totval+"</td>";
 
-		if (bayObject[i].totval>=10000){
+		if (bayObject[i].totval>=0.8){
 			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
 		}
-		else if (10000 >=bayObject[i].totval && bayObject[i].totval> 5000){
+		else if (0.8 >bayObject[i].totval && bayObject[i].totval>= 0.4){
 			row.insertCell(3).innerHTML="<div class='colcircle_yellow'> </div>";
 		}
 		else {
@@ -596,26 +590,21 @@ function populateTable(bayObject, map){
 
 function getExtentofBay(idArray,features,map){
 	var baySource = new ol.source.Vector({});
+	bayArray = [];
 	for (i=0; i<idArray.length;i++){
 		var bayID = idArray[i]
-		var foundFeat = features.filter(function(features){
-			return features.get("fack") == bayID
+		var lineFeat = features.filter(function(features){
+			return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'LineString'
+		});
+		var pointFeat = features.filter(function(features){
+			return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'Point'
 		});
 		//console.log(foundFeat);
-		extent = foundFeat[0].getGeometry().getExtent();
-		var first =[extent[0],extent[1]];
-		var second =[extent[2],extent[3]];
-		var ring = [first,second];
-		var MBR = new ol.Feature({
-			geometry: new ol.geom.Polygon([ring])
-		});
-		baySource.addFeature(MBR);
+		var bayLayer = polyMaker(lineFeat,pointFeat,map, bayID);
+		bayArray.push(bayLayer);
 	}
-	var bayLayer = new ol.layer.Vector({
-		source: baySource,
-		style: styleFunction
-	});
-	//map.addLayer(bayLayer);
+	return bayArray;
+	
 }
 
 function zoomToMap(map,featureID, features){
