@@ -1,13 +1,13 @@
 //Visual settings for el
 var styles = {
-        'Point': [new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 2,
-                fill: new ol.style.Fill({
-                    color: 'black'
-                })
-            })
-        })],
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 2,
+				fill: new ol.style.Fill({
+					color: 'black'
+				})
+			})
+		})],
 		'LineString': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: 'green',
@@ -93,8 +93,8 @@ init = function() {
 	requests = {
 			'lines':
 				makeRequest('GET', '/cbl/'),
-			'bays':
-				makeRequest('GET', '/bay_stats')
+				'bays':
+					makeRequest('GET', '/bay_stats')
 	}
 	Promise
 	.props(requests)
@@ -113,7 +113,7 @@ init = function() {
 		});
 		map = mapMaker(lineLayer,bayObject);
 	})
-/*	.catch(function (err) {
+	/*	.catch(function (err) {
 		console.error('Augh, there was an error!', err.statusText);
 		console.error(err);
 	});*/
@@ -160,68 +160,68 @@ function mapMaker(lineLayer,bayObject){
 			crossOrigin: 'anonymous'
 		})
 	});
-    var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
-    ol.proj.addProjection(myProjection);
-    var map = new ol.Map({
-      layers: [basemap, lineLayer],
-      target: 'map',
-      interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
-      view: new ol.View({
-        center: [138577,6307000],
-        resolution: 20,
-        projection: myProjection,
-      })
-    });
-    var layerSwitcher = new ol.control.LayerSwitcher({target: 'layer_panel',
-        tipLabel: 'Legend' // Optional label for button
-      });
-    var element = document.getElementById('popup');
-    var popup = new ol.Overlay({
-        element: element,
-        positioning: 'bottom-center',
-        stopEvent: false
-    });
-    map.addOverlay(popup);
-    map.on('click', function (evt) {
-        var feature = map.forEachFeatureAtPixel(evt.pixel,
+	var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
+	ol.proj.addProjection(myProjection);
+	var map = new ol.Map({
+		layers: [basemap, lineLayer],
+		target: 'map',
+		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
+		view: new ol.View({
+			center: [138577,6307000],
+			resolution: 20,
+			projection: myProjection,
+		})
+	});
+	var layerSwitcher = new ol.control.LayerSwitcher({target: 'layer_panel',
+		tipLabel: 'Legend' // Optional label for button
+	});
+	var element = document.getElementById('popup');
+	var popup = new ol.Overlay({
+		element: element,
+		positioning: 'bottom-center',
+		stopEvent: false
+	});
+	map.addOverlay(popup);
+	map.on('click', function (evt) {
+		var feature = map.forEachFeatureAtPixel(evt.pixel,
 
-        function (feature, layer) {
-            return feature;
-        });
-        if (feature) {
-            var geometry = feature.getGeometry();
-            var coord = geometry.getCoordinates();
-            popup.setPosition(coord);
-            $(element).popover({
-                'placement': 'top',
-                'html': true,
-                'content': "<p>" + 'Antal anmärkningar: ' + feature.get("antal_anm")+"</p>" + "<p>"+'Anmärkningsgrad: ' + feature.get("grad")+"</p>"
-            });
-            $(element).popover('show');
-        } else {
-            $(element).popover('destroy');
-        }
-    });
-    map.addControl(layerSwitcher);
+				function (feature, layer) {
+			return feature;
+		});
+		if (feature) {
+			var geometry = feature.getGeometry();
+			var coord = geometry.getCoordinates();
+			popup.setPosition(coord);
+			$(element).popover({
+				'placement': 'top',
+				'html': true,
+				'content': "<p>" + 'Antal anmärkningar: ' + feature.get("antal_anm")+"</p>" + "<p>"+'Anmärkningsgrad: ' + feature.get("grad")+"</p>"
+			});
+			$(element).popover('show');
+		} else {
+			$(element).popover('destroy');
+		}
+	});
+	map.addControl(layerSwitcher);
 	var features = lineLayer.getSource().getFeatures();
 	checkExistance(features,map)
-    $("#runBtn").click(function(){
-  	  var sum = 0
-  	  //For each slider..
-  	  var sliders = $("#sliders .slider");
-  	  sliders.each(function(){
-  		  //..add value of slider to sum variable
-  		  sum += $(this).slider("option","value");
-  	  });
+	$("#runBtn").click(function(){
+		var sum = 0
+		//For each slider..
+		var sliders = $("#sliders .slider");
+		sliders.each(function(){
+			//..add value of slider to sum variable
+			sum += $(this).slider("option","value");
+		});
 
-  	  if (sum < 100) {
-  		  alert ("Totala vikten är " + sum + "%. Måste vara 100%")
-  	  }
-  	  else {
-  		  getParamValue(bayObject,map);
-  		  hideForm('weightForm');
-  	  }
-    })
+		if (sum < 100) {
+			alert ("Totala vikten är " + sum + "%. Måste vara 100%")
+		}
+		else {
+			getParamValue(bayObject,map);
+			hideForm('weightForm');
+		}
+	})
 }
 
 
@@ -279,39 +279,39 @@ function layerMaker(data,layers,network,showArc, showNode, showConn,layerGroups,
 
 
 function openNav() {
-    var e = document.getElementById("mySidenav");
-    var x = document.getElementById("openButton")
-    if (e.style.width == '250px' && x.style.marginLeft == '251px')
-    	
-    {
-        e.style.width = '0px';
-        x.style.marginLeft = '0px';
-    }
-    else 
-    {
-        e.style.width = '250px';
-        x.style.marginLeft='251px';
-    }
+	var e = document.getElementById("mySidenav");
+	var x = document.getElementById("openButton")
+	if (e.style.width == '250px' && x.style.marginLeft == '251px')
+
+	{
+		e.style.width = '0px';
+		x.style.marginLeft = '0px';
+	}
+	else 
+	{
+		e.style.width = '250px';
+		x.style.marginLeft='251px';
+	}
 }
 
 /*function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
 }
-*/
+ */
 function extendMenu(){
-var acc = document.getElementsByClassName("accordion");
+	var acc = document.getElementsByClassName("accordion");
 
-for (i = 0; i < acc.length; i++) {
-  acc[i].onclick = function() {
-    this.classList.toggle("active");
-    var extend = this.nextElementSibling;
-    if (extend.style.maxHeight){
-      extend.style.maxHeight = null;
-    } else {
-      extend.style.maxHeight = extend.scrollHeight + "px";
-    } 
-  }
-}
+	for (i = 0; i < acc.length; i++) {
+		acc[i].onclick = function() {
+			this.classList.toggle("active");
+			var extend = this.nextElementSibling;
+			if (extend.style.maxHeight){
+				extend.style.maxHeight = null;
+			} else {
+				extend.style.maxHeight = extend.scrollHeight + "px";
+			} 
+		}
+	}
 }
 
 function workCluster(responses, title, visibility, styleF){
@@ -433,7 +433,7 @@ function MCEmapMaker(map, bayObject){
 		})
 	})
 	};
-/*	for (i=0; i<bayObject.length;i++){
+	/*	for (i=0; i<bayObject.length;i++){
 		if (feature[i].get('totval') >= 10000){
 			feature[i].setStyle(styleRed[feature[i].getGeometry().getType()]);
 		} 
@@ -492,7 +492,7 @@ function getParamValue(bayObject, map){
 		var normedOutage = normValues(no_of_obs[j], minOutage, maxOutage);
 		var normedobs_degree = normValues(obs_degree[j], minobs_degree, maxobs_degree);
 		var normedtot_out = normValues(tot_out[j], mintot_out, maxtot_out);
-		
+
 		//Multiply normed value with weight
 		weightno_of_obs.push(normedOutage*sliderValues[0]);
 		weightobs_degree.push(normedobs_degree*sliderValues[1]);
@@ -501,7 +501,7 @@ function getParamValue(bayObject, map){
 		//Sum the weighted parameters to a total score
 		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]+weighttot_out[j]);
 	}
-	
+
 	var requests = [];
 	for (k=0; k<bayObject.length; k++){
 		totVal = totalValue[k].toFixed(2);
@@ -509,7 +509,7 @@ function getParamValue(bayObject, map){
 		//features[i].set('id',i);
 		//console.log(features[k]);
 	}
-/*	for (k=0; k<10; k++){
+	/*	for (k=0; k<10; k++){
 		var totVal = parseFloat((totalValue[k]).toFixed(2));
 		features[k].set("totalvalue", totVal);
 		//Update arc id[i] with totalValue[k]
@@ -548,13 +548,10 @@ function populateTable(bayObject, map){
 		//Get oid of bayObject
 		var featureID = bayObject[i].fack_oid;
 		//Insert columns for
-		row.insertCell(0).innerHTML="<td>"+i+"</td>";
-		row.insertCell(1).innerHTML="<td id="+features[i].get("fack")+">"+features[i].get("fack")+"</td>";
-		row.insertCell(2).innerHTML="<td>"+features[i].get("totval")+"</td>";
-		if (features[i].get("totval")>=10000){
-		row.insertCell(0).innerHTML="<p>"+(i+1)+"</p>";
-		row.insertCell(1).innerHTML="<p id="+bayObject[i].fack_oid+">"+bayObject[i].fack_oid+"</p>";
-		row.insertCell(2).innerHTML="<p>"+bayObject[i].totval+"</p>";
+		row.insertCell(0).innerHTML="<td>"+(i+1)+"</td>";
+		row.insertCell(1).innerHTML="<td id="+bayObject[i].fack_oid+">"+bayObject[i].fack_oid+"</td>";
+		row.insertCell(2).innerHTML="<td>"+bayObject[i].totval+"</td>";
+
 		if (bayObject[i].totval>=10000){
 			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
 		}
@@ -571,28 +568,29 @@ function populateTable(bayObject, map){
 	};
 	$('#tableDiv').show();
 	$('#tableDiv').scroll(moveScroll);
+
 }
 
 function moveScroll(){
-    var scroll = $('#tableDiv').scrollTop();
-    var anchor_top = $("#featureTable").offset().top;
-    var anchor_bottom = $("#bottom_anchor").offset().top;
-    if (scroll>anchor_top && scroll<anchor_bottom) {
-    clone_table = $("#clone");
-    if(clone_table.length == 0){
-        clone_table = $("#featureTable").clone();
-        clone_table.attr('id', 'clone');
-        clone_table.css({position:'fixed',
-                 'pointer-events': 'none',
-                 top:0});
-        clone_table.width($("#featureTable").width());
-        $("#tableDiv").append(clone_table);
-        $("#clone").css({visibility:'hidden'});
-        $("#clone thead").css({visibility:'visible'});
-    }
-    } else {
-    $("#clone").remove();
-    }
+	var scroll = $('#tableDiv').scrollTop();
+	var anchor_top = $("#featureTable").offset().top;
+	var anchor_bottom = $("#bottom_anchor").offset().top;
+	if (scroll>anchor_top && scroll<anchor_bottom) {
+		clone_table = $("#clone");
+		if(clone_table.length == 0){
+			clone_table = $("#featureTable").clone();
+			clone_table.attr('id', 'clone');
+			clone_table.css({position:'fixed',
+				'pointer-events': 'none',
+				top:0});
+			clone_table.width($("#featureTable").width());
+			$("#tableDiv").append(clone_table);
+			$("#clone").css({visibility:'hidden'});
+			$("#clone thead").css({visibility:'visible'});
+		}
+	} else {
+		$("#clone").remove();
+	}
 }
 
 function getExtentofBay(idArray,features,map){
@@ -608,8 +606,8 @@ function getExtentofBay(idArray,features,map){
 		var second =[extent[2],extent[3]];
 		var ring = [first,second];
 		var MBR = new ol.Feature({
-            geometry: new ol.geom.Polygon([ring])
-        });
+			geometry: new ol.geom.Polygon([ring])
+		});
 		baySource.addFeature(MBR);
 	}
 	var bayLayer = new ol.layer.Vector({
@@ -647,7 +645,7 @@ function getSliderValue(){
 		var value = ($(this).slider("option","value")/100);
 		sliderValues.push(value);
 	});
-	
+
 	return sliderValues;
 }
 //'703000':['el','#006f00'], '606000':['heating','#000000'], '890400':['water','#0066ff']
