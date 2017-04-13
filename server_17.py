@@ -33,7 +33,7 @@ def cbl():
 @app.route('/bay_stats/')
 def bay_stats():
     cursor = con.cursor()
-    query = "SELECT json_arrayagg(json_object('fack_oid' IS ssp_bay_oid, 'fack_otype' is ssp_bay_otype, 'ant_obj_over_35' IS antal_over_35, 'antal_anm' is antal_bes, 'anm_grad' is bes_grad, 'antal_avbr' is antal_avbr, 'kundtid' is kundtid)returning clob) AS tempclob FROM all_objects_stats WHERE install_year IS NOT NULL and dbms_lob.getlength(geo_json)<3800".format()
+    query = "SELECT json_arrayagg(json_object('fack_oid' IS ssp_bay_oid, 'fack_otype' is ssp_bay_otype, 'ant_obj_over_35' IS antal_over_35, 'antal_anm' is antal_bes, 'anm_grad' is bes_grad, 'antal_avbr' is antal_avbr, 'kundtid' is kundtid, 'totval' is null)returning clob) AS tempclob FROM bay_stats".format()
     cursor.execute(query)
     inVar = (cursor.fetchone()[0])
 

@@ -2,7 +2,7 @@
 var styles = {
         'Point': [new ol.style.Style({
             image: new ol.style.Circle({
-                radius: 3,
+                radius: 2,
                 fill: new ol.style.Fill({
                     color: 'black'
                 })
@@ -111,7 +111,7 @@ init = function() {
 			source: lineSource,
 			style: styleFunction
 		});
-		map = mapMaker(lineLayer);
+		map = mapMaker(lineLayer,bayObject);
 	})
 /*	.catch(function (err) {
 		console.error('Augh, there was an error!', err.statusText);
@@ -131,8 +131,16 @@ function checkExistance(features,map){
 	getExtentofBay(idArray,features,map);
 }
 
+function getBayObject(feature,bayObject){
+	var feature_oid = feature.get("fack_oid");
+	console.log(bayObject[1].fack_oid);
+	var returnedBay = bayObject.filter(function(entry){
+		return entry.fack_oid === feature_oid
+	});
+}
 
-function mapMaker(lineLayer){
+
+function mapMaker(lineLayer,bayObject){
 	proj4.defs("EPSG:3009","+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
 	var myProjection = ol.proj.get('EPSG:3009');
 	var raster = new ol.layer.Tile({  
@@ -148,7 +156,6 @@ function mapMaker(lineLayer){
 		type:'base',
 		title:'Bakgrund mörk', 
 		source: new ol.source.XYZ({
-			tileSize: [512, 512],
 			url: 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZmhpbGRpbmciLCJhIjoiY2luMDgyMXB3MDBubXY5bHlsZ3d0NXpuMCJ9.YzM1KUyixi_b2Vl1CF0e2g',
 			crossOrigin: 'anonymous'
 		})
@@ -211,7 +218,7 @@ function mapMaker(lineLayer){
   		  alert ("Totala vikten är " + sum + "%. Måste vara 100%")
   	  }
   	  else {
-  		  getParamValue(lineLayer,map);
+  		  getParamValue(bayObject,map);
   		  hideForm('weightForm');
   	  }
     })
@@ -380,7 +387,7 @@ function polyMaker(feature) {
 	return style;
 }
 
-function MCEmapMaker(lineLayer,feature, map){
+function MCEmapMaker(map, bayObject){
 	var styleRed = {'Point': [new ol.style.Style({
 		image: new ol.style.Circle({
 			radius: 3,
@@ -426,7 +433,7 @@ function MCEmapMaker(lineLayer,feature, map){
 		})
 	})
 	};
-	for (i=0; i<feature.length;i++){
+/*	for (i=0; i<bayObject.length;i++){
 		if (feature[i].get('totval') >= 10000){
 			feature[i].setStyle(styleRed[feature[i].getGeometry().getType()]);
 		} 
@@ -436,69 +443,69 @@ function MCEmapMaker(lineLayer,feature, map){
 		else {
 			feature[i].setStyle(styleGreen[feature[i].getGeometry().getType()]);;
 		}
-	}
-	populateTable(feature,map);
+	}*/
+	populateTable(bayObject,map);
 }
 
-function getAge(features){
-	ageList = [];
-	var currentYear = new Date().getFullYear();
-	for (i=0; i<features.length; i++){
-		if (!!features[i].get("installerad")){
-			var age = currentYear - features[i].get("installerad")
-			ageList.push(age);
-		}
-	}
-	return ageList;
-}
-
-function getParamValue(lineLayer, map){
+function getParamValue(bayObject, map){
 	//Get faetures from layers 
-	var features = lineLayer.getSource().getFeatures();
-	id = [];
-	getAge(features);
+	//var features = lineLayer.getSource().getFeatures();
+	oid = [];
+	otype = [];
+	age_over_35 = [];
+	weightAge = [];
 	no_of_obs = [];
 	weightno_of_obs = [];
 	obs_degree = [];
-	weightAge = [];
 	weightobs_degree = [];
+	tot_out = [];
+	weighttot_out = [];
 	totalValue = [];
 	var sliderValues = getSliderValue(); //Get value from each slider
 
 	//For every parameter...
-	for (i=0; i<features.length; i++){
+	for (i=0; i<bayObject.length; i++){
 		//..push value into array
-		var bayID = (features[i].get("fack"));
-		no_of_obs.push(features[i].get("antal_anm"));
-		obs_degree.push(features[i].get("grad"));
+		//var bay = getBayObject(features[i], bayObject);
+		//var bayID = (bay.fack_oid);
+		oid.push(bayObject[i].fack_oid)
+		otype.push(bayObject[i].fack_otype);
+		no_of_obs.push(bayObject[i].antal_anm);
+		obs_degree.push(bayObject[i].anm_grad);
+		age_over_35.push(bayObject[i].ant_obj_over_35);
+		tot_out.push(bayObject[i].antal_avbr);
 		//getExtent(bayID,features[i]);
 	}
 	//get minimum and maximum value
-	var minAge = Math.min.apply(null,ageList);
-	var maxAge = Math.max.apply(null,ageList);
+	var minAge = Math.min.apply(null,age_over_35);
+	var maxAge = Math.max.apply(null,age_over_35);
 	var minOutage = Math.min.apply(null,no_of_obs);
 	var maxOutage = Math.max.apply(null,no_of_obs);
 	var minobs_degree = Math.min.apply(null,obs_degree); 
 	var maxobs_degree = Math.max.apply(null,obs_degree);
+	var mintot_out = Math.min.apply(null,tot_out); 
+	var maxtot_out = Math.max.apply(null,tot_out);
 
 	for ( j=0; j<no_of_obs.length; j++){
 		//Norm values
-		var normedAge = normValues(ageList[j], minAge, maxAge);
+		var normedAge = normValues(age_over_35[j], minAge, maxAge);
 		var normedOutage = normValues(no_of_obs[j], minOutage, maxOutage);
 		var normedobs_degree = normValues(obs_degree[j], minobs_degree, maxobs_degree);
+		var normedtot_out = normValues(tot_out[j], mintot_out, maxtot_out);
 		
 		//Multiply normed value with weight
 		weightno_of_obs.push(normedOutage*sliderValues[0]);
 		weightobs_degree.push(normedobs_degree*sliderValues[1]);
 		weightAge.push(normedAge*sliderValues[2]);
+		weighttot_out.push(normedtot_out*sliderValues[3]);
 		//Sum the weighted parameters to a total score
-		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]);
+		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]+weighttot_out[j]);
 	}
 	
 	var requests = [];
-	for (k=0; k<ageList.length; k++){
+	for (k=0; k<bayObject.length; k++){
 		totVal = totalValue[k].toFixed(2);
-		features[k].set('totval', totVal);
+		bayObject[k].totval = totVal;
 		//features[i].set('id',i);
 		//console.log(features[k]);
 	}
@@ -513,17 +520,18 @@ function getParamValue(lineLayer, map){
 		console.log("Klar");
 		MCEmapMaker(features, map);
 	});*/
-	MCEmapMaker(lineLayer,features, map);
+	MCEmapMaker(map,bayObject);
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
 	resetSliders()
 }
 
-function populateTable(features, map){
-	//Sort features based on totalvalue --> highest value on top
-	features.sort(function(obj1, obj2) {
-		return obj2.get("totval") - obj1.get("totval")
+function populateTable(bayObject, map){
+	//Sort bayObjects based on totalvalue --> highest value on top
+	console.log(bayObject);
+	bayObject.sort(function(obj1, obj2) {
+		return obj2.totval - obj1.totval
 	});
 	var table = document.getElementById("featureTable");
 	var header = table.createTHead();
@@ -532,28 +540,32 @@ function populateTable(features, map){
 	headerRow.insertCell(1).innerHTML="<th>Fack</th>";
 	headerRow.insertCell(2).innerHTML="<th>Värde</th>";
 	headerRow.insertCell(3).innerHTML="<th></th>";
-	//For each feature...
+	//For each object...
 	var tBody = document.getElementById("tbody")
-	for(i=1; i<features.length; i++) {
+	for(i=0; i<bayObject.length; i++) {
 		//Create a row
 		var row = tBody.insertRow(i+1);
-		//Get ID of feature
-		var featureID = features[i].get("gid");
+		//Get oid of bayObject
+		var featureID = bayObject[i].fack_oid;
 		//Insert columns for
 		row.insertCell(0).innerHTML="<td>"+i+"</td>";
 		row.insertCell(1).innerHTML="<td id="+features[i].get("fack")+">"+features[i].get("fack")+"</td>";
 		row.insertCell(2).innerHTML="<td>"+features[i].get("totval")+"</td>";
 		if (features[i].get("totval")>=10000){
+		row.insertCell(0).innerHTML="<p>"+(i+1)+"</p>";
+		row.insertCell(1).innerHTML="<p id="+bayObject[i].fack_oid+">"+bayObject[i].fack_oid+"</p>";
+		row.insertCell(2).innerHTML="<p>"+bayObject[i].totval+"</p>";
+		if (bayObject[i].totval>=10000){
 			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
 		}
-		else if (10000 >=features[i].get("totval") && features[i].get("totval")> 5000){
+		else if (10000 >=bayObject[i].totval && bayObject[i].totval> 5000){
 			row.insertCell(3).innerHTML="<div class='colcircle_yellow'> </div>";
 		}
 		else {
 			row.insertCell(3).innerHTML="<div class='colcircle_green'> </div>";
 		}
-		//When click on column with ID features[i].get("gid")
-		$("#"+features[i].get("fack")+"").click(function(test){
+		//When click on column with ID bayObject[i].fack_oid
+		$("#"+bayObject[i].fack_oid+"").click(function(test){
 			//getExtent(map, test.target.outerText, features)
 		});
 	};
@@ -621,7 +633,7 @@ function zoomToMap(map,featureID, features){
 
 //TODO:Normerar värden, hur ska denna göras? Just nu är det linear stretching
 function normValues(value, min, max){
-	var normedValue = (value-min)*(255/(max-min))
+	var normedValue = (value-min)*(1/(max-min))
 	return normedValue;	
 }
 
@@ -632,9 +644,10 @@ function getSliderValue(){
 	var sliders = $("#sliders .slider");
 	sliders.each(function(){
 		//...get value of slider and push it into array
-		var value = $(this).slider("option","value");
+		var value = ($(this).slider("option","value")/100);
 		sliderValues.push(value);
 	});
+	
 	return sliderValues;
 }
 //'703000':['el','#006f00'], '606000':['heating','#000000'], '890400':['water','#0066ff']
