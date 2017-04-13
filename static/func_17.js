@@ -534,12 +534,13 @@ function populateTable(bayObject, map){
 		return obj2.totval - obj1.totval
 	});
 	var table = document.getElementById("featureTable");
-	var header = table.createTHead();
+/*	var header = table.createTHead();
 	var headerRow = header.insertRow(0);
+	headerRow.innerHTML=""
 	headerRow.insertCell(0).innerHTML="<th>Rank</th>";
 	headerRow.insertCell(1).innerHTML="<th>Fack</th>";
 	headerRow.insertCell(2).innerHTML="<th>Värde</th>";
-	headerRow.insertCell(3).innerHTML="<th></th>";
+	headerRow.insertCell(3).innerHTML="<th></th>";*/
 	//For each object...
 	var tBody = document.getElementById("tbody")
 	for(i=0; i<bayObject.length; i++) {
@@ -567,31 +568,31 @@ function populateTable(bayObject, map){
 		});
 	};
 	$('#tableDiv').show();
-	$('#tableDiv').scroll(moveScroll);
+//	$('#tableDiv').scroll(moveScroll);
 
 }
 
-function moveScroll(){
-	var scroll = $('#tableDiv').scrollTop();
-	var anchor_top = $("#featureTable").offset().top;
-	var anchor_bottom = $("#bottom_anchor").offset().top;
-	if (scroll>anchor_top && scroll<anchor_bottom) {
-		clone_table = $("#clone");
-		if(clone_table.length == 0){
-			clone_table = $("#featureTable").clone();
-			clone_table.attr('id', 'clone');
-			clone_table.css({position:'fixed',
-				'pointer-events': 'none',
-				top:0});
-			clone_table.width($("#featureTable").width());
-			$("#tableDiv").append(clone_table);
-			$("#clone").css({visibility:'hidden'});
-			$("#clone thead").css({visibility:'visible'});
-		}
-	} else {
-		$("#clone").remove();
-	}
-}
+//function moveScroll(){
+//	var scroll = $('#tableDiv').scrollTop();
+//	var anchor_top = $("#featureTable").offset().top;
+//	var anchor_bottom = $("#bottom_anchor").offset().top;
+//	if (scroll>anchor_top && scroll<anchor_bottom) {
+//		clone_table = $("#clone");
+//		if(clone_table.length == 0){
+//			clone_table = $("#featureTable").clone();
+//			clone_table.attr('id', 'clone');
+//			clone_table.css({position:'fixed',
+//				'pointer-events': 'none',
+//				top:0});
+//			clone_table.width($("#featureTable").width());
+//			$("#tableDiv").append(clone_table);
+//			$("#clone").css({visibility:'hidden'});
+//			$("#clone thead").css({visibility:'visible'});
+//		}
+//	} else {
+//		$("#clone").remove();
+//	}
+//}
 
 function getExtentofBay(idArray,features,map){
 	var baySource = new ol.source.Vector({});
