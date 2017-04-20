@@ -2,7 +2,7 @@
 var styles = {
 		'Point': [new ol.style.Style({
 			image: new ol.style.Circle({
-				radius: 2,
+				radius: 1.5,
 				fill: new ol.style.Fill({
 					color: 'black'
 				})
@@ -72,13 +72,11 @@ function makeRequest (method, url) {
 }
 
 init = function() {
-	//Requests from all the different text files.
-	//To be implemeted: somehow group them together already in the requests-phase.
 	requests = {
-			'lines':
+			'objects':
 				makeRequest('GET', '/cbl/'),
-				'bays':
-					makeRequest('GET', '/bay_stats')
+			'bays':
+				makeRequest('GET', '/bay_stats')
 	}
 	Promise
 	.props(requests)
@@ -87,7 +85,7 @@ init = function() {
 			$('[data-toggle="popover"]').popover()
 		})
 		var bayObject = JSON.parse(JSON.parse(responses.bays));
-		var lineObject = JSON.parse(responses.lines);
+		var lineObject = JSON.parse(responses.objects);
 		var lineSource = new ol.source.Vector({
 			features: (new ol.format.GeoJSON()).readFeatures(lineObject)
 		})
@@ -112,8 +110,8 @@ function checkExistance(features,map){
 			idArray.push(bayID);
 		}
 	}
-	var bayLayer = getExtentofBay(idArray,features,map);
-	return bayLayer;
+	var bayFeat = getExtentofBay(idArray,features,map);
+	return bayFeat;
 }
 
 function getBayObject(feature,bayObject){
@@ -148,7 +146,7 @@ function mapMaker(lineLayer,bayObject){
 	var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
-		layers: [basemap],
+		layers: [basemap,lineLayer],
 		target: 'map',
 		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
 		view: new ol.View({
@@ -189,7 +187,7 @@ function mapMaker(lineLayer,bayObject){
 	});
 	map.addControl(layerSwitcher);
 	var features = lineLayer.getSource().getFeatures();
-	
+
 	$("#runBtn").click(function(){
 		var sum = 0
 		//For each slider..
@@ -203,8 +201,8 @@ function mapMaker(lineLayer,bayObject){
 			alert ("Totala vikten är " + sum + "%. Måste vara 100%")
 		}
 		else {
-			var bayLayer = checkExistance(features,map)
-			getParamValue(bayObject,map, bayLayer);
+			var bayFeat = checkExistance(features,map);
+			getParamValue(bayObject,map, bayFeat);
 			hideForm('weightForm');
 		}
 	})
@@ -356,94 +354,91 @@ function polyMaker(lineFeat, pointFeat, map, bayID) {
 	var jstsPoint = parser.read(newPoint);
 	var chLine = jstsLine.convexHull();
 	var chPoint = jstsPoint.convexHull();
-	
-	var polySource = new ol.source.Vector();
+
 	var polyLine = new ol.Feature({
 		geometry: parser.write(chLine)
 	})
 	var polyPoint = new ol.Feature({
 		geometry: parser.write(chPoint)
 	})
-	
+
 	var unionGeom = parser.read(polyLine.getGeometry());
 	unionGeom = unionGeom.union(parser.read(polyPoint.getGeometry()));
-	
+
 	var unionFeat = new ol.Feature({
 		geometry: parser.write(unionGeom),
 		fack_oid: bayID
 	})
-	
-	polySource.addFeature(unionFeat);
+
+	/*	polySource.addFeature(unionFeat);
+	var polyLayer = new ol.layer.Vector({
+		source: polySource
+	});
+	map.addLayer(polyLayer);*/
+	return unionFeat;
+}
+
+function MCEmapMaker(map, bayObject, bayFeat){
+
+	var polySource = new ol.source.Vector();
+/*	for (i=0; i<bayFeat.length; i++){
+		polySource.addFeature(bayFeat[i]);
+		//console.log(bayFeat[i]);
+	}
+	var polyLayer = new ol.layer.Vector({
+		source: polySource
+	});
+	map.addLayer(polyLayer);*/
+	var styleRed = new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: 'red',
+			width: 3
+		}),
+		fill: new ol.style.Fill({
+			color: 'rgba(255, 0, 0, 0.3)'
+		})
+	});
+	var styleGreen = new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: 'green',
+			width: 3
+		}),
+		fill: new ol.style.Fill({
+			color: 'rgba(0, 255, 0, 0.3)'
+		})
+	});
+	var styleYellow = new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: 'yellow',
+			width: 3
+		}),
+		fill: new ol.style.Fill({
+			color: 'rgba(255, 255, 51, 0.3)'
+		})
+	});
+	for (i=0; i<bayFeat.length;i++){
+		var bayfeature = bayFeat.filter(function(bayFeat){
+			return bayFeat.get("fack_oid") === bayObject[i].fack_oid 
+		});
+		if (bayObject[i].totval >= 0.8){
+			bayfeature[0].setStyle(styleRed);
+			polySource.addFeature(bayfeature[0]);
+		} 
+		else if (0.8 > bayObject[i].totval && bayObject[i].totval >= 0.4){
+			bayfeature[0].setStyle(styleYellow);
+		} 
+		else {
+			bayfeature[0].setStyle(styleGreen);;
+		}
+	}
 	var polyLayer = new ol.layer.Vector({
 		source: polySource
 	});
 	map.addLayer(polyLayer);
-	return polySource;
-}
-
-function MCEmapMaker(map, bayObject, bayLayer){
-	var styleRed = {'Point': [new ol.style.Style({
-		image: new ol.style.Circle({
-			radius: 3,
-			fill: new ol.style.Fill({
-				color: 'red'
-			})
-		})
-	})],
-	'LineString': new ol.style.Style({
-		stroke: new ol.style.Stroke({
-			color: 'red',
-			width: 1
-		})
-	})
-	};
-	var styleGreen = {'Point': [new ol.style.Style({
-		image: new ol.style.Circle({
-			radius: 3,
-			fill: new ol.style.Fill({
-				color: 'green'
-			})
-		})
-	})],
-	'LineString': new ol.style.Style({
-		stroke: new ol.style.Stroke({
-			color: 'green',
-			width: 1
-		})
-	})
-	};
-	var styleYellow = {'Point': [new ol.style.Style({
-		image: new ol.style.Circle({
-			radius: 3,
-			fill: new ol.style.Fill({
-				color: 'yellow'
-			})
-		})
-	})],
-	'LineString': new ol.style.Style({
-		stroke: new ol.style.Stroke({
-			color: 'yellow',
-			width: 1
-		})
-	})
-	};
-	//var bayFeat = bayLayer.getSource().getFeatures();
-	console.log(bayLayer);
-/*	for (i=0; i<bayObject.length;i++){
-		if (feature[i].get('totval') >= 10000){
-			feature[i].setStyle(styleRed[feature[i].getGeometry().getType()]);
-		} 
-		else if (10000 >= feature[i].get('totval') && feature[i].get('totval') > 5000){
-			feature[i].setStyle(styleYellow[feature[i].getGeometry().getType()]);
-		} 
-		else {
-			feature[i].setStyle(styleGreen[feature[i].getGeometry().getType()]);;
-		}
-	}*/
 	populateTable(bayObject,map);
 }
 
-function getParamValue(bayObject, map, bayLayer){
+function getParamValue(bayObject, map, bayFeat){
 	//Get faetures from layers 
 	//var features = lineLayer.getSource().getFeatures();
 	oid = [];
@@ -515,7 +510,7 @@ function getParamValue(bayObject, map, bayLayer){
 		console.log("Klar");
 		MCEmapMaker(features, map);
 	});*/
-	MCEmapMaker(map,bayObject, bayLayer);
+	MCEmapMaker(map,bayObject, bayFeat);
 	//Reset parameters
 	resetForm('checkParamForm')
 	resetForm('weightForm1')
@@ -528,7 +523,7 @@ function populateTable(bayObject, map){
 		return obj2.totval - obj1.totval
 	});
 	var table = document.getElementById("featureTable");
-/*	var header = table.createTHead();
+	/*	var header = table.createTHead();
 	var headerRow = header.insertRow(0);
 	headerRow.innerHTML=""
 	headerRow.insertCell(0).innerHTML="<th>Rank</th>";
@@ -558,7 +553,7 @@ function populateTable(bayObject, map){
 		}
 		//When click on column with ID bayObject[i].fack_oid
 		$("#"+bayObject[i].fack_oid+"").click(function(test){
-			//getExtent(map, test.target.outerText, features)
+			zoomToMap(map, test.target.outerText, features)
 		});
 	};
 	$('#tableDiv').show();
@@ -567,25 +562,25 @@ function populateTable(bayObject, map){
 }
 
 //function moveScroll(){
-//	var scroll = $('#tableDiv').scrollTop();
-//	var anchor_top = $("#featureTable").offset().top;
-//	var anchor_bottom = $("#bottom_anchor").offset().top;
-//	if (scroll>anchor_top && scroll<anchor_bottom) {
-//		clone_table = $("#clone");
-//		if(clone_table.length == 0){
-//			clone_table = $("#featureTable").clone();
-//			clone_table.attr('id', 'clone');
-//			clone_table.css({position:'fixed',
-//				'pointer-events': 'none',
-//				top:0});
-//			clone_table.width($("#featureTable").width());
-//			$("#tableDiv").append(clone_table);
-//			$("#clone").css({visibility:'hidden'});
-//			$("#clone thead").css({visibility:'visible'});
-//		}
-//	} else {
-//		$("#clone").remove();
-//	}
+//var scroll = $('#tableDiv').scrollTop();
+//var anchor_top = $("#featureTable").offset().top;
+//var anchor_bottom = $("#bottom_anchor").offset().top;
+//if (scroll>anchor_top && scroll<anchor_bottom) {
+//clone_table = $("#clone");
+//if(clone_table.length == 0){
+//clone_table = $("#featureTable").clone();
+//clone_table.attr('id', 'clone');
+//clone_table.css({position:'fixed',
+//'pointer-events': 'none',
+//top:0});
+//clone_table.width($("#featureTable").width());
+//$("#tableDiv").append(clone_table);
+//$("#clone").css({visibility:'hidden'});
+//$("#clone thead").css({visibility:'visible'});
+//}
+//} else {
+//$("#clone").remove();
+//}
 //}
 
 function getExtentofBay(idArray,features,map){
@@ -600,11 +595,10 @@ function getExtentofBay(idArray,features,map){
 			return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'Point'
 		});
 		//console.log(foundFeat);
-		var bayLayer = polyMaker(lineFeat,pointFeat,map, bayID);
-		bayArray.push(bayLayer);
+		var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID);
+		bayArray.push(bayFeat);
 	}
 	return bayArray;
-	
 }
 
 function zoomToMap(map,featureID, features){
