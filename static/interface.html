@@ -45,8 +45,11 @@
   		</div>
   	</div>
   <a href="#" class = "accordion" onClick="extendMenu()">Analys</a>
-  	  	<div class="extend">
+  	<div class="extend">
+  	<div class = "undergrupp">
   		<a href="#" class="underrubrik" onClick="showForm('checkDiv')">Kör analys</a>
+  		<a href="#" id ="clearanalysis" class="underrubrik">Rensa analys</a>
+  	</div>
   	</div>
 </div>
 
@@ -67,11 +70,11 @@
     <!-- <div class="section"><span>1</span></div> -->
     			<div class="inner-wrap">
   						<ul class="control">
-  								<li><label class="control control--checkbox" id="v1" >Avbrottsminuter & timmar<input id="value1" type="checkbox" value="value1"/>
+  								<li><label class="control control--checkbox" id="v1" >Antal besiktningsanmärkningar<input id="value1" type="checkbox" value="value1"/>
   											<span class="control__indicator"></span>
   									</label>
   								</li>
-    							<li><label class="control control--checkbox" id="v2">Km i skog <input id="value2" type="checkbox" value="value2"/>
+    							<li><label class="control control--checkbox" id="v2">Besiktningsanmärkningsgrad <input id="value2" type="checkbox" value="value2"/>
     										<span class="control__indicator"></span>
     								</label>
     							</li>
@@ -84,7 +87,7 @@
     								</label>
     							</li>
     							
-    							<li><label class="control control--checkbox" id="v5" >Value 5 <input id="value5" type="checkbox" value="value5"/>
+    							<li><label class="control control--checkbox" id="v5" >Total avbrottstid <input id="value5" type="checkbox" value="value5"/>
     										<span class="control__indicator"></span>
     								</label>
     							</li>
@@ -206,8 +209,6 @@
 	</table>
 <!-- 	<div id="bottom_anchor"></div> -->
 </div>
-
-
 
 <script>
   init();

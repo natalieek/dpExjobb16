@@ -67,6 +67,10 @@ input[type=checkbox], input[type=radio] {
     transition: 0.5s;
 }
 
+.undergrupp {
+    border-bottom: 1px solid #D3D3D3;
+}
+
 .sidenav a {
     padding: 12px 8px 12px 20px;
     text-decoration: none;
@@ -84,9 +88,10 @@ input[type=checkbox], input[type=radio] {
 }
 
 a.underrubrik {
-	font-size:14px ;
+    font-size:14px ;
     font-weight: 500;
     padding:0 0 5px 32px;
+    border-bottom: none;
 	
 }
 

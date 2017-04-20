@@ -75,8 +75,8 @@ init = function() {
 	requests = {
 			'objects':
 				makeRequest('GET', '/cbl/'),
-			'bays':
-				makeRequest('GET', '/bay_stats')
+				'bays':
+					makeRequest('GET', '/bay_stats')
 	}
 	Promise
 	.props(requests)
@@ -201,66 +201,14 @@ function mapMaker(lineLayer,bayObject){
 			alert ("Totala vikten är " + sum + "%. Måste vara 100%")
 		}
 		else {
+			hideForm('weightForm');
+			$("loader").show();
 			var bayFeat = checkExistance(features,map);
 			getParamValue(bayObject,map, bayFeat);
-			hideForm('weightForm');
+
 		}
 	})
 }
-
-
-function networkMaker(inArc, inNode){
-	return {'arcArray': inArc, 'nodeArray':inNode}
-}
-
-swe_eng = {'full':{
-	'water': {'title':'Vattennät', 'arc': 'Ledningar', 'conn': 'Anslutningar'},
-	'gas': {'title':'Gasnät','arc':'Ledningar', 'conn':'Anslutningar' },
-	'heating': {'title':'Fjärrvärmenät','arc':'Ledningar','conn':'Anslutningar' }},
-	'broken':{
-		'water': {'title':'Avbrott: Vatten','node': 'Trasig nod: '},
-		'gas': {'title': 'Avbrott: Gas','node':'Trasig nod:'},
-		'heating': {'title':'Avbrott: Fjärrvärme', 'node':'Trasig nod: ' }}}
-
-//Creates the layers and sets the styles determining the visualization
-function layerMaker(data,layers,network,showArc, showNode, showConn,layerGroups,title,bool_broken){
-
-	broken = ''
-		if(bool_broken===true){
-			broken = 'broken'
-		} else{
-			broken = 'full'
-		}
-	tmpArc = new ol.layer.Vector({
-		source: data.arcSource,
-		style: styleFunction('arc', network, bool_broken),
-		visible: showArc,
-		network: network,
-		title: swe_eng['full'][network]['arc'],
-		type: 'arc'
-	})
-
-	tmpNode = new ol.layer.Vector({
-		source: data.nodeSource,
-		style: styleFunction('node', network, bool_broken),
-		visible: showNode,
-		network: network,
-		title: swe_eng[broken][network]['node']+title,
-		type: 'node'
-	})
-
-	if(bool_broken===false){
-		tmpNode.unset('title')
-	}
-	layerGroups.push(new ol.layer.Group({
-		'title': swe_eng[broken][network]['title'],
-		layers: [tmpArc, tmpNode, tmpConn]
-	}))
-	layers.Arcs.push(tmpArc)
-	layers.Nodes.push(tmpNode)
-	//If multiple clusters, add clustering vector creation here
-}
-
 
 function openNav() {
 	var e = document.getElementById("mySidenav");
@@ -369,26 +317,12 @@ function polyMaker(lineFeat, pointFeat, map, bayID) {
 		geometry: parser.write(unionGeom),
 		fack_oid: bayID
 	})
-
-	/*	polySource.addFeature(unionFeat);
-	var polyLayer = new ol.layer.Vector({
-		source: polySource
-	});
-	map.addLayer(polyLayer);*/
 	return unionFeat;
 }
 
 function MCEmapMaker(map, bayObject, bayFeat){
 
 	var polySource = new ol.source.Vector();
-/*	for (i=0; i<bayFeat.length; i++){
-		polySource.addFeature(bayFeat[i]);
-		//console.log(bayFeat[i]);
-	}
-	var polyLayer = new ol.layer.Vector({
-		source: polySource
-	});
-	map.addLayer(polyLayer);*/
 	var styleRed = new ol.style.Style({
 		stroke: new ol.style.Stroke({
 			color: 'red',
@@ -435,7 +369,13 @@ function MCEmapMaker(map, bayObject, bayFeat){
 		source: polySource
 	});
 	map.addLayer(polyLayer);
-	populateTable(bayObject,map);
+	map.removeLayer(zoomLayer);
+	populateTable(bayObject, bayFeat,map);
+	$("#clearanalysis").click(function(test){
+		polySource.clear();
+		$('#tableDiv').hide();
+		zoomSource.clear();
+	});
 }
 
 function getParamValue(bayObject, map, bayFeat){
@@ -451,6 +391,8 @@ function getParamValue(bayObject, map, bayFeat){
 	weightobs_degree = [];
 	tot_out = [];
 	weighttot_out = [];
+	tot_out_time = [];
+	weighttot_out_time = [];
 	totalValue = [];
 	var sliderValues = getSliderValue(); //Get value from each slider
 
@@ -465,6 +407,7 @@ function getParamValue(bayObject, map, bayFeat){
 		obs_degree.push(bayObject[i].anm_grad);
 		age_over_35.push(bayObject[i].ant_obj_over_35);
 		tot_out.push(bayObject[i].antal_avbr);
+		tot_out_time.push(bayObject[i].kundtid);
 		//getExtent(bayID,features[i]);
 	}
 	//get minimum and maximum value
@@ -476,21 +419,25 @@ function getParamValue(bayObject, map, bayFeat){
 	var maxobs_degree = Math.max.apply(null,obs_degree);
 	var mintot_out = Math.min.apply(null,tot_out); 
 	var maxtot_out = Math.max.apply(null,tot_out);
+	var mintot_out_time = Math.min.apply(null,tot_out_time); 
+	var maxtot_out_time = Math.max.apply(null,tot_out_time);
 
 	for ( j=0; j<no_of_obs.length; j++){
 		//Norm values
 		var normedAge = normValues(age_over_35[j], minAge, maxAge);
-		var normedOutage = normValues(no_of_obs[j], minOutage, maxOutage);
+		var normedno_obs = normValues(no_of_obs[j], minOutage, maxOutage);
 		var normedobs_degree = normValues(obs_degree[j], minobs_degree, maxobs_degree);
 		var normedtot_out = normValues(tot_out[j], mintot_out, maxtot_out);
+		var normedtot_out_time = normValues(tot_out_time[j], mintot_out_time, maxtot_out_time);
 
 		//Multiply normed value with weight
-		weightno_of_obs.push(normedOutage*sliderValues[0]);
+		weightno_of_obs.push(normedno_obs*sliderValues[0]);
 		weightobs_degree.push(normedobs_degree*sliderValues[1]);
 		weightAge.push(normedAge*sliderValues[2]);
 		weighttot_out.push(normedtot_out*sliderValues[3]);
+		weighttot_out_time.push(normedtot_out_time*sliderValues[4]);
 		//Sum the weighted parameters to a total score
-		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]+weighttot_out[j]);
+		totalValue.push(weightno_of_obs[j] + weightobs_degree[j]+weightAge[j]+weighttot_out[j]+weighttot_out_time[j]);
 	}
 
 	for (k=0; k<bayObject.length; k++){
@@ -517,7 +464,7 @@ function getParamValue(bayObject, map, bayFeat){
 	resetSliders()
 }
 
-function populateTable(bayObject, map){
+function populateTable(bayObject, bayFeat, map){
 	//Sort bayObjects based on totalvalue --> highest value on top
 	bayObject.sort(function(obj1, obj2) {
 		return obj2.totval - obj1.totval
@@ -538,8 +485,9 @@ function populateTable(bayObject, map){
 		//Get oid of bayObject
 		var featureID = bayObject[i].fack_oid;
 		//Insert columns for
+		row.id=bayObject[i].fack_oid;
 		row.insertCell(0).innerHTML="<td>"+(i+1)+"</td>";
-		row.insertCell(1).innerHTML="<td id="+bayObject[i].fack_oid+">"+bayObject[i].fack_oid+"</td>";
+		row.insertCell(1).innerHTML="<td>"+bayObject[i].fack_oid+"</td>";
 		row.insertCell(2).innerHTML="<td>"+bayObject[i].totval+"</td>";
 
 		if (bayObject[i].totval>=0.8){
@@ -551,37 +499,18 @@ function populateTable(bayObject, map){
 		else {
 			row.insertCell(3).innerHTML="<div class='colcircle_green'> </div>";
 		}
+		//console.log(row);
 		//When click on column with ID bayObject[i].fack_oid
-		$("#"+bayObject[i].fack_oid+"").click(function(test){
-			zoomToMap(map, test.target.outerText, features)
+		$("#"+bayObject[i].fack_oid).click(function(test){
+			var id = $(this).closest("tr").find('td:eq(1)').text();
+			zoomSource.clear();
+			zoomToMap(map, id, bayFeat)
 		});
+
 	};
 	$('#tableDiv').show();
-//	$('#tableDiv').scroll(moveScroll);
-
+	map.addLayer(zoomLayer);
 }
-
-//function moveScroll(){
-//var scroll = $('#tableDiv').scrollTop();
-//var anchor_top = $("#featureTable").offset().top;
-//var anchor_bottom = $("#bottom_anchor").offset().top;
-//if (scroll>anchor_top && scroll<anchor_bottom) {
-//clone_table = $("#clone");
-//if(clone_table.length == 0){
-//clone_table = $("#featureTable").clone();
-//clone_table.attr('id', 'clone');
-//clone_table.css({position:'fixed',
-//'pointer-events': 'none',
-//top:0});
-//clone_table.width($("#featureTable").width());
-//$("#tableDiv").append(clone_table);
-//$("#clone").css({visibility:'hidden'});
-//$("#clone thead").css({visibility:'visible'});
-//}
-//} else {
-//$("#clone").remove();
-//}
-//}
 
 function getExtentofBay(idArray,features,map){
 	var baySource = new ol.source.Vector({});
@@ -601,12 +530,18 @@ function getExtentofBay(idArray,features,map){
 	return bayArray;
 }
 
-function zoomToMap(map,featureID, features){
+var zoomSource = new ol.source.Vector();
+var zoomLayer = new ol.layer.Vector({
+	source: zoomSource
+});
+
+function zoomToMap(map,featureID, bayFeat){
 	//Filter out feature - return the ones that match feature ID
-	var foundFeat = features.filter(function(features){
-		return features.get("fack") == featureID
+	var foundFeat = bayFeat.filter(function(features){
+		return features.get("fack_oid") == featureID
 	});
-	console.log(foundFeat);
+	//Add the returned feature to the source
+	zoomSource.addFeature(foundFeat[0]);
 	//Get extent of feature
 	extent = foundFeat[0].getGeometry().getExtent()
 	//Zoom to extent
