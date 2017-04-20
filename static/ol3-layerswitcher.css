@@ -41,6 +41,10 @@ ul.oordadlista{
 
 .layer label{
  font-weight:500!Important;
+ padding:0 !Important;
  }
 
-
+.group label{
+	padding:0 0 0 20px;
+	
+}

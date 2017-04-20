@@ -91,7 +91,8 @@ init = function() {
 		})
 		var lineLayer = new ol.layer.Vector({
 			source: lineSource,
-			style: styleFunction
+			style: styleFunction,
+			title:'Objektlager',
 		});
 		map = mapMaker(lineLayer,bayObject);
 	})
@@ -143,10 +144,11 @@ function mapMaker(lineLayer,bayObject){
 			crossOrigin: 'anonymous'
 		})
 	});
-	var basemap = new ol.layer.Group({ 'title': 'Baselayer', layers: [darkRaster,raster]})
+	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]})
+	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', layers: [lineLayer]})
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
-		layers: [basemap,lineLayer],
+		layers:[basemap,objectGroup],
 		target: 'map',
 		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
 		view: new ol.View({
@@ -155,9 +157,10 @@ function mapMaker(lineLayer,bayObject){
 			projection: myProjection,
 		})
 	});
-	var layerSwitcher = new ol.control.LayerSwitcher({target: 'layer_panel',
+	var layerSwitcher = new ol.control.LayerSwitcher({target:'layer_panel',
 		tipLabel: 'Legend' // Optional label for button
 	});
+
 	var element = document.getElementById('popup');
 	var popup = new ol.Overlay({
 		element: element,

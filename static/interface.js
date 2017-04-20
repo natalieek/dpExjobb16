@@ -114,7 +114,7 @@ $(document).ready(function(){
 			var text = $("#v5").text();
 			$("#sect5").html(text);
 		}
-		if (value6.checked){
+		/*if (value6.checked){
 			$("#s6").show();
 			var text = $("#v6").text();
 			$("#sect6").html(text);
@@ -133,7 +133,7 @@ $(document).ready(function(){
 			$("#s9").show();
 			var text = $("#v9").text();
 			$("#sect9").html(text);
-		}
+		}*/
 	});
 });
 

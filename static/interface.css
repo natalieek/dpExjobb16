@@ -163,9 +163,9 @@ div.extend {
 
 .testForm {
 	display:none;
-	min-width: 40%;
+ 	min-width: 30%;
   	width: fit-content;
-  	height:fit-content;
+  	height:fit-content; 
     padding:10px 30px;
     margin:100px auto;
     background: #FFF;
@@ -259,7 +259,7 @@ div.extend {
 
 .control {
   	display: block;
-  	position: relative;
+   	position: relative;
   	padding-left: 30px;
  	margin-bottom: 10px;
   	cursor: pointer;
@@ -289,7 +289,7 @@ ul.control {
 
 
 
-ul.control li {
+/* ul.control li {
 	display: inline-block;
     width: fit-content;
 	width: -moz-fit-content;
@@ -301,7 +301,7 @@ ul.control li {
 	float:left;
  	width:33%;
 
-}
+} */
 
 ul.control label {
     color:#336699;

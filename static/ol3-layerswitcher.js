@@ -11,7 +11,6 @@ ol.control.LayerSwitcher = function(opt_options) {
 
     var options = opt_options || {};
 
-
     this.mapListeners = [];
 
     this.shownClassName = 'ol-unselectable ol-control layer-switcher';
@@ -135,7 +134,6 @@ ol.control.LayerSwitcher.prototype.setVisible_ = function(lyr, visible) {
  */
 ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
     var this_ = this;
-
     var li = document.createElement('li');
 
     var lyrTitle = lyr.get('title');
@@ -146,10 +144,11 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
     if (lyr.getLayers && !lyr.get('combine')) {
 
         li.className = 'group';
+        label.innerHTML = lyrTitle;
+        li.appendChild(label);
         var ul = document.createElement('ul');
         ul.className = "innerul";
         li.appendChild(ul);
-
 
         this.renderLayers_(lyr, ul);
 
