@@ -41,6 +41,27 @@ var styles = {
 		})
 };
 
+var ageStyle = {
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 1.5,
+				fill: new ol.style.Fill({
+					color: 'red'
+				})
+			})
+		})],
+		'LineString': new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: 'red',
+				width: 1
+			})
+		})
+}
+
+var ageStyleFunc = function(feature) {
+	return ageStyle[feature.getGeometry().getType()];
+};
+
 var styleFunction = function(feature) {
 	return styles[feature.getGeometry().getType()];
 };
@@ -102,7 +123,7 @@ init = function() {
 	});*/
 };
 
-function checkExistance(features,map){
+function checkExistance(features,map, bayObject){
 	idArray = [];
 	for (i=0; i<features.length; i++){
 		var bayID = features[i].get("fack_oid");
@@ -111,7 +132,7 @@ function checkExistance(features,map){
 			idArray.push(bayID);
 		}
 	}
-	var bayFeat = getExtentofBay(idArray,features,map);
+	var bayFeat = getExtentofBay(idArray,features,map, bayObject);
 	return bayFeat;
 }
 
@@ -144,8 +165,23 @@ function mapMaker(lineLayer,bayObject){
 			crossOrigin: 'anonymous'
 		})
 	});
-	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]})
-	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', layers: [lineLayer]})
+	var features = lineLayer.getSource().getFeatures();
+	var ageFeatures = features.filter(function(entry){
+		return entry.get("installerad") <= 1982
+	});
+	var ageSource = new ol.source.Vector({
+		features: ageFeatures
+	})
+	var ageLayer = new ol.layer.Vector({
+		source: ageSource,
+		style: ageStyleFunc,
+		title:'Objekt över 35 år',
+		visible: false
+	});
+	
+	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]});
+	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', layers: [lineLayer, ageLayer]});
+
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
 		layers:[basemap,objectGroup],
@@ -162,34 +198,50 @@ function mapMaker(lineLayer,bayObject){
 	});
 
 	var element = document.getElementById('popup');
-	var popup = new ol.Overlay({
+	var overlay = new ol.Overlay({
 		element: element,
-		positioning: 'bottom-center',
-		stopEvent: false
-	});
-	map.addOverlay(popup);
-	map.on('click', function (evt) {
-		var feature = map.forEachFeatureAtPixel(evt.pixel,
-
-				function (feature, layer) {
-			return feature;
-		});
-		if (feature) {
-			var geometry = feature.getGeometry();
-			var coord = geometry.getCoordinates();
-			popup.setPosition(coord);
-			$(element).popover({
-				'placement': 'top',
-				'html': true,
-				'content': "<p>" + 'Antal anmärkningar: ' + feature.get("antal_anm")+"</p>" + "<p>"+'Anmärkningsgrad: ' + feature.get("grad")+"</p>"
-			});
-			$(element).popover('show');
-		} else {
-			$(element).popover('destroy');
+		autoPan: true,
+		autoPanAnimation: {
+			duration: 250
 		}
 	});
+	map.addOverlay(overlay);
+	
+	var closer = document.getElementById('popup-closer');
+	closer.onclick = function() {
+		overlay.setPosition(undefined);
+		closer.blur();
+		return false;
+	};
+	var content = document.getElementById('popup-content');
+	map.on('singleclick', function(evt) {
+		var foundFeat = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+			return feature;
+		});
+		if (foundFeat){
+			if (foundFeat.getGeometry().getType() === 'Point' || foundFeat.getGeometry().getType() === 'LineString'){
+				var coordinate = evt.coordinate;
+				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
+				overlay.setPosition(coordinate);
+			}
+			else {
+				console.log(foundFeat);
+				var coordinate = evt.coordinate;
+				content.innerHTML ='<b>Fack oid: </b>' + foundFeat.get('fack_oid') + '<br><b> Anmärkningar: </b>' + foundFeat.get('antal_anm')+ ' st' + '<br><b>Anmärkningsgrad: </b>'+ foundFeat.get('anm_grad') + '<br><b> Objekt>35 år: </b>' +foundFeat.get('antal_obj_35') + ' st' + '<br><b> Avbrott: </b>'+ foundFeat.get('antal_avbr') + ' st' + '<br><b> Kundtid: </b>' + foundFeat.get('kundtid')+ ' h' ;
+				overlay.setPosition(coordinate);
+			}
+/*		else {
+			overlay.setPosition(undefined);
+			closer.blur();
+		}*/
+		}
+	});
+	
+	map.on('pointermove', function(evt) {
+		map.getTargetElement().style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
+	});
+	
 	map.addControl(layerSwitcher);
-	var features = lineLayer.getSource().getFeatures();
 
 	$("#runBtn").click(function(){
 		var sum = 0
@@ -206,7 +258,7 @@ function mapMaker(lineLayer,bayObject){
 		else {
 			hideForm('weightForm');
 			$("loader").show();
-			var bayFeat = checkExistance(features,map);
+			var bayFeat = checkExistance(features,map, bayObject);
 			getParamValue(bayObject,map, bayFeat);
 
 		}
@@ -291,7 +343,7 @@ function brokenCluster(inConn, visibility, inGroup, styleF){
 	layers.Clusters.push(clusterLayer)
 }
 
-function polyMaker(lineFeat, pointFeat, map, bayID) {
+function polyMaker(lineFeat, pointFeat, map, bayID, bays) {
 	var parser = new jsts.io.OL3Parser();
 	var tmpLine = _.map(lineFeat, function(num){
 		return num.getGeometry().getCoordinates();
@@ -318,7 +370,12 @@ function polyMaker(lineFeat, pointFeat, map, bayID) {
 
 	var unionFeat = new ol.Feature({
 		geometry: parser.write(unionGeom),
-		fack_oid: bayID
+		fack_oid: bayID,
+		antal_anm: bays[0].antal_anm,
+		antal_obj_35: bays[0].ant_obj_over_35,
+		anm_grad: bays[0].anm_grad,
+		antal_avbr: bays[0].antal_avbr,
+		kundtid: bays[0].kundtid
 	})
 	return unionFeat;
 }
@@ -515,9 +572,10 @@ function populateTable(bayObject, bayFeat, map){
 	map.addLayer(zoomLayer);
 }
 
-function getExtentofBay(idArray,features,map){
+function getExtentofBay(idArray,features,map, bayObject){
 	var baySource = new ol.source.Vector({});
 	bayArray = [];
+	
 	for (i=0; i<idArray.length;i++){
 		var bayID = idArray[i]
 		var lineFeat = features.filter(function(features){
@@ -526,8 +584,10 @@ function getExtentofBay(idArray,features,map){
 		var pointFeat = features.filter(function(features){
 			return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'Point'
 		});
-		//console.log(foundFeat);
-		var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID);
+		var bays = bayObject.filter(function(features){
+			return features.fack_oid === bayID
+		});
+		var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID, bays);
 		bayArray.push(bayFeat);
 	}
 	return bayArray;
@@ -569,86 +629,6 @@ function getSliderValue(){
 	});
 
 	return sliderValues;
-}
-//'703000':['el','#006f00'], '606000':['heating','#000000'], '890400':['water','#0066ff']
-function popupMaker(feature,popup){
-
-	var coord
-	var title = "2"
-		var content = "1"
-			//If polygon
-
-			if(typeof feature.get('features') != 'undefined' && feature.get('features').length > 1){
-				data = _.countBy(_.map(feature.get('features'), function(num){
-					return num.get('dp_otype')
-				}), _.identity);
-				key = _.keys(data)[0]
-				count = _.values(data)[0]
-
-				if(key === '606000' || key === '890400' || key === '934000'){
-					title = 'Avbrott i '+pointTexts[key].type
-					content = 'Drabbade: '.concat(_.flatten(_.map(data, function(num, key){
-						return num + "st"
-					})))
-				} else {
-					title = pointTexts[key].title
-					content = 'Antal: '.concat(_.flatten(_.map(data, function(num, key){
-						return num + "st"
-					})))
-
-				}
-
-				coord = feature.getGeometry().getCoordinates()
-			} else {
-
-				if(feature.getGeometry().getType() == 'Point'){
-					var key
-					if(typeof feature.get('features') != 'undefined'){
-						key = feature.get('features')[0].get("dp_otype").toString()
-					} else {
-						key = feature.get("dp_otype").toString()
-					}
-					//Kund
-					//if-clause broken
-					if(key==='333333'){
-						title = pointTexts[key].title
-						content = 'ID: '+feature.get('gid')+ '\r\n\
-						Namn: '+ feature.get('firstname')+' '+feature.get('lastname') + '\r\n\
-						\r\nAdress: \r\n\ '+feature.get('address')+' \r\n\
-						\r\nAnslutningspunkter: \r\n'+ feature.get('gas_id') +' '+feature.get('water_id')+' '+feature.get('heating_id')
-						coord = feature.getGeometry().getCoordinates()
-					}else if(key === '606000' || key === '890400' || key === '934000'){
-						title = 'Anslutningspunkt i '+pointTexts[key].type
-						content = 'Tillhör kund med ID: '+feature.get('cust_id')
-						coord = feature.getGeometry().getCoordinates()
-					} else if(key === '933000' || key === '804000' || key === '800004'){
-						title = pointTexts[key].title
-						content = 'ID på trasig nod: '+feature.get('gid')
-						coord = feature.getGeometry().getCoordinates()
-					} else{
-
-						title = pointTexts[key].title
-						if(key==='112233'){
-							content = 'Startdatum: 2016-05-18 \ Beräknat slutdatum: 2016-05-25 \ Typ: Nyanslutning'  
-						} else {
-							content = 'Startdatum: 2016-05-19 \ Beräknat slutdatum: 2016-05-20 \ Typ: Avgrävd kabel'  
-						}
-						coord = feature.getGeometry().getCoordinates()
-					}
-				} else {
-					key = feature.get("dp_otype").toString()
-					title = lineTexts[key].title+'nät'
-					content = ''
-						coord = feature.getGeometry().getCoordinateAt(0.5)      
-				}
-			}
-	popup.setPosition(coord);
-	$(popup.getElement()).attr( 'data-placement', 'top' );
-	$(popup.getElement()).attr( 'data-original-title', title );
-	$(popup.getElement()).attr( 'data-content', content);
-	//$(popup.getElement()).attr( 'data-html', true );
-	$(popup.getElement()).popover();
-	$(popup.getElement()).popover('show');
 }
 
 
