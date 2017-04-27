@@ -11,7 +11,7 @@ var styles = {
 		'LineString': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: 'green',
-				width: 1
+				width: 1.5
 			})
 		}),
 		'MultiLineString': new ol.style.Style({
@@ -166,18 +166,16 @@ init = function() {
 		})
 		var bayObject = JSON.parse(JSON.parse(responses.bays));
 		var lineObject = JSON.parse(responses.objects);
-		var lineSource = new ol.source.Vector({
-			features: (new ol.format.GeoJSON()).readFeatures(lineObject)
-		})
-		var lineLayer = createLayer(lineSource, styleFunction, 99, 'Objekt');
-		var ageLayer = createLayer(lineSource, ageStyleFunc, 100, 'Ålder');
+		var lineFeature = (new ol.format.GeoJSON()).readFeatures(lineObject)
+		var lineLayer = createLayer(lineFeature, styleFunction, 99, 'Objekt');
+		var ageLayer = createLayer(lineFeature, ageStyleFunc, 100, 'Ålder');
 		ageLayer.setVisible(false);
 		map = mapMaker(lineLayer,bayObject,ageLayer);
 	})
-		.catch(function (err) {
+/*		.catch(function (err) {
 		console.error('Augh, there was an error!', err.statusText);
 		console.error(err);
-	});
+	});*/
 };
 
 function checkExistance(features,map, bayObject){
@@ -202,7 +200,10 @@ function getBayObject(feature,bayObject){
 	});
 }
 
-function createLayer(source, style, zIndex, title){
+function createLayer(feature, style, zIndex, title){
+	var source = new ol.source.Vector({
+        features: feature
+      });
 	var vectorLayer = new ol.layer.Vector({
 		source: source,
 		style: style,
@@ -234,7 +235,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 	});
 	var features = lineLayer.getSource().getFeatures();
 	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]});
-	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', layers: [lineLayer, ageLayer]});
+	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', zIndex: 99, layers: [lineLayer, ageLayer]});
 
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
@@ -270,11 +271,12 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 	var content = document.getElementById('popup-content');
 	var bayFeatSource = new ol.source.Vector({})
 	var bayFeatLayer = new ol.layer.Vector({
-		source: bayFeatSource,
-		style: styleFunction,
-		title:'Fack',
-		zIndexing: true
-	});
+        source: bayFeatSource,
+        style: styleFunction,
+        title: 'Fack',
+        zIndex: 0
+    });
+
 	map.on('singleclick', function(evt) {
 		if (checkLayer(bayFeatLayer,map)){
 			map.removeLayer(bayFeatLayer);
@@ -282,16 +284,18 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 		}
 		var foundFeat = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
 			return feature;
+		}, {
+			hitTolerance: 10
 		});
 		if (foundFeat){
 			fack_oid=foundFeat.get("fack_oid")
 			var featBay = getExtentofBay(fack_oid,features,map, bayObject);
 			bayFeatSource.addFeature(featBay[0]);
 			map.addLayer(bayFeatLayer);
-			
+			layerDown(bayFeatLayer, map);
 			if (foundFeat.getGeometry().getType() === 'Point' || foundFeat.getGeometry().getType() === 'LineString'){
 				var coordinate = evt.coordinate;
-				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
+				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Tillhör fack: </b>'+foundFeat.get('fack_oid')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
 				overlay.setPosition(coordinate);
 			}
 			else {
@@ -330,6 +334,44 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 	})
 }
 
+function getLayerIndex(layer,map) {
+    var res = false;
+    for (var i=0;i<map.getLayers().getLength();i++) {
+        if (map.getLayers().getArray()[i] === layer) { //check if layer exists
+            res = i; //if exists, return index
+        }
+    }
+    return res;
+}
+
+function layerDown(layer,map) {
+    var e = getLayerIndex(layer,map);
+    console.log(e);
+    if (e != false && e != 0) {
+        var f = map.getLayers().getArray()[e - 1];
+        map.getLayers().getArray()[e - 1] = layer;
+        map.getLayers().getArray()[e] = f;
+        map.updateSize();
+    }
+}
+
+function layerTop(layer,map) {
+    var e = getLayerIndex(layer,map);
+    if (e != false) {
+        map.getLayers().getArray().splice(e,1);
+        map.getLayers().getArray().push(layer);
+        map.updateSize();
+    }
+}
+
+function layerBottom(layer,map) {
+    var e = getLayerIndex(layer,map);
+    if (e != false) {
+        map.getLayers().getArray().splice(e,1);
+        map.getLayers().getArray().splice(0,0,layer);
+        map.updateSize();
+    }
+}
 
 function checkLayer(layer,map){
     var res = false;
