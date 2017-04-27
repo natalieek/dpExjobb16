@@ -168,8 +168,9 @@ init = function() {
 		var lineSource = new ol.source.Vector({
 			features: (new ol.format.GeoJSON()).readFeatures(lineObject)
 		})
-		var lineLayer = createLayer(lineSource, styleFunction, 99);
-		var ageLayer = createLayer(lineSource, ageStyleFunc, 100);
+		var lineLayer = createLayer(lineSource, styleFunction, 99, 'Objekt');
+		var ageLayer = createLayer(lineSource, ageStyleFunc, 100, 'Ålder');
+		ageLayer.setVisible(false);
 		map = mapMaker(lineLayer,bayObject,ageLayer);
 	})
 		.catch(function (err) {
@@ -199,10 +200,11 @@ function getBayObject(feature,bayObject){
 	});
 }
 
-function createLayer(source, style, zIndex){
+function createLayer(source, style, zIndex, title){
 	var vectorLayer = new ol.layer.Vector({
 		source: source,
-		style: style
+		style: style,
+		title: title
 	});
 	vectorLayer.setZIndex(zIndex);
 	return vectorLayer;
@@ -230,11 +232,11 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 	});
 	var features = lineLayer.getSource().getFeatures();
 	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]});
-	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', zIndex: 99, zIndexing: true, layers: [lineLayer, ageLayer]});
+	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', layers: [lineLayer, ageLayer]});
 
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
-		layers:[basemap,lineLayer],
+		layers:[basemap,objectGroup],
 		target: 'map',
 		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
 		view: new ol.View({
@@ -284,6 +286,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 			var featBay = getExtentofBay(fack_oid,features,map, bayObject);
 			bayFeatSource.addFeature(featBay[0]);
 			map.addLayer(bayFeatLayer);
+			
 			if (foundFeat.getGeometry().getType() === 'Point' || foundFeat.getGeometry().getType() === 'LineString'){
 				var coordinate = evt.coordinate;
 				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
