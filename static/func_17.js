@@ -58,9 +58,67 @@ var ageStyle = {
 		})
 }
 
+var ageStyle_40 = {
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 1.5,
+				fill: new ol.style.Fill({
+					color: 'red'
+				})
+			})
+		})],
+		'LineString': new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: 'red',
+				width: 1
+			})
+		})
+}
+var ageStyle_35 = {
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 1.5,
+				fill: new ol.style.Fill({
+					color: "#e79516"
+				})
+			})
+		})],
+		'LineString': new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: "#e79516",
+				width: 1
+			})
+		})
+}
+var ageStyle = {
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 1.5,
+				fill: new ol.style.Fill({
+					color: 'gray'
+				})
+			})
+		})],
+		'LineString': new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: 'gray',
+				width: 1
+			})
+		})
+}
+
 var ageStyleFunc = function(feature) {
-	return ageStyle[feature.getGeometry().getType()];
+	if (feature.get("installerad") <= 1977){
+		return ageStyle_40[feature.getGeometry().getType()];
+	}
+	else if (feature.get("installerad")<= 1982 && feature.get("installerad")>1978){
+		return ageStyle_35[feature.getGeometry().getType()];
+	}
+	else {
+		return ageStyle[feature.getGeometry().getType()];
+	}
 };
+
 
 var styleFunction = function(feature) {
 	return styles[feature.getGeometry().getType()];
@@ -110,17 +168,14 @@ init = function() {
 		var lineSource = new ol.source.Vector({
 			features: (new ol.format.GeoJSON()).readFeatures(lineObject)
 		})
-		var lineLayer = new ol.layer.Vector({
-			source: lineSource,
-			style: styleFunction,
-			title:'Objektlager',
-		});
-		map = mapMaker(lineLayer,bayObject);
+		var lineLayer = createLayer(lineSource, styleFunction, 99);
+		var ageLayer = createLayer(lineSource, ageStyleFunc, 100);
+		map = mapMaker(lineLayer,bayObject,ageLayer);
 	})
-	/*	.catch(function (err) {
+		.catch(function (err) {
 		console.error('Augh, there was an error!', err.statusText);
 		console.error(err);
-	});*/
+	});
 };
 
 function checkExistance(features,map, bayObject){
@@ -144,8 +199,16 @@ function getBayObject(feature,bayObject){
 	});
 }
 
+function createLayer(source, style, zIndex){
+	var vectorLayer = new ol.layer.Vector({
+		source: source,
+		style: style
+	});
+	vectorLayer.setZIndex(zIndex);
+	return vectorLayer;
+}
 
-function mapMaker(lineLayer,bayObject){
+function mapMaker(lineLayer,bayObject,ageLayer){
 	proj4.defs("EPSG:3009","+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
 	var myProjection = ol.proj.get('EPSG:3009');
 	var raster = new ol.layer.Tile({  
@@ -166,25 +229,12 @@ function mapMaker(lineLayer,bayObject){
 		})
 	});
 	var features = lineLayer.getSource().getFeatures();
-	var ageFeatures = features.filter(function(entry){
-		return entry.get("installerad") <= 1982
-	});
-	var ageSource = new ol.source.Vector({
-		features: ageFeatures
-	})
-	var ageLayer = new ol.layer.Vector({
-		source: ageSource,
-		style: ageStyleFunc,
-		title:'Objekt över 35 år',
-		visible: false
-	});
-	
 	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]});
-	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', layers: [lineLayer, ageLayer]});
+	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', zIndex: 99, zIndexing: true, layers: [lineLayer, ageLayer]});
 
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({
-		layers:[basemap,objectGroup],
+		layers:[basemap,lineLayer],
 		target: 'map',
 		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
 		view: new ol.View({
@@ -214,26 +264,36 @@ function mapMaker(lineLayer,bayObject){
 		return false;
 	};
 	var content = document.getElementById('popup-content');
+	var bayFeatSource = new ol.source.Vector({})
+	var bayFeatLayer = new ol.layer.Vector({
+		source: bayFeatSource,
+		style: styleFunction,
+		title:'Fack',
+		zIndexing: true
+	});
 	map.on('singleclick', function(evt) {
+		if (checkLayer(bayFeatLayer,map)){
+			map.removeLayer(bayFeatLayer);
+			bayFeatLayer.getSource().clear();
+		}
 		var foundFeat = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
 			return feature;
 		});
 		if (foundFeat){
+			fack_oid=foundFeat.get("fack_oid")
+			var featBay = getExtentofBay(fack_oid,features,map, bayObject);
+			bayFeatSource.addFeature(featBay[0]);
+			map.addLayer(bayFeatLayer);
 			if (foundFeat.getGeometry().getType() === 'Point' || foundFeat.getGeometry().getType() === 'LineString'){
 				var coordinate = evt.coordinate;
 				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
 				overlay.setPosition(coordinate);
 			}
 			else {
-				console.log(foundFeat);
 				var coordinate = evt.coordinate;
 				content.innerHTML ='<b>Fack oid: </b>' + foundFeat.get('fack_oid') + '<br><b> Anmärkningar: </b>' + foundFeat.get('antal_anm')+ ' st' + '<br><b>Anmärkningsgrad: </b>'+ foundFeat.get('anm_grad') + '<br><b> Objekt>35 år: </b>' +foundFeat.get('antal_obj_35') + ' st' + '<br><b> Avbrott: </b>'+ foundFeat.get('antal_avbr') + ' st' + '<br><b> Kundtid: </b>' + foundFeat.get('kundtid')+ ' h' ;
 				overlay.setPosition(coordinate);
 			}
-/*		else {
-			overlay.setPosition(undefined);
-			closer.blur();
-		}*/
 		}
 	});
 	
@@ -263,6 +323,16 @@ function mapMaker(lineLayer,bayObject){
 
 		}
 	})
+}
+
+function checkLayer(layer,map){
+    var res = false;
+    for (var i=0;i<map.getLayers().getLength();i++) {
+        if (map.getLayers().getArray()[i] === layer) { //check if layer exists
+            res = true; //if exists, return true
+        }
+    }
+    return res;
 }
 
 function openNav() {
@@ -299,48 +369,6 @@ function extendMenu(){
 			} 
 		}
 	}
-}
-
-function workCluster(responses, title, visibility, styleF){
-	var workSource = new ol.source.Vector()
-	workSource.addFeatures(new ol.format.GeoJSON().readFeatures(JSON.parse(responses)))
-	var clusterSource = new ol.source.Cluster({
-		distance: 100,
-		source: workSource
-	});
-
-	var clusterLayer = new ol.layer.Vector({
-		source: clusterSource,
-		title: title,
-		style: styleF,
-		visible: true,
-		type: 'cluster'
-	});
-	if(workSource.getFeatures()[0].get("dp_otype")===112233){
-		$('#numInstalls').text('Installationer: '+workSource.getFeatures().length);
-	}else if(workSource.getFeatures()[0].get("dp_otype")===123123){
-		$('#numRepairs').text('Reparationer: '+workSource.getFeatures().length);
-	}
-	return clusterLayer
-}
-
-function brokenCluster(inConn, visibility, inGroup, styleF){
-	var clusterSource = new ol.source.Cluster({
-		distance: 2000,
-		source: inConn
-	});
-
-
-	//If single cluster creation, keep this layer creation
-	var clusterLayer = new ol.layer.Vector({
-		source: clusterSource,
-		title: 'Kluster',
-		style: styleF,
-		visible: true,
-		type: 'cluster'
-	});
-	inGroup.get("layers").push(clusterLayer)
-	layers.Clusters.push(clusterLayer)
 }
 
 function polyMaker(lineFeat, pointFeat, map, bayID, bays) {
@@ -575,21 +603,37 @@ function populateTable(bayObject, bayFeat, map){
 function getExtentofBay(idArray,features,map, bayObject){
 	var baySource = new ol.source.Vector({});
 	bayArray = [];
-	
-	for (i=0; i<idArray.length;i++){
-		var bayID = idArray[i]
+	console.log(idArray);
+	if (idArray.length>1){
+		for (i=0; i<idArray.length;i++){
+			var bayID = idArray[i]
+			var lineFeat = features.filter(function(features){
+				return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'LineString'
+			});
+			var pointFeat = features.filter(function(features){
+				return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'Point'
+			});
+			var bays = bayObject.filter(function(features){
+				return features.fack_oid === bayID
+			});
+			var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID, bays);
+			bayArray.push(bayFeat);
+		}
+	}
+	else {
 		var lineFeat = features.filter(function(features){
-			return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'LineString'
+			return features.get("fack_oid") === idArray && features.getGeometry().getType() === 'LineString'
 		});
 		var pointFeat = features.filter(function(features){
-			return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'Point'
+			return features.get("fack_oid") === idArray && features.getGeometry().getType() === 'Point'
 		});
 		var bays = bayObject.filter(function(features){
-			return features.fack_oid === bayID
+			return features.fack_oid === idArray
 		});
 		var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID, bays);
 		bayArray.push(bayFeat);
 	}
+	console.log(bayArray);
 	return bayArray;
 }
 
