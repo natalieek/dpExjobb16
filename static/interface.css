@@ -587,3 +587,9 @@ background-color:#ccc;
 .scroll::-webkit-scrollbar-thumb:active{
 background-color:#ccc;
 } 
+
+.legend {
+	right:0px; 
+	bottom:0px;
+	position:fixed;
+}

@@ -124,6 +124,7 @@ var styleFunction = function(feature) {
 	return styles[feature.getGeometry().getType()];
 };
 
+
 //Makes HTTP-request to the file, via the python http server.
 //Python http-server is started with: python -m http.server
 function makeRequest (method, url) {
@@ -191,6 +192,7 @@ function checkExistance(features,map, bayObject){
 	var bayFeat = getExtentofBay(idArray,features,map, bayObject);
 	return bayFeat;
 }
+
 
 function getBayObject(feature,bayObject){
 	var feature_oid = feature.get("fack_oid");
@@ -327,6 +329,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 		}
 	})
 }
+
 
 function checkLayer(layer,map){
     var res = false;

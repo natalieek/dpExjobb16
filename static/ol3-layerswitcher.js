@@ -164,8 +164,17 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         }
         input.id = lyrId;
         input.checked = lyr.get('visible');
+        
         input.onchange = function(e) {
+        	var legend = document.getElementById("legend");
             this_.setVisible_(lyr, e.target.checked);
+            if (lyr.get('title')==="Ålder" && lyr.get('visible')===true){
+            	
+            	legend.style.display='block';
+            }
+            else{
+            	legend.style.display='none';
+            }
         };
         li.appendChild(input);
     
