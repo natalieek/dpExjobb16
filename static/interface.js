@@ -42,7 +42,7 @@ sliders.each(function() {
         min: 0,
         max: 100,
         range: "max",
-        step: 1,
+        step: 5,
         animate: 100,
         slide: function(event, ui) {
 
@@ -91,27 +91,37 @@ $(document).ready(function(){
 	$("#nextButton").on("click", function(){
 		if(value1.checked){
 			$("#s1").show();
-			var text = $("#v1").text();
+			var text = $("#v1").contents().filter(function(){ 
+				  return this.nodeType == 3; 
+			})[0].nodeValue
 			$("#sect1").html(text);
 		}
 		if (value2.checked){
 			$("#s2").show();
-			var text = $("#v2").text();
+			var text = $("#v2").contents().filter(function(){ 
+				  return this.nodeType == 3; 
+			})[0].nodeValue
 			$("#sect2").html(text);
 		}
 		if (value3.checked){
 			$("#s3").show();
-			var text = $("#v3").text();
+			var text = $("#v3").contents().filter(function(){ 
+				  return this.nodeType == 3; 
+			})[0].nodeValue
 			$("#sect3").html(text);
 		}
 		if (value4.checked){
 			$("#s4").show();
-			var text = $("#v4").text();
+			var text = $("#v4").contents().filter(function(){ 
+				  return this.nodeType == 3; 
+			})[0].nodeValue
 			$("#sect4").html(text);
 		}
 		if (value5.checked){
 			$("#s5").show();
-			var text = $("#v5").text();
+			var text = $("#v5").contents().filter(function(){ 
+				  return this.nodeType == 3; 
+			})[0].nodeValue
 			$("#sect5").html(text);
 		}
 		/*if (value6.checked){

@@ -11,7 +11,7 @@ var styles = {
 		'LineString': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: 'green',
-				width: 1.5
+				width: 1
 			})
 		}),
 		'MultiLineString': new ol.style.Style({
@@ -53,7 +53,7 @@ var ageStyle = {
 		'LineString': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: 'red',
-				width: 1
+				width: 1.5
 			})
 		})
 }
@@ -70,7 +70,7 @@ var ageStyle_40 = {
 		'LineString': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: 'red',
-				width: 1
+				width: 1.5
 			})
 		})
 }
@@ -86,7 +86,7 @@ var ageStyle_35 = {
 		'LineString': new ol.style.Style({
 			stroke: new ol.style.Stroke({
 				color: "#e79516",
-				width: 1
+				width: 1.5
 			})
 		})
 }
@@ -244,7 +244,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 		interactions : ol.interaction.defaults({doubleClickZoom :true}).extend([new ol.interaction.MouseWheelZoom({duration :500})]),
 		view: new ol.View({
 			center: [138577,6307000],
-			resolution: 20,
+			resolution: 10,
 			projection: myProjection,
 		})
 	});
@@ -346,29 +346,10 @@ function getLayerIndex(layer,map) {
 
 function layerDown(layer,map) {
     var e = getLayerIndex(layer,map);
-    console.log(e);
     if (e != false && e != 0) {
         var f = map.getLayers().getArray()[e - 1];
         map.getLayers().getArray()[e - 1] = layer;
         map.getLayers().getArray()[e] = f;
-        map.updateSize();
-    }
-}
-
-function layerTop(layer,map) {
-    var e = getLayerIndex(layer,map);
-    if (e != false) {
-        map.getLayers().getArray().splice(e,1);
-        map.getLayers().getArray().push(layer);
-        map.updateSize();
-    }
-}
-
-function layerBottom(layer,map) {
-    var e = getLayerIndex(layer,map);
-    if (e != false) {
-        map.getLayers().getArray().splice(e,1);
-        map.getLayers().getArray().splice(0,0,layer);
         map.updateSize();
     }
 }
@@ -601,6 +582,10 @@ function getParamValue(bayObject, map, bayFeat){
 }
 
 function populateTable(bayObject, bayFeat, map){
+	if ($('#featureTable').length > 0){
+		console.log($('#featureTable').length )
+		//$('#featureTable tr').remove(1);
+	}
 	//Sort bayObjects based on totalvalue --> highest value on top
 	bayObject.sort(function(obj1, obj2) {
 		return obj2.totval - obj1.totval
@@ -651,7 +636,6 @@ function populateTable(bayObject, bayFeat, map){
 function getExtentofBay(idArray,features,map, bayObject){
 	var baySource = new ol.source.Vector({});
 	bayArray = [];
-	console.log(idArray);
 	if (idArray.length>1){
 		for (i=0; i<idArray.length;i++){
 			var bayID = idArray[i]
@@ -681,7 +665,6 @@ function getExtentofBay(idArray,features,map, bayObject){
 		var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID, bays);
 		bayArray.push(bayFeat);
 	}
-	console.log(bayArray);
 	return bayArray;
 }
 
