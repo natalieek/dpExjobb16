@@ -123,8 +123,9 @@ input[type=checkbox], input[type=radio] {
 	vertical-align:middle !Important;
 }
 
-.openButton{
+div#openButton.openButton {
 	transition: 0.5s;
+	width:40px;
 	
 }
 
@@ -554,6 +555,7 @@ ul.control li:hover input ~ .control__indicator {
 	display:none;
 	align-items:center;
 	background-color:#FFF;	
+/* 	transition: 0.5s; */
 }
 
 #featureTable{
@@ -625,8 +627,10 @@ background-color:#ccc;
 background-color:#ccc;
 } 
 
-.legend {
+#legend {
 	right:0px; 
 	bottom:0px;
 	position:fixed;
+	transition: 0.5s;
 }
+

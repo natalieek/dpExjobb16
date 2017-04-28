@@ -326,9 +326,10 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 		}
 		else {
 			hideForm('weightForm');
-			$("loader").show();
 			var bayFeat = checkExistance(features,map, bayObject);
 			getParamValue(bayObject,map, bayFeat);
+			legendPlacement();
+			
 
 		}
 	})
@@ -377,6 +378,32 @@ function openNav() {
 	{
 		e.style.width = '250px';
 		x.style.marginLeft='251px';
+	}
+}
+
+//function closeTable() {
+//	var e = document.getElementById("tableDiv");
+//	var x = document.getElementById("tableCloser")
+//	if (e.style.diplay == 'block'){
+//		x.style.display = 'block';
+//		x.style.marginRight='251px'
+//	}
+//	else 
+//	{
+//		e.style.width = '250px';
+//		x.style.marginLeft='251px';
+//	}
+//}
+
+function legendPlacement() {
+	var table = document.getElementById("tableDiv");
+	var legend = document.getElementById("legend")
+
+	if (table.style.display=='none'&& legend.style.marginRight=='251px'&& legend.style.display=='block'){	
+		legend.style.marginRight = '0px';
+	}
+	else {
+		legend.style.marginRight='251px';
 	}
 }
 
@@ -488,10 +515,12 @@ function MCEmapMaker(map, bayObject, bayFeat){
 	map.addLayer(polyLayer);
 	map.removeLayer(zoomLayer);
 	populateTable(bayObject, bayFeat,map);
-	$("#clearanalysis").click(function(test){
+	$("#clearanalysis").click(function(test){ 
 		polySource.clear();
 		$('#tableDiv').hide();
 		zoomSource.clear();
+		var legend = document.getElementById("legend")
+		legend.style.marginRight = '0px';
 	});
 }
 
@@ -630,6 +659,7 @@ function populateTable(bayObject, bayFeat, map){
 
 	};
 	$('#tableDiv').show();
+	
 	map.addLayer(zoomLayer);
 }
 
