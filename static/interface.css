@@ -187,6 +187,8 @@ a.underrubrik {
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
+  #tableDiv
+  #closeTable
 }
 
 .accordion {
@@ -555,7 +557,7 @@ ul.control li:hover input ~ .control__indicator {
 	display:none;
 	align-items:center;
 	background-color:#FFF;	
-/* 	transition: 0.5s; */
+ 	transition: 0.5s;
 }
 
 #featureTable{
@@ -633,4 +635,23 @@ background-color:#ccc;
 	position:fixed;
 	transition: 0.5s;
 }
+
+#closeTable{
+/* 	position:absolute; */
+	float:right;
+	margin-right:250px;
+	margin-top:0px;
+	display:none;
+	height:100%;
+	width:20px;
+	background-color:#FFF;
+	z-index:1000;
+ 	transition: 0.5s;
+}
+.closeTable{
+	font-size:30px;
+	cursor:pointer;
+}
+
+
 

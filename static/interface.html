@@ -26,15 +26,22 @@
   
 </head>
 <body>
+
+<div id="closeTable">
+</div>
 <div class="container">
 <div id="popup" class="ol-popup">
   <a href="#" id="popup-closer" class="ol-popup-closer"></a>
   <div id="popup-content"></div>
 </div>
+
 <div class="row map" id="map" ></div>
 <div id="openButton" class="openButton">
   <span onclick="openNav()">&#9776;</span>
 </div>
+
+
+
 <div id="mySidenav" class="sidenav">
 <!--   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a> -->
   <a href="#">Om</a>
@@ -198,9 +205,10 @@
 
 </div>
 
-
+</div>
 <div id="dvCSV">
 </div>
+
 
 <div id="tableDiv" class="scroll">
 	<table id="featureTable" >
@@ -221,7 +229,8 @@
 <div id="legend" style="display:none;">
 	<img class = "legend" src="Legend.png"/>
 </div>
-</div>
+
+
 <script>
   init();
 </script>

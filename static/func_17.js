@@ -330,6 +330,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 			getParamValue(bayObject,map, bayFeat);
 			legendPlacement();
 			
+			
 
 		}
 	})
@@ -381,29 +382,31 @@ function openNav() {
 	}
 }
 
-//function closeTable() {
-//	var e = document.getElementById("tableDiv");
-//	var x = document.getElementById("tableCloser")
-//	if (e.style.diplay == 'block'){
-//		x.style.display = 'block';
-//		x.style.marginRight='251px'
-//	}
-//	else 
-//	{
-//		e.style.width = '250px';
-//		x.style.marginLeft='251px';
-//	}
-//}
+function closeTable() {
+	var table = document.getElementById("tableDiv");
+	var button = document.getElementById("closeTable")
+	var legend = document.getElementById("legend")
+	if (table.style.width == '0px' && button.style.marginRight == '0px'){
+		table.style.width = '250px';
+		button.style.marginRight = '250px';
+		legend.style.marginRight='270px';
+	}
+	else {
+		table.style.width = '0px';
+		button.style.marginRight='0px';
+		legend.style.marginRight = '20px';
+	}
+}
 
 function legendPlacement() {
 	var table = document.getElementById("tableDiv");
 	var legend = document.getElementById("legend")
 
-	if (table.style.display=='none'&& legend.style.marginRight=='251px'&& legend.style.display=='block'){	
-		legend.style.marginRight = '0px';
+	if (table.style.display=='none'&& legend.style.marginRight=='270px'&& legend.style.display=='block'&& table.style.width == '0px'){	
+		legend.style.marginRight = '20px';
 	}
 	else {
-		legend.style.marginRight='251px';
+		legend.style.marginRight='270px';
 	}
 }
 
@@ -518,11 +521,19 @@ function MCEmapMaker(map, bayObject, bayFeat){
 	$("#clearanalysis").click(function(test){ 
 		polySource.clear();
 		$('#tableDiv').hide();
+		$('#closeTable').hide();
 		zoomSource.clear();
 		var legend = document.getElementById("legend")
 		legend.style.marginRight = '0px';
 	});
 }
+
+$(document).ready(function(){
+	$("#closeTable").on("click", function(){
+		closeTable();
+		console.log('hej')
+	});
+});
 
 function getParamValue(bayObject, map, bayFeat){
 	//Get faetures from layers 
@@ -659,6 +670,8 @@ function populateTable(bayObject, bayFeat, map){
 
 	};
 	$('#tableDiv').show();
+	$('#closeTable').show();
+	
 	
 	map.addLayer(zoomLayer);
 }
