@@ -78,7 +78,7 @@ html, body, .map {
   border: 1px solid #cccccc;
   bottom: 12px;
   left: -50px;
-  width: 170px;
+  width: 180px;
 }
 .ol-popup:after, .ol-popup:before {
   top: 100%;

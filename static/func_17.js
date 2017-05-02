@@ -180,13 +180,18 @@ init = function() {
 
 function checkExistance(features,map, bayObject){
 	idArray = [];
+	//For every feature
 	for (i=0; i<features.length; i++){
+		//Get id
 		var bayID = features[i].get("fack_oid");
 		var idx = $.inArray(bayID, idArray);
+		//If id not already in idArray
 		if (idx == -1) {
+			//Add id to idArray
 			idArray.push(bayID);
 		}
 	}
+	//Get bay
 	var bayFeat = getExtentofBay(idArray,features,map, bayObject);
 	return bayFeat;
 }
@@ -347,7 +352,9 @@ function getLayerIndex(layer,map) {
 }
 
 function layerDown(layer,map) {
+	//Check index of layer
     var e = getLayerIndex(layer,map);
+    //If layer exists and index is not 0
     if (e != false && e != 0) {
         var f = map.getLayers().getArray()[e - 1];
         map.getLayers().getArray()[e - 1] = layer;
@@ -358,6 +365,7 @@ function layerDown(layer,map) {
 
 function checkLayer(layer,map){
     var res = false;
+    //For every layer in map
     for (var i=0;i<map.getLayers().getLength();i++) {
         if (map.getLayers().getArray()[i] === layer) { //check if layer exists
             res = true; //if exists, return true
@@ -431,30 +439,35 @@ function extendMenu(){
 }
 
 function polyMaker(lineFeat, pointFeat, map, bayID, bays) {
+	//create io parser
 	var parser = new jsts.io.OL3Parser();
+	//Create variable with coordinates
 	var tmpLine = _.map(lineFeat, function(num){
 		return num.getGeometry().getCoordinates();
 	});
 	var tmpPoint = _.map(pointFeat, function(num){
 		return num.getGeometry().getCoordinates();
 	});
+	//Create geoms from coordinates
 	var newLine = new ol.geom.MultiLineString(tmpLine);
 	var newPoint = new ol.geom.MultiPoint(tmpPoint);
+	//Parse geoms to jsts
 	var jstsLine = parser.read(newLine);
 	var jstsPoint = parser.read(newPoint);
+	//Create convex hull
 	var chLine = jstsLine.convexHull();
 	var chPoint = jstsPoint.convexHull();
-
+	//Cretae features from jsts
 	var polyLine = new ol.Feature({
 		geometry: parser.write(chLine)
 	})
 	var polyPoint = new ol.Feature({
 		geometry: parser.write(chPoint)
 	})
-
+	//Union convexhull from lines and points
 	var unionGeom = parser.read(polyLine.getGeometry());
 	unionGeom = unionGeom.union(parser.read(polyPoint.getGeometry()));
-
+	//Create feature from union
 	var unionFeat = new ol.Feature({
 		geometry: parser.write(unionGeom),
 		fack_oid: bayID,
@@ -468,7 +481,6 @@ function polyMaker(lineFeat, pointFeat, map, bayID, bays) {
 }
 
 function MCEmapMaker(map, bayObject, bayFeat){
-
 	var polySource = new ol.source.Vector();
 	var styleRed = new ol.style.Style({
 		stroke: new ol.style.Stroke({
@@ -497,31 +509,46 @@ function MCEmapMaker(map, bayObject, bayFeat){
 			color: 'rgba(255, 255, 51, 0.3)'
 		})
 	});
+	//For every bay...
 	for (i=0; i<bayFeat.length;i++){
+		//Filter out bays where fack_oid is the same as id- to be able to bind properties from bayObject to bayFeat
 		var bayfeature = bayFeat.filter(function(bayFeat){
 			return bayFeat.get("fack_oid") === bayObject[i].fack_oid 
 		});
+		//If value is greater than 0.8..
 		if (bayObject[i].totval >= 0.8){
+			//Style red
 			bayfeature[0].setStyle(styleRed);
+			//Add polygon to source
 			polySource.addFeature(bayfeature[0]);
-		} 
+		}
+		//Ifa value is between 0.8 and 0.4..
 		else if (0.8 > bayObject[i].totval && bayObject[i].totval >= 0.4){
+			//Color yellow
 			bayfeature[0].setStyle(styleYellow);
 		} 
 		else {
+			//Color green
 			bayfeature[0].setStyle(styleGreen);;
 		}
 	}
 	var polyLayer = new ol.layer.Vector({
 		source: polySource
 	});
+	//Add polygon layer to map
 	map.addLayer(polyLayer);
+	//Remove zoomed in layer
 	map.removeLayer(zoomLayer);
+	//populate table
 	populateTable(bayObject, bayFeat,map);
-	$("#clearanalysis").click(function(test){ 
+	//When button clear analysis is clicked..
+	$("#clearanalysis").click(function(test){
+		//Remove polygons from source
 		polySource.clear();
+		//Hide table
 		$('#tableDiv').hide();
 		$('#closeTable').hide();
+		//Remove polygons from zoomed layer
 		zoomSource.clear();
 		var legend = document.getElementById("legend")
 		legend.style.marginRight = '0px';
@@ -622,10 +649,6 @@ function getParamValue(bayObject, map, bayFeat){
 }
 
 function populateTable(bayObject, bayFeat, map){
-	if ($('#featureTable').length > 0){
-		console.log($('#featureTable').length )
-		//$('#featureTable tr').remove(1);
-	}
 	//Sort bayObjects based on totalvalue --> highest value on top
 	bayObject.sort(function(obj1, obj2) {
 		return obj2.totval - obj1.totval
@@ -679,33 +702,46 @@ function populateTable(bayObject, bayFeat, map){
 function getExtentofBay(idArray,features,map, bayObject){
 	var baySource = new ol.source.Vector({});
 	bayArray = [];
+	//If more than one object in idArray..
 	if (idArray.length>1){
+		//For every id..
 		for (i=0; i<idArray.length;i++){
 			var bayID = idArray[i]
+			//Filter out line features with the same bay oid
 			var lineFeat = features.filter(function(features){
 				return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'LineString'
 			});
+			//Filter out point features with the same bay oid
 			var pointFeat = features.filter(function(features){
 				return features.get("fack_oid") === bayID && features.getGeometry().getType() === 'Point'
 			});
+			//Filter out corresponding bay
 			var bays = bayObject.filter(function(features){
 				return features.fack_oid === bayID
 			});
+			//Create polygons for bays
 			var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID, bays);
+			//Push bay into array
 			bayArray.push(bayFeat);
 		}
 	}
+	//If only one id in idArray
 	else {
+		//Filter out line features where bay oid is the same as id
 		var lineFeat = features.filter(function(features){
 			return features.get("fack_oid") === idArray && features.getGeometry().getType() === 'LineString'
 		});
+		//Filter out point features where bay oid is the same as id
 		var pointFeat = features.filter(function(features){
 			return features.get("fack_oid") === idArray && features.getGeometry().getType() === 'Point'
 		});
+		//Filter out corresponding bay
 		var bays = bayObject.filter(function(features){
 			return features.fack_oid === idArray
 		});
+		//Create polygons for bays
 		var bayFeat = polyMaker(lineFeat,pointFeat,map, bayID, bays);
+		//Push bay into array
 		bayArray.push(bayFeat);
 	}
 	return bayArray;
