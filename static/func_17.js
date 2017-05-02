@@ -394,14 +394,14 @@ function closeTable() {
 	var table = document.getElementById("tableDiv");
 	var button = document.getElementById("closeTable")
 	var legend = document.getElementById("legend")
-	if (table.style.width == '0px' && button.style.marginRight == '0px'){
+	if (table.style.width == '0px' && button.style.marginRight == '-15px'){
 		table.style.width = '250px';
-		button.style.marginRight = '250px';
+		button.style.marginRight = '235px';
 		legend.style.marginRight='270px';
 	}
 	else {
 		table.style.width = '0px';
-		button.style.marginRight='0px';
+		button.style.marginRight='-15px';
 		legend.style.marginRight = '20px';
 	}
 }
@@ -410,11 +410,11 @@ function legendPlacement() {
 	var table = document.getElementById("tableDiv");
 	var legend = document.getElementById("legend")
 
-	if (table.style.display=='none'&& legend.style.marginRight=='270px'&& legend.style.display=='block'&& table.style.width == '0px'){	
+	if (table.style.display=='none'&& legend.style.marginRight=='250px'&& legend.style.display=='block'&& table.style.width == '0px'){	
 		legend.style.marginRight = '20px';
 	}
 	else {
-		legend.style.marginRight='270px';
+		legend.style.marginRight='250px';
 	}
 }
 
@@ -558,7 +558,6 @@ function MCEmapMaker(map, bayObject, bayFeat){
 $(document).ready(function(){
 	$("#closeTable").on("click", function(){
 		closeTable();
-		console.log('hej')
 	});
 });
 
@@ -693,7 +692,7 @@ function populateTable(bayObject, bayFeat, map){
 
 	};
 	$('#tableDiv').show();
-	$('#closeTable').show();
+	//$('#closeTable').show();
 	
 	
 	map.addLayer(zoomLayer);
