@@ -331,6 +331,8 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 		}
 		else {
 			hideForm('weightForm');
+			showForm('legendDiv');
+			getParamName();
 			var bayFeat = checkExistance(features,map, bayObject);
 			getParamValue(bayObject,map, bayFeat);
 			legendPlacement();
@@ -340,6 +342,54 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 		}
 	})
 }
+
+
+function getParamName(){
+	var slidervalue = getSliderValue();
+	if (value1.checked){
+		var text = $("#v1").contents().filter(function(){ 
+			  return this.nodeType == 3; 
+		})[0].nodeValue
+		var slidernum = slidervalue[0]*100;
+		$("#param1").html(text+": "+slidernum+"%");
+		$("#param1").show();
+	}
+	if (value2.checked){
+		var text = $("#v2").contents().filter(function(){ 
+			  return this.nodeType == 3; 
+		})[0].nodeValue
+		var slidernum = slidervalue[1]*100;
+		$("#param2").html(text+": "+slidernum+"%");
+		$("#param2").show();
+	}
+	if (value3.checked){
+		var text = $("#v3").contents().filter(function(){ 
+			  return this.nodeType == 3; 
+		})[0].nodeValue
+		var slidernum = slidervalue[2]*100;
+		$("#param3").html(text+": "+slidernum+"%");
+		$("#param3").show();
+	}
+	if (value4.checked){
+		var text = $("#v4").contents().filter(function(){ 
+			  return this.nodeType == 3; 
+		})[0].nodeValue
+		var slidernum = slidervalue[3]*100;
+		$("#param4").html(text+": "+slidernum+"%");
+		$("#param4").show();
+	}
+	if (value5.checked){
+		var text = $("#v5").contents().filter(function(){ 
+			  return this.nodeType == 3; 
+		})[0].nodeValue
+		var slidernum = slidervalue[4]*100;
+		$("#param5").html(text+": "+slidernum+"%");
+		$("#param5").show();
+	}
+	
+}
+
+
 
 function getLayerIndex(layer,map) {
     var res = false;
@@ -376,17 +426,20 @@ function checkLayer(layer,map){
 
 function openNav() {
 	var e = document.getElementById("mySidenav");
-	var x = document.getElementById("openButton")
+	var x = document.getElementById("openButton");
+	var y= document.getElementById("legendDiv")
 	if (e.style.width == '250px' && x.style.marginLeft == '251px')
 
 	{
 		e.style.width = '0px';
 		x.style.marginLeft = '0px';
+		y.style.marginLeft='5px';
 	}
 	else 
 	{
 		e.style.width = '250px';
 		x.style.marginLeft='251px';
+		y.style.marginLeft='255px';
 	}
 }
 
@@ -548,6 +601,7 @@ function MCEmapMaker(map, bayObject, bayFeat){
 		//Hide table
 		$('#tableDiv').hide();
 		$('#closeTable').hide();
+		$('#legendDiv').hide();
 		//Remove polygons from zoomed layer
 		zoomSource.clear();
 		var legend = document.getElementById("legend")

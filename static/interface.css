@@ -189,6 +189,7 @@ a.underrubrik {
   .sidenav a {font-size: 18px;}
   #tableDiv
   #closeTable
+  #legendDiv
 }
 
 .accordion {
@@ -251,9 +252,9 @@ div.extend {
     padding:10px 30px;
     margin:100px auto;
     background: #FFF;
-    border-radius: 2px;
+/*     border-radius: 2px;
     -webkit-border-radius:5px;
-    -moz-border-radius: 5px;
+    -moz-border-radius: 5px; */
 /*     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
     -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13); */
@@ -590,7 +591,7 @@ ul.control li:hover input ~ .control__indicator {
 }
 
 #thead:hover > tr:hover{  
-	background: url(http://jackrugile.com/images/misc/noise-diagonal.png), linear-gradient(#777, #444);
+	background:linear-gradient(#777, #444);
 	cursor: pointer;
 	}
 
@@ -631,7 +632,7 @@ background-color:#ccc;
 
 #legend {
 	right:0px; 
-	bottom:0px;
+	bottom:5px;
 	position:fixed;
 	transition: 0.5s;
 }
@@ -651,6 +652,49 @@ background-color:#ccc;
 .closeTable{
 	font-size:30px;
 	cursor:pointer;
+}
+
+#legendDiv {
+	margin-left:5px; 
+	bottom:5px!important;
+	position:fixed;
+	display:none;
+ 	min-width: 10%;
+  	width: fit-content;
+  	height:fit-content; 
+    background: #FFF;
+/*     border-radius: 2px;
+    -webkit-border-radius:5px;
+    -moz-border-radius: 5px; */
+/*     margin-left:250px;
+    margin-bottom:0px; */
+/*     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13); */
+    overflow:hidden;
+    border: 1px solid #A9A9A9;
+    transition:0.5s;
+
+}
+
+#legendDiv h1{
+	font-size:15px;
+	font-weight:600;
+	background: #F8F8FF;
+	border-bottom: 1px solid #A9A9A9;
+	margin:0;
+	text-align:center;
+	padding:10px;
+}
+ .legendForm .inner-wrap{
+    padding: 10px 10px 0px 5px;
+    background:#FFF;
+} 
+.legendform .content{
+	font-weight:500;
+	font-size:15px;
+	padding:5px;
+	display:none;
 }
 
 
