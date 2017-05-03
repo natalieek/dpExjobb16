@@ -305,7 +305,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 			}
 			else {
 				var coordinate = evt.coordinate;
-				content.innerHTML ='<b>Fack oid: </b>' + foundFeat.get('fack_oid') + '<br><b> Anmärkningar: </b>' + foundFeat.get('antal_anm')+ ' st' + '<br><b>Anmärkningsgrad: </b>'+ foundFeat.get('anm_grad') + '<br><b> Objekt>35 år: </b>' +foundFeat.get('antal_obj_35') + ' st' + '<br><b> Avbrott: </b>'+ foundFeat.get('antal_avbr') + ' st' + '<br><b> Kundtid: </b>' + foundFeat.get('kundtid')+ ' h' ;
+				content.innerHTML ='<b>Fack oid: </b>' + foundFeat.get('fack_oid') + '<br><b> Besiktningsanmärkningar: </b>' + foundFeat.get('antal_anm')+ ' st' + '<br><b>Besiktningsanmärkningsgrad: </b>'+ foundFeat.get('anm_grad') + '<br><b> Objekt>35 år: </b>' +foundFeat.get('antal_obj_35') + ' st' + '<br><b> Avbrott: </b>'+ foundFeat.get('antal_avbr') + ' st' + '<br><b> Kundtid: </b>' + foundFeat.get('kundtid')+ ' h' ;
 				overlay.setPosition(coordinate);
 			}
 		}
@@ -671,23 +671,23 @@ function populateTable(bayObject, bayFeat, map){
 		row.id=bayObject[i].fack_oid;
 		row.insertCell(0).innerHTML="<td>"+(i+1)+"</td>";
 		row.insertCell(1).innerHTML="<td>"+bayObject[i].fack_oid+"</td>";
-		row.insertCell(2).innerHTML="<td>"+bayObject[i].totval+"</td>";
+		//row.insertCell(2).innerHTML="<td>"+bayObject[i].totval+"</td>";
 
 		if (bayObject[i].totval>=0.8){
-			row.insertCell(3).innerHTML="<div class='colcircle_red'> </div>";
+			row.insertCell(2).innerHTML="<div class='colcircle_red'> </div>";
 		}
 		else if (0.8 >bayObject[i].totval && bayObject[i].totval>= 0.4){
-			row.insertCell(3).innerHTML="<div class='colcircle_yellow'> </div>";
+			row.insertCell(2).innerHTML="<div class='colcircle_yellow'> </div>";
 		}
 		else {
-			row.insertCell(3).innerHTML="<div class='colcircle_green'> </div>";
+			row.insertCell(2).innerHTML="<div class='colcircle_green'> </div>";
 		}
 		//console.log(row);
 		//When click on column with ID bayObject[i].fack_oid
 		$("#"+bayObject[i].fack_oid).click(function(test){
 			var id = $(this).closest("tr").find('td:eq(1)').text();
 			zoomSource.clear();
-			zoomToMap(map, id, bayFeat)
+			zoomToMap(map, id, bayFeat);
 		});
 
 	};
@@ -780,173 +780,5 @@ function getSliderValue(){
 		var value = ($(this).slider("option","value")/100);
 		sliderValues.push(value);
 	});
-
 	return sliderValues;
-}
-
-
-//Based on the resolution, changes the content in the source of the line- and node layers, thus changing what is drawn.
-//Also sets / unsets the visibility of the connections, depending on the layer.
-function trimData(restraints, layers, inGroups){
-	for (var i = 0; i < layers.Arcs.length; i++) {
-		arcs = layers.Arcs[i]
-		nodes = layers.Nodes[i]
-		networks = layers.Networks[i]
-		data = layers.Data[i]
-		connections = layers.Connections[i]
-		//Clears all current arcs
-		arcs.getSource().clear();
-		//For each restraint-set(i.e. one per network type)
-		_.each(restraints[i]['line'], function(rest){
-			//Adds arcs matching the current restriction set
-			arcs.getSource().addFeatures(_.filter(networks.arcArray, function(line){
-				tmp = line.get('dp_subtype')==linetypes[layers.Types[i]][rest]['subtyp'] && line.get('dp_otype')==linetypes[layers.Types[i]][rest]['otyp']       
-				return tmp
-			}))
-		})
-		arcs.getSource().dispatchEvent('removefeature')
-		//Extracts so only nodes that intersect a currently drawn arc is shown. Not used currently.
-		var pointsOnLinesource = _.map(arcs.getSource().getFeatures(), function(line){
-			return line.get('gid')
-		})
-		pointsOnLinesource.sort();
-	}
-	//_.each(inGroups, function(layerGroup){
-	if(inGroups.length>3){
-		for(var i=3;i<inGroups.length;i++){
-			group = inGroups[i]
-			for(var j=0;j<group.getLayers().getLength();j++){
-				layer = group.getLayers().item(j)
-				if(layer.get("type")==='conn'){
-					if(restraints[0]['connection']==true){
-						layer.setVisible(true);
-					} else {
-						layer.setVisible(false);
-					}
-
-				} else if (layer.get("type")==='cluster'){
-					if(restraints[0]['connection']==true){
-						layer.setVisible(false);
-					} else {
-						layer.setVisible(true);
-					}
-				}
-			}
-		}
-	}
-	//Shows connections for the correct zoom-levels.
-}
-
-
-//Decides what to show and to not show based on arbitrary zoom levels.
-function resolutionEvaluator(cur_res,layers){
-	restraints = [];
-	for (var i = 0; i < layers.Arcs.length; i++) {
-		var showLine = [];
-		var showCon = false;
-
-		switch (true){
-		case (cur_res>=6):
-			showLine = [];
-		break;
-		case (cur_res<6 && cur_res>=4):
-			showLine = ['big']
-		break;
-		case (cur_res<4 && cur_res>=1.5):
-			showLine = ['big', 'main']
-		break;
-		case (cur_res<1.5 && cur_res>=1):
-			showLine = ['big', 'main', 'small']
-		break;
-		case (cur_res<1):
-			showLine = ['big', 'main', 'small']
-		showCon = true;
-		break;
-		}
-		toShow = {'line': showLine, 'connection': showCon}
-		restraints.push(toShow);
-	}
-	return restraints
-}
-
-
-//Taken from http://www.acuriousanimal.com/thebookofopenlayers3/chapter03_04_imagecanvas.html
-var canvasFunction = function(inFeature, inArray, inColors) {
-	var canvas = document.createElement('canvas');
-	canvas.id = 'someId';
-	var context = canvas.getContext('2d');
-	//var canvasWidth = size[0], canvasHeight = size[1];
-	canvas.setAttribute('width', 100);
-	canvas.setAttribute('height', 100);
-	var feat = inFeature;
-	var colors = inColors
-	var radius = 15;
-
-//	Track the accumulated arcs drawn
-	var totalArc = -90*Math.PI / 180;
-	var percentToRadians = 1 / 100*360 *Math.PI / 180;
-	var wedgeRadians;
-	var coordinate = inFeature.getGeometry().getCoordinates();
-	var data = inArray; //Placeholder
-
-	drawPie(coordinate, data, colors);
-	return canvas;            
-};
-
-var proportions = function(data) {
-	tot = data.length;
-	data = _.countBy(data, _.identity);
-	data = _.map(data, function(num, key) { return [key, 100*(num/tot)]; })
-	return _.object(data);
-}
-
-
-function styleFunc(feature) {
-	var size = feature.get('features').length;
-	var inputFeatures = feature.get('features');
-	var all_otypes = _.map(inputFeatures, function(ol) {
-		return ol.get('dp_otype');
-	})
-	var share_array = _.values(proportions(all_otypes));
-	var fixedColors = _.map(_.keys(proportions(all_otypes)), function(type) {return pointColors[type].color});
-	var expCanvas = canvasFunction(feature, share_array, fixedColors);    
-	style =  new ol.style.Style({
-		image: new ol.style.Icon(({
-			img: expCanvas,
-			imgSize: [100,100]
-		})),
-		text: new ol.style.Text({
-			text: size.toString(),
-			fill: new ol.style.Fill({
-				color: '#ffffff'
-			})
-		})
-	});
-	return style;
-}
-
-function bindNodeInputs(layer, inLayers, inMap, layerGroups, customers) {
-	var textbox = $('input#usr');
-	textbox.on('change', function() {
-		console.log('CHANGE')
-		var selectedText = $('#Networks').find("option:selected").text();
-		if(layer.get("network") === selectedText.toLowerCase()){
-			feature = _.find(layer.getSource().getFeatures(),function(feat){return feat.get("gid").toString()===textbox.val()})
-			disableNode(feature, inLayers, inMap, layerGroups, customers)
-		}    
-	})
-};
-
-
-
-function deleteLayers(inLayers, layer, map, layerGroups){
-	layerType = {'arc': inLayers.Arcs, 'node': inLayers.Nodes, 'conn':inLayers.Connections}
-	index = _.indexOf(layerType[layer.get('type')], layer)
-	_.each(inLayers, function(value, key){
-		if(key !== 'Clusters' && index >= 3){
-			map.removeLayer(layerGroups[index])
-			value.splice(index,1)
-			map.render()
-		}
-	});
 }
