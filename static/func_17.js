@@ -305,7 +305,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 			}
 			else {
 				var coordinate = evt.coordinate;
-				content.innerHTML ='<b>Fack oid: </b>' + foundFeat.get('fack_oid') + '<br><b> Besiktningsanmärkningar: </b>' + foundFeat.get('antal_anm')+ ' st' + '<br><b>Besiktningsanmärkningsgrad: </b>'+ foundFeat.get('anm_grad') + '<br><b> Objekt>35 år: </b>' +foundFeat.get('antal_obj_35') + ' st' + '<br><b> Avbrott: </b>'+ foundFeat.get('antal_avbr') + ' st' + '<br><b> Kundtid: </b>' + foundFeat.get('kundtid')+ ' h' ;
+				content.innerHTML ='<b>Fack oid: </b>' + foundFeat.get('fack_oid') + '<br><b> Besiktningsanmärkningar: </b>' + foundFeat.get('antal_anm')+ ' st' + '<br><b>Allvarliga besiktningsanmärkningar: </b>'+ foundFeat.get('anm_grad') +' st' + '<br><b> Objekt>35 år: </b>' +foundFeat.get('antal_obj_35') + ' st' + '<br><b> Avbrott: </b>'+ foundFeat.get('antal_avbr') + ' st' + '<br><b> Kundtid: </b>' + foundFeat.get('kundtid')+ ' h' ;
 				overlay.setPosition(coordinate);
 			}
 		}
