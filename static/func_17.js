@@ -350,7 +350,7 @@ function getParamName(){
 		var text = $("#v1").contents().filter(function(){ 
 			  return this.nodeType == 3; 
 		})[0].nodeValue
-		var slidernum = slidervalue[0]*100;
+		var slidernum = Math.round(slidervalue[0]*100);
 		$("#param1").html(text+": "+slidernum+"%");
 		$("#param1").show();
 	}
@@ -358,7 +358,7 @@ function getParamName(){
 		var text = $("#v2").contents().filter(function(){ 
 			  return this.nodeType == 3; 
 		})[0].nodeValue
-		var slidernum = slidervalue[1]*100;
+		var slidernum = Math.round(slidervalue[1]*100);
 		$("#param2").html(text+": "+slidernum+"%");
 		$("#param2").show();
 	}
@@ -366,7 +366,7 @@ function getParamName(){
 		var text = $("#v3").contents().filter(function(){ 
 			  return this.nodeType == 3; 
 		})[0].nodeValue
-		var slidernum = slidervalue[2]*100;
+		var slidernum = Math.round(slidervalue[2]*100);
 		$("#param3").html(text+": "+slidernum+"%");
 		$("#param3").show();
 	}
@@ -374,7 +374,7 @@ function getParamName(){
 		var text = $("#v4").contents().filter(function(){ 
 			  return this.nodeType == 3; 
 		})[0].nodeValue
-		var slidernum = slidervalue[3]*100;
+		var slidernum = MAth.round(slidervalue[3]*100);
 		$("#param4").html(text+": "+slidernum+"%");
 		$("#param4").show();
 	}
@@ -382,7 +382,7 @@ function getParamName(){
 		var text = $("#v5").contents().filter(function(){ 
 			  return this.nodeType == 3; 
 		})[0].nodeValue
-		var slidernum = slidervalue[4]*100;
+		var slidernum = Math.round(slidervalue[4]*100);
 		$("#param5").html(text+": "+slidernum+"%");
 		$("#param5").show();
 	}

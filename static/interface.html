@@ -70,14 +70,14 @@
 			<div class="inner-wrap">
 				<span>	Denna applikation är tänkt att användas som beslutsstöd vid re-investeringar i nätet.<br>
 						Analysen baseras på en MultiCriteriaEvaluation (MCE) metod som kallas Weighted Linear Combination (WLC). <br>
-						Detta innebär att alla parametrar först skalas om linjärt och får värden mellan 0 och 1.<br>
+						Detta innebär att alla parametrar först skalas om linjärt och får värden mellan 0 och 1,<br>
+						där parametern som är sämst får 1 och den bästa parametern får 0. 
 						Dessa värden multipliceras sedan med den respektive vikt som väljs av användaren<br>
-						Adderas<br>
+						Slutligen adderas alla vikter*värden till en slutgiltig summa.<br>
 						I slutresultat ges varje fack ett värde mellan 0 och 1. <br>
-						Facket i högst behov av reinvestering kommer alltid få ett värde av 1 och de fack som är i minst behov av reinvestering får väde 0.<br>
+						Facket/facken i högst behov av reinvestering kommer få höga värden och de fack som är i minst behov av reinvestering får låga värden.<br>
 						Värden mellan 1-0.8 färgas röda, värden mellan 0.8-0.4 färgas gula och värden mellan 0.4-0 färgas gröna.<br>
-						De röda facken syns automatiskt i kartan efter analys,<br>
-						gula och gröna fack går att klicka fram.<br><br>
+						De röda facken syns automatiskt i kartan efter analys, gula och gröna fack går att klicka fram.<br><br>
 						Vid frågor eller kommentarer kontakta:<br>
 						Natalie Ekroth (natalie.ekroth@digpro.se) eller Josefin Lennartsson (josefin.lennartsson@digpro.se)</span>
 			</div>

@@ -167,6 +167,7 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
         
         input.onchange = function(e) {
         	var legend = document.getElementById("legend");
+        	var menuButton=document.getElementById("openButton");
             this_.setVisible_(lyr, e.target.checked);
             if (lyr.get('title')==="Ålder" && lyr.get('visible')===true){
             	
@@ -175,6 +176,14 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
             else{
             	legend.style.display='none';
             }
+            if (lyr.get('title')==="Bakgrund mörk"){
+            	menuButton.style.color='white';
+            }
+            else{
+            	menuButton.style.color='black';
+            }
+            	
+            	
         };
         li.appendChild(input);
     
