@@ -300,7 +300,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 			layerDown(bayFeatLayer, map);
 			if (foundFeat.getGeometry().getType() === 'Point' || foundFeat.getGeometry().getType() === 'LineString'){
 				var coordinate = evt.coordinate;
-				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Tillhör fack: </b>'+foundFeat.get('fack_oid')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
+				content.innerHTML ='<b>Oid: </b>' + foundFeat.get('obj_oid') + '<br><b>Otype: </b>' + foundFeat.get('obj_otype')+'<br><b>Tillhör fack oid: </b>'+foundFeat.get('fack_oid')+'<br><b>Ålder: </b>' + (new Date().getFullYear() - foundFeat.get('installerad'))+ ' år';
 				overlay.setPosition(coordinate);
 			}
 			else {
@@ -374,7 +374,7 @@ function getParamName(){
 		var text = $("#v4").contents().filter(function(){ 
 			  return this.nodeType == 3; 
 		})[0].nodeValue
-		var slidernum = MAth.round(slidervalue[3]*100);
+		var slidernum = Math.round(slidervalue[3]*100);
 		$("#param4").html(text+": "+slidernum+"%");
 		$("#param4").show();
 	}
@@ -471,10 +471,6 @@ function legendPlacement() {
 	}
 }
 
-/*function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-}
- */
 function extendMenu(){
 	var acc = document.getElementsByClassName("accordion");
 
@@ -707,13 +703,6 @@ function populateTable(bayObject, bayFeat, map){
 		return obj2.totval - obj1.totval
 	});
 	var table = document.getElementById("featureTable");
-	/*	var header = table.createTHead();
-	var headerRow = header.insertRow(0);
-	headerRow.innerHTML=""
-	headerRow.insertCell(0).innerHTML="<th>Rank</th>";
-	headerRow.insertCell(1).innerHTML="<th>Fack</th>";
-	headerRow.insertCell(2).innerHTML="<th>Värde</th>";
-	headerRow.insertCell(3).innerHTML="<th></th>";*/
 	//For each object...
 	var tBody = document.getElementById("tbody")
 	for(i=0; i<bayObject.length; i++) {

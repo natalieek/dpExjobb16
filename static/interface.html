@@ -43,18 +43,12 @@
 
 
 <div id="mySidenav" class="sidenav">
-<!--   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a> -->
   <a href="#" onClick="showForm('omForm')">Om </a>
   <a href="#" class = "accordion" onClick="extendMenu()"> Karta</a>
   	<div class="extend">
   		<div id="layer_panel">
   		</div>
   	</div>
-<!--   <a href="#" class = "accordion" onClick="extendMenu()">Filter</a>
-  	<div class="extend">
-  		<div id="layer_panel">
-  		</div>
-  	</div> -->
   <a href="#" class = "accordion" onClick="extendMenu()">Analys</a>
   	<div class="extend">
   	<div class = "undergrupp">
@@ -88,7 +82,6 @@
 <div class="testForm" id="checkDiv">
 		<h1>Välj parametrar</h1>
 		<form id="checkParamForm">
-    <!-- <div class="section"><span>1</span></div> -->
     			<div class="inner-wrap">
   						<ul class="control">
   								<li><label class="tooltiptest control control--checkbox" id="v1" >Antal besiktningsanmärkningar<input id="value1" type="checkbox" value="value1"/>
@@ -96,43 +89,27 @@
   											<span class="tooltiptext">Totala antalet besiktningsanmärkningar i facket</span>
   									</label>
   								</li>
-    							<li><label class="tooltiptest control control--checkbox" id="v2">Besiktningsanmärkningsgrad <input id="value2" type="checkbox" value="value2"/>
+    							<li><label class="tooltiptest control control--checkbox" id="v2">Besiktningsanmärkningsgrad<input id="value2" type="checkbox" value="value2"/>
     										<span class="control__indicator"></span>
     										<span class="tooltiptext">Antal objekt med besiktningsanmärkningsgrad "Allvarlig" i facket</span>
     								</label>
     							</li>
-    							<li><label class="tooltiptest control control--checkbox" id="v3">Antal objekt över 35 år <input id="value3" type="checkbox" value="value3"/>
+    							<li><label class="tooltiptest control control--checkbox" id="v3">Antal objekt över 35 år<input id="value3" type="checkbox" value="value3"/>
     										<span class="control__indicator"></span> 
     										<span class="tooltiptext">Antal objekt över 35 år i facket</span>
     								</label>
     							</li>
-    							<li><label class="tooltiptest control control--checkbox" id="v4">Antal avbrott <input id="value4" type="checkbox" value="value4"/>
+    							<li><label class="tooltiptest control control--checkbox" id="v4">Antal avbrott<input id="value4" type="checkbox" value="value4"/>
     										<span class="control__indicator"></span>
     										<span class="tooltiptext">Totala antalet avbrott i facket</span>
     								</label>
     							</li>
     							
-    							<li><label class="tooltiptest control control--checkbox" id="v5" >Total avbrottstid <input id="value5" type="checkbox" value="value5"/>
+    							<li><label class="tooltiptest control control--checkbox" id="v5" >Total avbrottstid<input id="value5" type="checkbox" value="value5"/>
     										<span class="control__indicator"></span>
     										<span class="tooltiptext">Totala antalet kundavbrottstimmar i facket</span>
     								</label>
     							</li>
-    	<!-- 						<li><label class="control control--checkbox" id="v6">Value 6 <input id="value6" type="checkbox" value="value6"/>
-    										<span class="control__indicator"></span>
-    								</label>
-    							</li>
-    							<li><label class="control control--checkbox" id="v7">Value 7 <input id="value7" type="checkbox" value="value7"/>
-    										<span class="control__indicator"></span>
-    								</label>
-    							</li>
-    							<li><label class="control control--checkbox" id="v8">Value 8 <input id="value8" type="checkbox" value="value8"/>
-    										<span class="control__indicator"></span>
-    								</label>
-    							</li>
-    							<li><label class="control control--checkbox" id="v9">Value 9 <input id="value9" type="checkbox" value="value9"/>
-    										<span class="control__indicator"></span>
-    								</label>
-    							</li> -->
     					</ul>
     			</div>
     			<button class="nextBtn" id=nextButton type="button" onClick="showForm('weightForm'); hideForm('checkDiv')"> Nästa</button>

@@ -124,26 +124,6 @@ $(document).ready(function(){
 			})[0].nodeValue
 			$("#sect5").html(text);
 		}
-		/*if (value6.checked){
-			$("#s6").show();
-			var text = $("#v6").text();
-			$("#sect6").html(text);
-		}
-		if (value7.checked){
-			$("#s7").show();
-			var text = $("#v7").text();
-			$("#sect7").html(text);
-		}
-		if (value8.checked){
-			$("#s8").show();
-			var text = $("#v8").text();
-			$("#sect8").html(text);
-		}
-		if (value9.checked){
-			$("#s9").show();
-			var text = $("#v9").text();
-			$("#sect9").html(text);
-		}*/
 	});
 });
 
