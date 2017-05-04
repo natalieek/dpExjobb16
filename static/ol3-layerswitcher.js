@@ -173,16 +173,17 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
             	
             	legend.style.display='block';
             }
-            else{
+            
+            else if(lyr.get('title')==="Ålder" && lyr.get('visible')===false){
             	legend.style.display='none';
             }
+
             if (lyr.get('title')==="Bakgrund mörk"){
             	menuButton.style.color='white';
             }
-            else{
+            else if (lyr.get('title')==="Bakgrund ljus"){
             	menuButton.style.color='black';
             }
-            	
             	
         };
         li.appendChild(input);
