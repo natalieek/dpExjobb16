@@ -428,7 +428,7 @@ function openNav() {
 	var e = document.getElementById("mySidenav");
 	var x = document.getElementById("openButton");
 	var y= document.getElementById("legendDiv")
-	if (e.style.width == '250px' && x.style.marginLeft == '251px')
+	if (e.style.width == '200px' && x.style.marginLeft == '200px')
 
 	{
 		e.style.width = '0px';
@@ -437,13 +437,13 @@ function openNav() {
 	}
 	else 
 	{
-		e.style.width = '250px';
-		x.style.marginLeft='251px';
-		y.style.marginLeft='255px';
+		e.style.width = '200px';
+		x.style.marginLeft='200px';
+		y.style.marginLeft='205px';
 	}
 }
 
-function closeTable() {
+/*function closeTable() {
 	var table = document.getElementById("tableDiv");
 	var button = document.getElementById("closeTable")
 	var legend = document.getElementById("legend")
@@ -457,17 +457,17 @@ function closeTable() {
 		button.style.marginRight='-15px';
 		legend.style.marginRight = '20px';
 	}
-}
+}*/
 
 function legendPlacement() {
 	var table = document.getElementById("tableDiv");
 	var legend = document.getElementById("legend")
 
-	if (table.style.display=='none'&& legend.style.marginRight=='250px'&& legend.style.display=='block'&& table.style.width == '0px'){	
-		legend.style.marginRight = '20px';
+	if (table.style.display=='none'&& legend.style.marginRight=='200px'&& legend.style.display=='block'&& table.style.width == '0px'){	
+		legend.style.marginRight = '5px';
 	}
 	else {
-		legend.style.marginRight='250px';
+		legend.style.marginRight='200px';
 	}
 }
 
@@ -596,7 +596,7 @@ function MCEmapMaker(map, bayObject, bayFeat){
 		polySource.clear();
 		//Hide table
 		$('#tableDiv').hide();
-		$('#closeTable').hide();
+//		$('#closeTable').hide();
 		$('#legendDiv').hide();
 		//Remove polygons from zoomed layer
 		zoomSource.clear();
@@ -605,11 +605,11 @@ function MCEmapMaker(map, bayObject, bayFeat){
 	});
 }
 
-$(document).ready(function(){
+/*$(document).ready(function(){
 	$("#closeTable").on("click", function(){
 		closeTable();
 	});
-});
+});*/
 
 function getParamValue(bayObject, map, bayFeat){
 	//Get faetures from layers 

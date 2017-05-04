@@ -212,11 +212,12 @@ div.extend {
 	display:none;
  	min-width: 30%;
   	width: fit-content;
-  	height:fit-content; 
+  	height: fit-content;
+  	max-height:80%; 
     padding:10px 30px;
-    margin:100px auto;
+    margin:10px auto;
     background: #FFF;
-    overflow:hidden;
+    overflow-y:auto;
 
 }
 .testForm .inner-wrap{
@@ -444,7 +445,7 @@ ul.control li:hover input ~ .control__indicator {
 }
 
 #tableDiv{
-	width:250px;
+	width:200px;
 	height:100%;
 	position:absolute;
 	right:0;
@@ -523,7 +524,7 @@ tr:nth-child(even) {
 } 
 
 #legend {
-	right:0px; 
+	right:5px; 
 	bottom:5px;
 	position:fixed;
 	transition: 0.5s;
@@ -546,7 +547,7 @@ tr:nth-child(even) {
 	cursor:pointer;
 }
 
-#legendDiv {
+.legendForm {
 	margin-left:5px; 
 	bottom:5px!important;
 	position:fixed;
@@ -560,8 +561,8 @@ tr:nth-child(even) {
     transition:0.5s;
 }
 
-#legendDiv h1{
-	font-size:15px;
+.legendForm h1{
+	font-size:12px;
 	font-weight:600;
 	background: #F8F8FF;
 	border-bottom: 1px solid #A9A9A9;
@@ -577,10 +578,14 @@ tr:nth-child(even) {
 
 .legendform .content{
 	font-weight:500;
-	font-size:15px;
+	font-size:12px;
 	padding:5px;
 	display:none;
 }
 
+.left {
+   float: left;
+   padding: 5px 5px 15px 2px;
+}
 
 
