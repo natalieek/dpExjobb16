@@ -598,12 +598,24 @@ function MCEmapMaker(map, bayObject, bayFeat){
 		$('#tableDiv').hide();
 //		$('#closeTable').hide();
 		$('#legendDiv').hide();
+		clearLegendForm();
+	
 		//Remove polygons from zoomed layer
 		zoomSource.clear();
 		var legend = document.getElementById("legend")
 		legend.style.marginRight = '0px';
 	});
 }
+
+function clearLegendForm(){
+//	resetForm('legendForm');
+	$("#param1").hide();
+	$("#param2").hide();
+	$("#param3").hide();
+	$("#param4").hide();
+	$("#param5").hide();
+}
+
 
 /*$(document).ready(function(){
 	$("#closeTable").on("click", function(){
