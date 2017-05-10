@@ -12,7 +12,7 @@ def cbl():
     #print(filename)
     #with con.cursor() as cursor:
     cursor = con.cursor()
-    query = "SELECT json_arrayagg(json_object('type' IS 'Feature','geometry' IS geo_json,'properties' IS json_object('obj_oid' is dp_oid, 'obj_otype' is dp_otype,  'fack_oid' IS ssp_bay_oid, 'fack_otype' is ssp_bay_otype, 'installerad' IS install_year))returning CLOB) AS tempclob FROM all_objects_stats WHERE install_year IS NOT NULL and dbms_lob.getlength(geo_json)<3800".format()
+    query = "SELECT json_arrayagg(json_object('type' IS 'Feature','geometry' IS geo_json,'properties' IS json_object('obj_oid' is dp_oid, 'obj_otype' is dp_otype,  'fack_oid' IS ssp_bay_oid, 'fack_otype' is ssp_bay_otype, 'installerad' IS install_year, 'bes_grad' IS grad))returning CLOB) AS tempclob FROM all_objects_final WHERE install_year IS NOT NULL and dbms_lob.getlength(geo_json)<3800".format()
     cursor.execute(query)
     inVar = (cursor.fetchone()[0])
     invar = '{"type": "FeatureCollection", "features":' + ((str(inVar).replace('"{','{')).replace('}"','}')).replace('\\','') + '}'

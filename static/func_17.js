@@ -106,6 +106,38 @@ var ageStyle = {
 			})
 		})
 }
+var obsStyle_ser = {
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 2.5,
+				fill: new ol.style.Fill({
+					color: 'red'
+				})
+			})
+		})],
+		'LineString': new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: 'red',
+				width: 1.5
+			})
+		})
+}
+var obsStyle = {
+		'Point': [new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 1.5,
+				fill: new ol.style.Fill({
+					color: 'gray'
+				})
+			})
+		})],
+		'LineString': new ol.style.Style({
+			stroke: new ol.style.Stroke({
+				color: 'gray',
+				width: 1
+			})
+		})
+}
 
 var ageStyleFunc = function(feature) {
 	if (feature.get("installerad") <= 1977){
@@ -116,6 +148,15 @@ var ageStyleFunc = function(feature) {
 	}
 	else {
 		return ageStyle[feature.getGeometry().getType()];
+	}
+};
+
+var obsStyleFunc = function(feature) {
+	if (feature.get("bes_grad") == 3){
+		return obsStyle_ser[feature.getGeometry().getType()];
+	}
+	else {
+		return obsStyle[feature.getGeometry().getType()];
 	}
 };
 
@@ -170,7 +211,9 @@ init = function() {
 		var lineLayer = createLayer(lineFeature, styleFunction, 99, 'Objekt');
 		var ageLayer = createLayer(lineFeature, ageStyleFunc, 100, 'Ålder');
 		ageLayer.setVisible(false);
-		map = mapMaker(lineLayer,bayObject,ageLayer);
+		var obsLayer = createLayer(lineFeature, obsStyleFunc, 100, 'Anmärkningar');
+		obsLayer.setVisible(false);
+		map = mapMaker(lineLayer,bayObject,ageLayer,obsLayer);
 	})
 /*		.catch(function (err) {
 		console.error('Augh, there was an error!', err.statusText);
@@ -218,7 +261,7 @@ function createLayer(feature, style, zIndex, title){
 	return vectorLayer;
 }
 
-function mapMaker(lineLayer,bayObject,ageLayer){
+function mapMaker(lineLayer,bayObject,ageLayer,obsLayer){
 	proj4.defs("EPSG:3009","+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
 	var myProjection = ol.proj.get('EPSG:3009');
 	var raster = new ol.layer.Tile({  
@@ -240,7 +283,7 @@ function mapMaker(lineLayer,bayObject,ageLayer){
 	});
 	var features = lineLayer.getSource().getFeatures();
 	var basemap = new ol.layer.Group({ 'title': 'Bakgrundskarta', layers: [darkRaster,raster]});
-	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', zIndex: 99, layers: [lineLayer, ageLayer]});
+	var objectGroup = new ol.layer.Group({ 'title': 'Kartlager', zIndex: 99, layers: [lineLayer, ageLayer,obsLayer]});
 
 	ol.proj.addProjection(myProjection);
 	var map = new ol.Map({

@@ -173,7 +173,6 @@ ol.control.LayerSwitcher.prototype.renderLayer_ = function(lyr, idx) {
             	
             	legend.style.display='block';
             }
-            
             else if(lyr.get('title')==="Ålder" && lyr.get('visible')===false){
             	legend.style.display='none';
             }
